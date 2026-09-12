@@ -9,29 +9,29 @@ const curatedExhibits = [
   {
     id: '01',
     title: 'The Silent Reverie',
-    medium: 'Raw Charcoal & Graphite',
+    medium: 'Raw Charcoal & 8B Graphite',
     year: '2026',
-    edition: 'Original Masterpiece No. 01',
-    badgeColor: 'from-amber-500/20 to-orange-500/10 text-amber-900 border-amber-300/60',
-    image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1000&q=80',
+    edition: 'Master Portrait Study',
+    image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1000&q=80',
+    grayscale: true,
   },
   {
     id: '02',
-    title: 'Gaze into Eternity',
-    medium: 'Compressed Charcoal on Arches',
+    title: 'Loyal Companion Study',
+    medium: 'Fine Vine Charcoal on Arches',
     year: '2026',
-    edition: 'Original Commission Study',
-    badgeColor: 'from-indigo-500/20 to-sky-500/10 text-indigo-900 border-indigo-300/60',
-    image: 'https://images.unsplash.com/photo-1580136579312-94651dfd596d?auto=format&fit=crop&w=1000&q=80',
+    edition: 'Custom Pet Commission',
+    image: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1000&q=80',
+    grayscale: true,
   },
   {
     id: '03',
-    title: 'Solitude & Form',
-    medium: 'Fine Graphite 8B & Blending Stumps',
+    title: 'Heritage Bridal Radiance',
+    medium: 'Vibrant Colored Pencil & Prismacolor',
     year: '2026',
-    edition: 'Atelier Archive No. 07',
-    badgeColor: 'from-emerald-500/20 to-teal-500/10 text-emerald-900 border-emerald-300/60',
-    image: 'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&fit=crop&w=1000&q=80',
+    edition: 'Full Color Masterpiece',
+    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80',
+    grayscale: false, // Color artwork as shown on flyer
   },
 ];
 
@@ -79,76 +79,76 @@ export default function Hero() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="lg:col-span-6 space-y-8 text-center lg:text-left"
         >
-          {/* Colorful Live Atelier Badge */}
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-white/80 to-amber-500/5 backdrop-blur-md text-[10px] uppercase tracking-[0.25em] text-amber-900 shadow-xs">
+          {/* Live Atelier Badge with UK Registration */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-white/80 to-amber-500/5 backdrop-blur-md text-[10px] uppercase tracking-[0.22em] text-amber-900 shadow-xs">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
             </span>
-            <span className="font-semibold">Private Atelier &bull; Custom Commissions</span>
+            <span className="font-semibold">Bespoke Portraits &bull; UK Reg: 17429707</span>
           </div>
 
-          {/* Luxury Main Title with Gradient Typography */}
-          <h1 className="font-serif text-4xl sm:text-6xl xl:text-[72px] font-normal leading-[1.06] tracking-tight text-[#1A1A1A]">
-            Immortalizing soul <br />
-            <span className="italic font-light bg-gradient-to-r from-[#D4A348] via-[#B88728] to-[#9A6F1A] bg-clip-text text-transparent">
-              through graphite
+          {/* Luxury Main Title (Graphite, Charcoal & Colored Pencil) */}
+          <h1 className="font-serif text-4xl sm:text-6xl xl:text-[70px] font-normal leading-[1.08] tracking-tight text-[#1A1A1A]">
+            Turn your photos <br />
+            into <span className="italic font-light bg-gradient-to-r from-[#D4A348] via-[#B88728] to-[#9A6F1A] bg-clip-text text-transparent">
+              timeless art
             </span> <br />
-            & raw charcoal.
+            by hand.
           </h1>
 
           <p className="text-[#686057] text-base sm:text-lg max-w-lg mx-auto lg:mx-0 font-light leading-relaxed">
-            Hand-drawn portrait commissions created stroke by stroke on 300 GSM French cotton paper. Commemorate precious memories or acquire certified gallery originals.
+            Master hand-drawn portraits of people and cherished pets. Crafted stroke by stroke in pure charcoal, fine graphite, or vibrant colored pencil on 300 GSM cotton sheets.
           </p>
 
-          {/* Action CTAs with Rich Colors */}
+          {/* Action CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-1">
             <Link
               href="/custom-sketch"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-gradient-to-r hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)] group"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)] group"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:text-white transition-colors" />
-              <span>Commission a Piece</span>
+              <span>Order Custom Sketch</span>
             </Link>
 
             <Link
               href="/shop"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-amber-900/20 bg-white/70 backdrop-blur-xs text-[#1A1A1A] text-xs uppercase tracking-[0.2em] font-medium hover:border-amber-600 hover:bg-white hover:text-amber-900 transition-all duration-300 shadow-2xs group"
             >
-              <span>Explore Gallery</span>
+              <span>Explore Gallery Vault</span>
               <ArrowRight className="w-3.5 h-3.5 text-amber-700 opacity-80 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
-          {/* Museum Standard Guarantee Bar with Subtle Tints */}
+          {/* Museum Guarantee Bar matching flyer */}
           <div className="pt-8 border-t border-amber-900/10 grid grid-cols-3 gap-6 text-center lg:text-left">
-            <div className="p-2 rounded-xl bg-amber-50/40 border border-amber-200/40">
+            <div className="p-2.5 rounded-xl bg-amber-50/40 border border-amber-200/40">
               <p className="text-[10px] uppercase tracking-[0.2em] text-amber-800 flex items-center justify-center lg:justify-start gap-1 font-mono font-medium">
-                <Award className="w-3 h-3 text-amber-600" /> Craft
+                <Award className="w-3 h-3 text-amber-600" /> Subject
               </p>
-              <p className="font-serif text-sm text-[#1A1A1A] mt-1 font-medium">100% Hand-Drawn</p>
+              <p className="font-serif text-sm text-[#1A1A1A] mt-1 font-medium">Person OR Pet</p>
             </div>
-            <div className="p-2 rounded-xl bg-indigo-50/40 border border-indigo-200/40">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-indigo-800 font-mono font-medium">Substrate</p>
+            <div className="p-2.5 rounded-xl bg-indigo-50/40 border border-indigo-200/40">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-indigo-800 font-mono font-medium">Paper</p>
               <p className="font-serif text-sm text-[#1A1A1A] mt-1 font-medium">300 GSM Cotton</p>
             </div>
-            <div className="p-2 rounded-xl bg-emerald-50/40 border border-emerald-200/40">
+            <div className="p-2.5 rounded-xl bg-emerald-50/40 border border-emerald-200/40">
               <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-800 flex items-center justify-center lg:justify-start gap-1 font-mono font-medium">
-                <ShieldCheck className="w-3 h-3 text-emerald-600" /> Archival
+                <ShieldCheck className="w-3 h-3 text-emerald-600" /> Delivery
               </p>
-              <p className="font-serif text-sm text-[#1A1A1A] mt-1 font-medium">Acid-Free 100yr+</p>
+              <p className="font-serif text-sm text-[#1A1A1A] mt-1 font-medium">Worldwide Tracked</p>
             </div>
           </div>
         </motion.div>
 
-        {/* Right Column: Colorful Physical Wooden Museum Frame with 3D Tilt */}
+        {/* Right Column: Physical Museum Frame with 3D Tilt */}
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, delay: 0.15 }}
           className="lg:col-span-6 flex flex-col items-center justify-center relative"
         >
-          {/* Colorful Ambient Glow Behind Frame */}
+          {/* Ambient Glow */}
           <div className="absolute -inset-4 bg-gradient-to-tr from-amber-500/20 via-rose-500/10 to-indigo-500/20 rounded-3xl blur-2xl opacity-70 pointer-events-none" />
 
           <div
@@ -160,7 +160,7 @@ export default function Hero() {
               style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
               className="relative p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-[#241F1B] to-[#1A1715] shadow-[0_35px_85px_-18px_rgba(30,20,10,0.45)] border border-amber-900/30 transition-transform duration-200"
             >
-              {/* Vibrant Prismatic Glass Reflection */}
+              {/* Prismatic Glass Reflection */}
               <motion.div
                 style={{
                   background: 'radial-gradient(circle at 50% 50%, rgba(255, 235, 180, 0.22) 0%, rgba(180, 200, 255, 0.1) 40%, transparent 70%)',
@@ -170,10 +170,10 @@ export default function Hero() {
                 className="absolute inset-0 pointer-events-none z-30 opacity-60 mix-blend-screen rounded-2xl"
               />
 
-              {/* Embossed Warm Museum White Mat Board */}
+              {/* Museum White Mat Board */}
               <div className="bg-[#FAF8F3] p-5 sm:p-7 rounded-xl shadow-[inset_0_2px_12px_rgba(0,0,0,0.14)] relative border border-[#EBE5DA]">
                 
-                {/* Gold Foil Atelier Seal Stamp */}
+                {/* Gold Seal */}
                 <div className="absolute top-3.5 left-3.5 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-400/10 border border-amber-500/50 shadow-xs backdrop-blur-xs">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                   <span className="text-[8px] uppercase tracking-[0.2em] font-mono text-amber-900 font-bold">
@@ -192,11 +192,10 @@ export default function Hero() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.98 }}
                       transition={{ duration: 0.45 }}
-                      className="w-full h-full object-cover grayscale contrast-125 hover:scale-105 transition-transform duration-700"
+                      className={`w-full h-full object-cover ${activeExhibit.grayscale ? 'grayscale contrast-125' : 'contrast-110'} hover:scale-105 transition-transform duration-700`}
                     />
                   </AnimatePresence>
 
-                  {/* Serial Ribbon with Amber Tint */}
                   <div className="absolute bottom-3 right-3 text-[9px] uppercase tracking-[0.22em] text-amber-300 bg-black/75 border border-amber-500/30 px-2.5 py-1 rounded-md backdrop-blur-xs font-mono">
                     {activeExhibit.id} &mdash; 03
                   </div>
@@ -215,7 +214,7 @@ export default function Hero() {
             </p>
           </div>
 
-          {/* Interactive Switcher Dock with Gold Highlight Ring */}
+          {/* Switcher Dock */}
           <div className="mt-6 flex items-center gap-3 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-amber-900/15 shadow-sm relative z-10">
             <span className="text-[9px] uppercase tracking-[0.2em] text-amber-800 font-mono font-semibold">
               Curations:
@@ -235,11 +234,8 @@ export default function Hero() {
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover grayscale"
+                    className={`w-full h-full object-cover ${item.grayscale ? 'grayscale' : ''}`}
                   />
-                  {activeExhibit.id === item.id && (
-                    <div className="absolute inset-0 border-2 border-amber-500/60 pointer-events-none" />
-                  )}
                 </button>
               ))}
             </div>

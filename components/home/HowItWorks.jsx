@@ -6,31 +6,31 @@ import Link from 'next/link';
 
 const steps = [
   {
-    number: '01',
-    title: 'Submit Reference Photo',
-    subtitle: 'High-res digital capture',
-    desc: 'Upload your reference photo via our customizer. Combine separate photos or request tailored composition, lighting, and background revisions.',
+    phase: 'Phase 01',
+    title: 'Photo Ingestion & Composition',
+    subtitle: 'Person or Pet &bull; High-res Capture',
+    desc: 'Submit reference photos of people or cherished pets. Request custom compositions, merged photos, or background lighting refinements.',
     icon: UploadCloud,
   },
   {
-    number: '02',
-    title: 'Handcrafted Rendering',
-    subtitle: '3 to 5 business days',
-    desc: 'Our portrait artist hand-draws every contour on 300 GSM French archival cotton paper using professional graphite and vine charcoal pigments.',
+    phase: 'Phase 02',
+    title: 'Master Hand-Rendering',
+    subtitle: '3 to 5 business days on easel',
+    desc: 'Rendered stroke by stroke on 300 GSM French cotton sheets using 8B fine graphite, deep vine charcoal, or vibrant colored pencil.',
     icon: Pencil,
   },
   {
-    number: '03',
-    title: 'Proof Review & Approval',
+    phase: 'Phase 03',
+    title: 'Digital Proof Transmitted',
     subtitle: '100% satisfaction guarantee',
-    desc: 'You receive an ultra-high-resolution digital proof to inspect. We refine details until you are completely thrilled with the final drawing.',
+    desc: 'Receive an ultra-high-resolution preview directly to your inbox. We refine nuances until the artwork exceeds your expectations.',
     icon: CheckCircle2,
   },
   {
-    number: '04',
-    title: 'Archival Seal & Courier',
-    subtitle: 'Insured worldwide shipping',
-    desc: 'Treated with UV archival fixative, sealed in custom moisture-resistant museum matting, and dispatched via tracked express courier.',
+    phase: 'Phase 04',
+    title: 'Wax-Sealed & Dispatched',
+    subtitle: 'Insured worldwide courier',
+    desc: 'Treated with UV archival fixative, wax-sealed with an official Certificate of Authenticity, and dispatched via tracked express courier.',
     icon: PackageCheck,
   },
 ];
@@ -60,21 +60,21 @@ export default function HowItWorks() {
           </h2>
 
           <p className="text-[#686057] font-light text-sm sm:text-base leading-relaxed max-w-lg mx-auto">
-            Transparent craftsmanship with digital proof approvals before physical packaging and dispatch.
+            Transparent four-phase atelier craftsmanship with digital proof inspection before museum packaging and tracked courier dispatch.
           </p>
         </div>
 
-        {/* 4 Steps Bento Grid */}
+        {/* 4 Steps Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
           
-          {/* Subtle Golden Connector Line for Large Screens */}
-          <div className="hidden lg:block absolute top-12 left-12 right-12 h-[1px] bg-gradient-to-r from-transparent via-amber-400/40 to-transparent pointer-events-none -z-0" />
+          {/* Connector Line for Large Screens */}
+          <div className="hidden lg:block absolute top-14 left-12 right-12 h-[1px] bg-gradient-to-r from-transparent via-amber-400/35 to-transparent pointer-events-none z-0" />
 
           {steps.map((step, idx) => {
             const Icon = step.icon;
             return (
               <motion.div
-                key={step.number}
+                key={step.phase}
                 initial={{ opacity: 0, y: 25 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -83,8 +83,8 @@ export default function HowItWorks() {
               >
                 {/* Step Top Bar */}
                 <div className="flex items-center justify-between mb-8">
-                  <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-amber-500/10 text-amber-900 border border-amber-500/25 shadow-2xs">
-                    Phase {step.number}
+                  <span className="font-mono text-[11px] font-bold px-3 py-1 rounded-full bg-amber-500/10 text-amber-900 border border-amber-500/25 shadow-2xs">
+                    {step.phase}
                   </span>
 
                   <div className="w-11 h-11 rounded-2xl bg-white border border-amber-900/15 flex items-center justify-center text-[#1A1A1A] group-hover:bg-[#1A1A1A] group-hover:text-amber-300 group-hover:border-[#1A1A1A] transition-all duration-300 shadow-2xs">
@@ -115,7 +115,7 @@ export default function HowItWorks() {
         <div className="mt-16 text-center">
           <Link
             href="/custom-sketch"
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-gradient-to-r hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)] group"
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)] group cursor-pointer"
           >
             <span>Commission Your Portrait Now</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

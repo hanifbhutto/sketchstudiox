@@ -6,7 +6,7 @@ import { Star, ShieldCheck, Quote, Sparkles, CheckCircle2 } from 'lucide-react';
 const reviews = [
   {
     id: 1,
-    name: 'Eleanor Vance',
+    name: 'Lady Eleanor Vance',
     location: 'London, United Kingdom',
     type: 'Family Heritage Commission',
     rating: 5,
@@ -15,30 +15,33 @@ const reviews = [
       'The charcoal depth captured our late grandfather’s gaze better than any photograph ever could. Inspecting the digital proof prior to archival framing gave our family complete peace of mind.',
     artworkThumb:
       'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80',
+    grayscale: true,
   },
   {
     id: 2,
-    name: 'Marcus Sterling',
-    location: 'New York, United States',
-    type: 'Couple Anniversary Portrait',
+    name: 'Dr. Arthur Pendelton',
+    location: 'Oxford, United Kingdom',
+    type: 'Dual Pet Memorial Commission',
     rating: 5,
     date: 'July 2026',
     comment:
-      'Museum-grade packaging and express courier transit. The raw willow charcoal strokes on heavyweight French cotton paper bring a rare textural soul to our living gallery.',
+      'Commissioned a custom study of our two spaniels. The attention to fur texture, eye gleam, and paper highlights on 300 GSM French cotton was breathtaking. Handled with supreme care.',
     artworkThumb:
-      'https://images.unsplash.com/photo-1580136579312-94651dfd596d?auto=format&fit=crop&w=400&q=80',
+      'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=400&q=80',
+    grayscale: true,
   },
   {
     id: 3,
-    name: 'Sophia Laurent',
-    location: 'Paris, France',
-    type: 'Original Study Acquisition',
+    name: 'Marcus & Priya Thorne',
+    location: 'Surrey, United Kingdom',
+    type: 'Vibrant Colored Pencil Study',
     rating: 5,
     date: 'June 2026',
     comment:
-      'Acquired “The Silent Reverie” original study. Shipped with a wax-sealed Certificate of Authenticity. The atelier’s precision and personalized client care are truly world-class.',
+      'We wanted our wedding portrait in full chromatic detail. The colored pencil blending on Fabriano paper looks incandescent under museum spotlights. Arrived wax-sealed with certificate.',
     artworkThumb:
-      'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80',
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    grayscale: false,
   },
 ];
 
@@ -68,7 +71,7 @@ export default function Testimonials() {
             </h2>
 
             <p className="text-sm sm:text-base text-[#686057] font-light max-w-lg leading-relaxed">
-              Read uncensored feedback from art collectors and bespoke portrait patrons worldwide.
+              Read uncensored feedback from art collectors, portrait patrons, and pet owners worldwide.
             </p>
           </div>
 
@@ -83,12 +86,12 @@ export default function Testimonials() {
             <span className="text-xs text-amber-900/20">|</span>
             <span className="text-xs font-mono text-[#867E74] flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              120+ Commissions
+              120+ Easels Completed
             </span>
           </div>
         </div>
 
-        {/* Reviews Bento Grid */}
+        {/* Reviews Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {reviews.map((rev, idx) => (
             <motion.div
@@ -101,7 +104,7 @@ export default function Testimonials() {
             >
               <div className="space-y-5">
                 
-                {/* Top Rating & Vintage Quote Glyph */}
+                {/* Rating & Quote Icon */}
                 <div className="flex items-center justify-between">
                   <div className="flex text-amber-500">
                     {[...Array(rev.rating)].map((_, i) => (
@@ -113,13 +116,13 @@ export default function Testimonials() {
                   </div>
                 </div>
 
-                {/* Review Narrative */}
+                {/* Comment */}
                 <p className="text-[#3F3A34] text-sm font-light leading-relaxed">
                   &ldquo;{rev.comment}&rdquo;
                 </p>
               </div>
 
-              {/* Patron Profile & Artwork Provenance Plaque */}
+              {/* Profile & Artwork Thumbnail */}
               <div className="pt-6 mt-6 border-t border-amber-900/10 flex items-center justify-between gap-4">
                 <div className="space-y-0.5">
                   <h4 className="font-serif text-base text-[#1A1A1A] font-medium group-hover:text-amber-800 transition-colors">
@@ -127,19 +130,19 @@ export default function Testimonials() {
                   </h4>
                   <p className="text-[11px] text-[#867E74] font-light">{rev.location}</p>
                   
-                  {/* Verified Tag */}
+                  {/* Verified Type Badge */}
                   <div className="pt-1 flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-mono text-amber-900 font-medium">
                     <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                     <span>{rev.type}</span>
                   </div>
                 </div>
 
-                {/* Micro Artwork Thumbnail Preview */}
+                {/* Thumbnail */}
                 <div className="relative w-13 h-16 rounded-xl overflow-hidden bg-stone-200 border border-amber-900/20 shrink-0 shadow-xs group-hover:scale-105 transition-transform duration-300">
                   <img
                     src={rev.artworkThumb}
-                    alt={`Portrait commission for ${rev.name}`}
-                    className="w-full h-full object-cover grayscale contrast-125"
+                    alt={`Commission for ${rev.name}`}
+                    className={`w-full h-full object-cover ${rev.grayscale ? 'grayscale contrast-125' : 'contrast-110'}`}
                   />
                   <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-xl" />
                 </div>

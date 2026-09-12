@@ -5,20 +5,21 @@ import { motion } from 'framer-motion';
 import { 
   Sparkles, 
   Mail, 
-  Phone, 
   MapPin, 
   Clock, 
   ShieldCheck, 
   Send, 
   CheckCircle2,
-  MessageSquare
+  Building2,
+  Globe2
 } from 'lucide-react';
 
 const INQUIRY_TYPES = [
-  'Custom Portrait Commission',
-  'Original Artwork Acquisition',
-  'Exhibition & Gallery Representation',
-  'Private Appointment'
+  'Custom Portrait Commission (People)',
+  'Bespoke Pet & Animal Portrait',
+  'Original Gallery Vault Acquisition',
+  'Multi-Subject Heirloom (Up to 10 Subjects)',
+  'Private Atelier Consultation'
 ];
 
 export default function ContactPage() {
@@ -33,6 +34,23 @@ export default function ContactPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.name || !formData.email) return;
+
+    // Persist inquiry into local storage for Admin Concierge Desk
+    try {
+      const existingInquiries = JSON.parse(localStorage.getItem('ssx_concierge_inquiries') || '[]');
+      const newInquiry = {
+        id: `INQ-${Date.now().toString().slice(-4)}`,
+        type: inquiryType,
+        ...formData,
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        status: 'Unread'
+      };
+      localStorage.setItem('ssx_concierge_inquiries', JSON.stringify([newInquiry, ...existingInquiries]));
+    } catch (err) {
+      console.error('Storage error', err);
+    }
+
     setSubmitted(true);
   };
 
@@ -55,19 +73,19 @@ export default function ContactPage() {
           <h1 className="font-serif text-4xl sm:text-6xl xl:text-7xl font-normal text-[#1A1A1A] tracking-tight leading-[1.04]">
             Connect directly with <br />
             <span className="italic font-light bg-gradient-to-r from-[#D4A348] via-[#B88728] to-[#8C6415] bg-clip-text text-transparent">
-              our atelier studio.
+              our atelier desk.
             </span>
           </h1>
 
           <p className="text-[#686057] font-light text-base sm:text-lg leading-relaxed pt-1">
-            Whether you seek a multi-figure heirloom commission, original exhibition acquisition, or private consultation, our atelier team responds within 24 business hours.
+            Whether inquiring about custom people & pet portraits, acquiring certified originals, or arranging a multi-subject family heirloom, our studio desk responds within 24 business hours.
           </p>
         </div>
 
         {/* Main Contact Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* Left Column: Direct Studio Information & Guarantees */}
+          {/* Left Column: Direct Studio Information & Credentials */}
           <div className="lg:col-span-5 space-y-8">
             
             {/* Atelier Information Card */}
@@ -77,59 +95,70 @@ export default function ContactPage() {
               </h3>
 
               <div className="space-y-4 text-xs">
-                <div className="flex items-start gap-4 p-3.5 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
+                
+                {/* Official Email */}
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
                   <div className="w-10 h-10 rounded-xl bg-white border border-[#D4A348]/30 flex items-center justify-center text-[#C29B38] shrink-0 shadow-2xs">
                     <Mail className="w-4 h-4" />
                   </div>
                   <div className="space-y-0.5">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Concierge Dispatch</span>
-                    <p className="text-sm font-mono text-[#1A1A1A] font-medium">concierge@sketchstudiox.com</p>
-                    <p className="text-[11px] text-[#867E74] font-light">Direct desk of the lead studio curator</p>
+                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Official Communications</span>
+                    <a href="mailto:info@sketchstudiox.com" className="text-sm font-mono text-[#1A1A1A] font-bold hover:text-[#C29B38] block transition-colors">
+                      info@sketchstudiox.com
+                    </a>
+                    <p className="text-[11px] text-[#867E74] font-light">Direct desk for commissions, previews & client care</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-3.5 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
+                {/* UK Registration Credentials */}
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
                   <div className="w-10 h-10 rounded-xl bg-white border border-[#D4A348]/30 flex items-center justify-center text-[#C29B38] shrink-0 shadow-2xs">
-                    <Phone className="w-4 h-4" />
+                    <Building2 className="w-4 h-4" />
                   </div>
                   <div className="space-y-0.5">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Private Client Line</span>
-                    <p className="text-sm font-mono text-[#1A1A1A] font-medium">+1 (800) 842-7890</p>
-                    <p className="text-[11px] text-[#867E74] font-light">Mon &ndash; Fri, 9:00 AM &ndash; 6:00 PM EST</p>
+                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Corporate Entity</span>
+                    <p className="text-sm font-serif text-[#1A1A1A] font-bold">SKETCH X STUDIO LTD</p>
+                    <p className="text-[11px] text-[#867E74] font-mono">Company Number: 17429707</p>
+                    <p className="text-[11px] text-[#867E74] font-light">Registered in England & Wales (UK)</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-3.5 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
+                {/* Freight & Worldwide Delivery */}
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
                   <div className="w-10 h-10 rounded-xl bg-white border border-[#D4A348]/30 flex items-center justify-center text-[#C29B38] shrink-0 shadow-2xs">
-                    <MapPin className="w-4 h-4" />
+                    <Globe2 className="w-4 h-4" />
                   </div>
                   <div className="space-y-0.5">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Physical Atelier</span>
-                    <p className="text-sm font-serif text-[#1A1A1A]">Sketch Studio X Atelier</p>
-                    <p className="text-[11px] text-[#867E74] font-light">454 West Broadway, SoHo, New York, NY 10012</p>
+                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Global Fulfillment</span>
+                    <p className="text-sm font-mono text-[#1A1A1A] font-semibold">Worldwide Tracked Delivery</p>
+                    <p className="text-[11px] text-[#867E74] font-light">Insured transit with wax-sealed Certificate of Authenticity</p>
                   </div>
                 </div>
+
               </div>
 
               {/* Atelier Commitment */}
               <div className="pt-4 border-t border-[#E5DFD7] flex items-center justify-between text-[11px] font-mono text-[#736B63]">
                 <span className="flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-[#C29B38]" />
-                  24hr Response Window
+                  24-Hour Curator Window
                 </span>
-                <span className="text-emerald-700 font-medium">Studio Active</span>
+                <span className="text-emerald-700 font-medium flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Easel Active
+                </span>
               </div>
             </div>
 
-            {/* Privacy & Provenance Guarantee Badge */}
+            {/* Privacy & Photo Confidentiality Guarantee */}
             <div className="p-6 rounded-[28px] bg-[#0E0C0A] border border-[#D4A348]/30 text-white space-y-3 relative overflow-hidden shadow-xl">
               <div className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle,rgba(212,163,72,0.15)_0%,transparent_70%)] pointer-events-none" />
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-mono text-[#D4A348]">
                 <ShieldCheck className="w-4 h-4" />
-                <span>Confidential Patron Privilege</span>
+                <span>Strict Photo Confidentiality</span>
               </div>
               <p className="text-xs text-[#A8A196] font-light leading-relaxed">
-                All family photographs, personal milestones, and commissioned portrait references sent to the atelier remain strictly confidential and are deleted after archive sign-off.
+                All uploaded family portraits, pet reference photos, and personal memories submitted to Sketch Studio X remain strictly confidential and are never shared publicly without explicit written consent.
               </p>
             </div>
 
@@ -154,10 +183,10 @@ export default function ContactPage() {
                       Transmission Received
                     </span>
                     <h3 className="font-serif text-3xl text-[#1A1A1A] font-normal">
-                      Thank you, {formData.name || 'Collector'}.
+                      Thank you, {formData.name || 'Patron'}.
                     </h3>
                     <p className="text-xs text-[#686057] font-light max-w-md mx-auto leading-relaxed">
-                      Your inquiry has been routed to our studio curator. We will review your directive and reply to <span className="font-mono text-[#1A1A1A] font-medium">{formData.email}</span> within 24 hours.
+                      Your inquiry regarding <strong className="text-[#1A1A1A]">{inquiryType}</strong> has been received by our studio curator. We will reply to <span className="font-mono text-[#1A1A1A] font-medium">{formData.email}</span> within 24 business hours.
                     </p>
                   </div>
 
@@ -166,9 +195,9 @@ export default function ContactPage() {
                       setSubmitted(false);
                       setFormData({ name: '', email: '', phone: '', message: '' });
                     }}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-widest font-mono font-medium hover:bg-[#C29B38] transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-widest font-mono font-medium hover:bg-[#C29B38] transition-all cursor-pointer"
                   >
-                    <span>Submit Another Inquiry</span>
+                    <span>Send Another Transmission</span>
                   </button>
                 </motion.div>
               ) : (
@@ -185,7 +214,7 @@ export default function ContactPage() {
                           key={type}
                           type="button"
                           onClick={() => setInquiryType(type)}
-                          className={`p-3 rounded-xl border text-[11px] font-mono text-left transition-all ${
+                          className={`p-3 rounded-xl border text-[11px] font-mono text-left transition-all cursor-pointer ${
                             inquiryType === type
                               ? 'border-[#C29B38] bg-[#FAF8F3] text-[#1A1A1A] font-medium ring-1 ring-[#C29B38]/30 shadow-2xs'
                               : 'border-[#E5DFD7] bg-white text-[#736B63] hover:border-amber-400'
@@ -200,50 +229,50 @@ export default function ContactPage() {
                   {/* Name & Email */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-[10px] uppercase tracking-wider font-mono text-[#867E74] block">Your Full Name</label>
+                      <label className="text-[10px] uppercase tracking-wider font-mono text-[#867E74] block">Your Name *</label>
                       <input
                         type="text"
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Marcus Sterling"
+                        placeholder="Lady Eleanor Vance"
                         className="w-full px-4 py-3.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38] transition-colors"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] uppercase tracking-wider font-mono text-[#867E74] block">Collector Email</label>
+                      <label className="text-[10px] uppercase tracking-wider font-mono text-[#867E74] block">Email Address *</label>
                       <input
                         type="email"
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="marcus@domain.com"
+                        placeholder="eleanor@example.co.uk"
                         className="w-full px-4 py-3.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38] transition-colors"
                       />
                     </div>
                   </div>
 
-                  {/* Phone */}
+                  {/* Phone (WhatsApp update) */}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-wider font-mono text-[#867E74] block">Direct Telephone (Optional for WhatsApp updates)</label>
+                    <label className="text-[10px] uppercase tracking-wider font-mono text-[#867E74] block">Telephone / WhatsApp (Optional)</label>
                     <input
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="+1 (555) 000-0000"
+                      placeholder="+44 7000 000000"
                       className="w-full px-4 py-3.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38] transition-colors"
                     />
                   </div>
 
                   {/* Message */}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-wider font-mono text-[#867E74] block">Project Scope & Directive Details</label>
+                    <label className="text-[10px] uppercase tracking-wider font-mono text-[#867E74] block">Commission Scope & Directives *</label>
                     <textarea
                       rows={5}
                       required
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Please share your vision: subject description, target dimensions, desired timeline, or any specific requests regarding reference photos..."
+                      placeholder="Please share details: subject count (Person/Pet), target size (e.g. A3 or 20x30 in), preferred medium (Charcoal, Graphite, or Colored Pencil), and any desired composition timeline..."
                       className="w-full p-4 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38] transition-colors"
                     />
                   </div>
@@ -251,14 +280,14 @@ export default function ContactPage() {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full py-4 rounded-2xl bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)] flex items-center justify-center gap-2 group"
+                    className="w-full py-4 rounded-2xl bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)] flex items-center justify-center gap-2 group cursor-pointer"
                   >
                     <span>Transmit Concierge Inquiry</span>
                     <Send className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
                   </button>
 
                   <p className="text-center text-[10px] text-[#867E74] font-mono">
-                    Protected by 256-bit encrypted transmission &bull; Zero marketing solicitation
+                    Official UK Registered Atelier (17429707) &bull; Encrypted Desk Dispatch
                   </p>
 
                 </form>

@@ -1,15 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { Sparkles, ShieldCheck, MapPin, ArrowUpRight } from 'lucide-react';
+import { Sparkles, ShieldCheck, MapPin, Mail, ArrowUpRight } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#0A0908] border-t border-[#D4A348]/20 text-[#FAF8F5] pt-24 pb-12 px-6 sm:px-10 relative overflow-hidden">
+    <footer className="bg-[#0A0908] border-t border-[#D4A348]/20 text-[#FAF8F5] pt-20 pb-12 px-6 sm:px-10 relative overflow-hidden selection:bg-[#D4A348] selection:text-black">
       
-      {/* Subtle Warm Tuscan Gold & Charcoal Ambient Light Spill */}
+      {/* Tuscan Gold & Charcoal Ambient Glow */}
       <div className="absolute top-0 right-1/4 w-[600px] h-[350px] bg-[radial-gradient(ellipse_at_top,rgba(212,163,72,0.08)_0%,transparent_70%)] pointer-events-none" />
       <div className="absolute bottom-0 left-10 w-[450px] h-[300px] bg-[radial-gradient(ellipse_at_bottom,rgba(194,155,56,0.05)_0%,transparent_70%)] pointer-events-none" />
 
@@ -17,7 +17,7 @@ export default function Footer() {
         
         {/* Top Section: Brand Identity & Live Studio Pulse */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-12 border-b border-white/10 gap-8">
-          <div className="space-y-3.5 max-w-md">
+          <div className="space-y-3.5 max-w-lg">
             <Link href="/" className="flex items-center gap-3 group select-none">
               <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#C29B38] to-[#E5BF65] flex items-center justify-center font-serif text-sm text-[#0A0908] font-bold group-hover:scale-105 transition-transform shadow-[0_2px_12px_rgba(212,163,72,0.35)]">
                 X
@@ -27,12 +27,20 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-xs text-[#A8A196] font-light leading-relaxed">
-              An independent fine art atelier creating museum-grade charcoal originals and bespoke hand-drawn portraiture on 300 GSM French cotton paper.
+              An independent fine art atelier creating bespoke hand-drawn portraits of loved ones and cherished pets. Crafted in pure charcoal, fine graphite, and vibrant colored pencil on 300 GSM French cotton paper.
             </p>
           </div>
 
-          {/* Live Studio Status Pill */}
+          {/* Live Studio Status & Official Direct Mail */}
           <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
+            <a 
+              href="mailto:info@sketchstudiox.com"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 hover:border-[#D4A348]/50 text-[#E7E2D9] hover:text-[#D4A348] transition-colors shadow-inner backdrop-blur-md"
+            >
+              <Mail className="w-3.5 h-3.5 text-[#C29B38]" />
+              <span>info@sketchstudiox.com</span>
+            </a>
+
             <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-[#D4A348]/25 text-[#E7E2D9] shadow-inner backdrop-blur-md">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4A348] opacity-75" />
@@ -40,6 +48,7 @@ export default function Footer() {
               </span>
               <span className="tracking-wider">Atelier Open &bull; Accepting Commissions</span>
             </div>
+
             <div className="flex items-center gap-1.5 text-[#867E74] text-[11px] font-mono tracking-wider">
               <MapPin className="w-3.5 h-3.5 text-[#C29B38]" />
               <span>Worldwide Tracked Shipping</span>
@@ -50,7 +59,7 @@ export default function Footer() {
         {/* Middle Section: Categorized Directory */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10 text-xs">
           
-          {/* Column 1: Exhibitions */}
+          {/* Column 1: Exhibitions (Updated with Pets) */}
           <div className="space-y-4">
             <h4 className="font-mono uppercase tracking-[0.22em] text-[10px] text-[#C29B38] font-semibold">
               Exhibitions
@@ -63,22 +72,23 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/shop?category=portraits" className="hover:text-white transition-colors">
-                  Portrait Studies
+                  Human Portraits
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop?category=pets" className="hover:text-white transition-colors flex items-center gap-1 text-[#FAF8F5]">
+                  <span>Pet & Animal Studies</span>
+                  <span className="text-[9px] font-mono text-[#D4A348]">&bull; Core</span>
                 </Link>
               </li>
               <li>
                 <Link href="/shop?category=couples" className="hover:text-white transition-colors">
-                  Couples & Figures
+                  Couples & Family
                 </Link>
               </li>
               <li>
-                <Link href="/shop?category=family" className="hover:text-white transition-colors">
-                  Family Heritage
-                </Link>
-              </li>
-              <li>
-                <Link href="/shop?category=archives" className="hover:text-white transition-colors">
-                  Private Archives
+                <Link href="/shop?category=color" className="hover:text-white transition-colors">
+                  Colored Pencil Studies
                 </Link>
               </li>
             </ul>
@@ -97,17 +107,17 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/custom-sketch#pricing" className="hover:text-white transition-colors">
-                  Price Calculator
-                </Link>
-              </li>
-              <li>
-                <Link href="/custom-sketch#framing" className="hover:text-white transition-colors">
-                  Hardwood Framing
+                  Price Schedule Matrix
                 </Link>
               </li>
               <li>
                 <Link href="/custom-sketch#guidelines" className="hover:text-white transition-colors">
-                  Photo Guidelines
+                  Subject Photo Guidelines
+                </Link>
+              </li>
+              <li>
+                <Link href="/custom-sketch#framing" className="hover:text-white transition-colors">
+                  Hardwood & Glass Framing
                 </Link>
               </li>
             </ul>
@@ -121,22 +131,23 @@ export default function Footer() {
             <ul className="space-y-2.5 font-light text-[#A8A196]">
               <li>
                 <Link href="/about" className="hover:text-white transition-colors">
-                  Philosophy & Craft
+                  Philosophy & Heritage
                 </Link>
               </li>
               <li>
                 <Link href="/about#materials" className="hover:text-white transition-colors">
-                  300 GSM French Cotton
-                </Link>
-              </li>
-              <li>
-                <Link href="/about#artist" className="hover:text-white transition-colors">
-                  The Lead Artist
+                  Arches 300 GSM Cotton
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="hover:text-white transition-colors">
-                  Private Inquiries
+                  Private Inquiries Desk
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin" className="text-white/40 hover:text-white transition-colors flex items-center gap-1 font-mono text-[10px]">
+                  <span>Studio Console</span>
+                  <ArrowUpRight className="w-2.5 h-2.5" />
                 </Link>
               </li>
             </ul>
@@ -155,44 +166,43 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/shipping" className="hover:text-white transition-colors">
-                  Insured Packaging & Transit
+                  Insured Global Freight
                 </Link>
               </li>
               <li>
                 <Link href="/returns" className="hover:text-white transition-colors">
-                  Proof Approval Guarantee
-                </Link>
-              </li>
-              <li>
-                <Link href="/account" className="hover:text-white transition-colors">
-                  Collector Sign In
+                  Approval Guarantee
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 5: Direct Dispatch & Trust Card with Gold Accent */}
-          <div className="col-span-2 md:col-span-1 space-y-4 bg-white/[0.03] p-5 rounded-2xl border border-[#D4A348]/25 backdrop-blur-md shadow-inner">
+          {/* Column 5: Statutory Registration Card */}
+          <div className="col-span-2 md:col-span-1 space-y-3.5 bg-white/[0.03] p-5 rounded-2xl border border-[#D4A348]/25 backdrop-blur-md shadow-inner">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-[#FAF8F5]">
               <ShieldCheck className="w-4 h-4 text-[#C29B38]" />
-              <span className="font-mono tracking-wider text-[11px] uppercase">Studio Certified</span>
+              <span className="font-mono tracking-wider text-[11px] uppercase">UK Incorporation</span>
             </div>
             <p className="text-[11px] text-[#A8A196] font-light leading-relaxed">
-              Every shipment includes a wax-sealed Certificate of Authenticity signed by the artist.
+              SKETCH X STUDIO LTD is a registered entity in England & Wales.
             </p>
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-[#867E74] font-mono">
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-[#867E74]">
+              <span>Company No.</span>
+              <span className="font-bold text-[#D4A348]">17429707</span>
+            </div>
+            <div className="flex items-center justify-between text-[11px] font-mono text-[#867E74]">
               <span>Currency</span>
-              <span className="font-semibold text-[#FAF8F5]">USD ($)</span>
+              <span className="font-semibold text-[#FAF8F5]">USD ($) Base</span>
             </div>
           </div>
 
         </div>
 
-        {/* Bottom Bar: Copyright & Policies */}
+        {/* Bottom Bar: Corporate Disclosure & Links */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#867E74] gap-4 font-light">
           
-          <div className="flex items-center gap-2">
-            <span>&copy; {currentYear} Sketch Studio X. All rights reserved.</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span>&copy; {currentYear} SKETCH X STUDIO LTD (Company No: 17429707). All rights reserved.</span>
             <span className="hidden sm:inline text-white/20">&bull;</span>
             <span className="text-[#A8A196] font-mono">sketchstudiox.com</span>
           </div>
@@ -206,7 +216,7 @@ export default function Footer() {
               Terms of Sale
             </Link>
             <Link href="/shipping" className="hover:text-white transition-colors">
-              Shipping Guidelines
+              Shipping & Customs
             </Link>
           </div>
 

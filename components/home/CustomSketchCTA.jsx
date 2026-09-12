@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, CheckCircle2, Sliders, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sparkles, ArrowRight, CheckCircle2, Sliders, ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
 
 export default function CustomSketchCTA() {
   const [sliderPosition, setSliderPosition] = useState(50);
@@ -44,13 +44,19 @@ export default function CustomSketchCTA() {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="rounded-[32px] bg-white border border-[#E5DFD7] p-8 sm:p-14 lg:p-16 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center shadow-[0_20px_50px_-15px_rgba(212,163,72,0.12)]">
           
-          {/* Left: Value Proposition & Atelier Standards */}
+          {/* Left: Value Proposition & Official Atelier Standards */}
           <div className="lg:col-span-6 space-y-7 text-center lg:text-left">
             
-            {/* Atelier Commission Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#D4A348]/40 bg-[#D4A348]/10 backdrop-blur-md text-[#8C6415] text-[10px] uppercase tracking-[0.25em] font-mono font-semibold shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-[#C29B38]" />
-              <span>Bespoke Commission Service</span>
+            {/* Atelier Commission Pill & UK Registration */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#D4A348]/40 bg-[#D4A348]/10 backdrop-blur-md text-[#8C6415] text-[10px] uppercase tracking-[0.25em] font-mono font-semibold shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-[#C29B38]" />
+                <span>Bespoke Commission Service</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F3] border border-[#E5DFD7] text-[10px] font-mono text-[#867E74]">
+                <Building2 className="w-3 h-3 text-[#C29B38]" />
+                <span>UK No: 17429707</span>
+              </div>
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-light text-[#1A1A1A] tracking-tight leading-[1.08]">
@@ -61,16 +67,16 @@ export default function CustomSketchCTA() {
             </h2>
 
             <p className="text-[#686057] font-light text-base leading-relaxed max-w-lg mx-auto lg:mx-0">
-              Zero automated printing or digital filters. Every portrait is hand-rendered stroke by stroke onto 300 GSM French acid-free cotton paper with a lifetime archival seal.
+              Zero automated printing or digital filters. Every portrait is 100% hand-rendered stroke by stroke onto 300 GSM French acid-free cotton paper with guaranteed digital proof review before dispatch.
             </p>
 
-            {/* Benefit Checkpoints */}
+            {/* Official Benefit Checkpoints */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1 text-left">
               {[
                 'Digital proof approval before shipping',
-                'Raw Charcoal, 8B Graphite & Hybrid',
-                'Multiple subjects (Couples & Pets)',
-                'Museum Mat & Hardwood Framing',
+                'People & pet portraits (up to 10 subjects)',
+                'Formats from A4 (8×12") to 30×40" Master',
+                'Complimentary insured worldwide transit',
               ].map((benefit, i) => (
                 <div key={i} className="flex items-center gap-2.5 text-xs text-[#2A2621]">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -79,7 +85,7 @@ export default function CustomSketchCTA() {
               ))}
             </div>
 
-            {/* Price Preview & CTA */}
+            {/* Price Preview & CTA (Updated to Official $200 Start) */}
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5">
               <Link
                 href="/custom-sketch"
@@ -90,8 +96,8 @@ export default function CustomSketchCTA() {
               </Link>
               
               <div className="text-center sm:text-left border-l sm:border-[#E5DFD7] sm:pl-5">
-                <span className="text-[10px] text-[#867E74] block uppercase tracking-widest font-mono">Pricing Starts At</span>
-                <span className="text-xl font-mono font-bold text-[#1A1A1A]">$120 <span className="text-xs text-[#867E74] font-normal">USD</span></span>
+                <span className="text-[10px] text-[#867E74] block uppercase tracking-widest font-mono">Official Rate From</span>
+                <span className="text-2xl font-mono font-bold text-[#1A1A1A]">$200 <span className="text-xs text-[#867E74] font-normal font-sans">USD</span></span>
               </div>
             </div>
 
@@ -120,7 +126,7 @@ export default function CustomSketchCTA() {
                 {/* After Pill */}
                 <div className="absolute top-4 right-4 bg-black/80 border border-[#D4A348]/40 text-[#D4A348] text-[9px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md font-mono z-10 shadow-xs flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#D4A348] animate-pulse" />
-                  <span>Handmade Charcoal</span>
+                  <span>100% Hand-Drawn</span>
                 </div>
 
                 {/* Before: Original Photo (Clipped Overlay Layer) */}

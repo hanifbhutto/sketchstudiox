@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, Mail, Sparkles, Shield, Clock, Bell } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Mail, Sparkles, Shield, Clock, Bell, Award } from 'lucide-react';
+
+const PREFERENCES = [
+  { id: 'all', label: 'All Curations & Originals' },
+  { id: 'commissions', label: 'Custom Easel Slots' },
+  { id: 'pets', label: 'Pet & Portrait Releases' }
+];
 
 export default function Newsletter() {
   const [email, setEmail] = useState('');
@@ -11,7 +17,21 @@ export default function Newsletter() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !email.includes('@')) return;
+
+    // Persist subscriber dynamically for Admin Console / Ingestion
+    try {
+      const existing = JSON.parse(localStorage.getItem('ssx_patron_subscribers') || '[]');
+      const newSubscriber = {
+        email,
+        preference,
+        date: new Date().toISOString().split('T')[0]
+      };
+      localStorage.setItem('ssx_patron_subscribers', JSON.stringify([newSubscriber, ...existing]));
+    } catch (err) {
+      console.error('Storage error', err);
+    }
+
     setSubscribed(true);
   };
 
@@ -23,6 +43,7 @@ export default function Newsletter() {
       <div className="absolute bottom-10 right-1/4 w-[550px] h-[450px] bg-gradient-to-bl from-indigo-500/8 via-amber-300/5 to-transparent blur-[130px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
+        
         {/* Deep Obsidian Dark Box with Gold Accents */}
         <div className="rounded-[36px] bg-[#0E0C0A] border border-[#D4A348]/25 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.5)] overflow-hidden relative">
           
@@ -49,7 +70,7 @@ export default function Newsletter() {
                 </h2>
 
                 <p className="text-[#A8A196] font-light text-sm sm:text-base leading-relaxed max-w-md">
-                  We produce only a limited number of master studies each quarter. Registered patrons receive private preview catalogs 48 hours prior to public release.
+                  We render only a limited number of master originals and bespoke portrait commissions each quarter. Registered patrons receive private preview catalogs 48 hours prior to public release.
                 </p>
               </div>
 
@@ -59,21 +80,21 @@ export default function Newsletter() {
                   <div className="w-6 h-6 rounded-full bg-[#D4A348]/15 border border-[#D4A348]/30 flex items-center justify-center text-[#E5BF65] shrink-0">
                     <Sparkles className="w-3 h-3" />
                   </div>
-                  <span>Priority booking window for bespoke monthly commissions</span>
+                  <span>Priority booking for bespoke monthly portrait & pet commissions</span>
                 </div>
 
                 <div className="flex items-center gap-3 text-xs text-[#DDD8CE]">
                   <div className="w-6 h-6 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
                     <Clock className="w-3 h-3" />
                   </div>
-                  <span>48-hour advance access to curated original drops</span>
+                  <span>48-hour advance access to curated original drawings & drops</span>
                 </div>
 
                 <div className="flex items-center gap-3 text-xs text-[#DDD8CE]">
                   <div className="w-6 h-6 rounded-full bg-white/5 border border-white/15 flex items-center justify-center text-[#FAF8F5] shrink-0">
                     <Shield className="w-3 h-3" />
                   </div>
-                  <span>Zero promotional clutter &bull; strictly exhibition dispatches</span>
+                  <span>Zero marketing spam &bull; strictly exhibition and slot dispatches</span>
                 </div>
               </div>
 
@@ -95,7 +116,7 @@ export default function Newsletter() {
                     Welcome to the Atelier Circle
                   </h3>
                   <p className="text-xs text-[#A8A196] font-light max-w-sm mx-auto leading-relaxed">
-                    A private transmission confirmation has been logged for <span className="font-mono text-[#E5BF65] font-medium">{email}</span>. You will receive private previews ahead of public exhibitions.
+                    A private transmission confirmation has been logged for <span className="font-mono text-[#E5BF65] font-medium">{email}</span>. You will receive exclusive preview access ahead of public vault releases.
                   </p>
                 </motion.div>
               ) : (
@@ -106,29 +127,21 @@ export default function Newsletter() {
                     <label className="text-[10px] uppercase tracking-[0.22em] text-[#A8A196] font-mono font-semibold block">
                       Dispatch Preference
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setPreference('all')}
-                        className={`py-2.5 px-3 rounded-xl text-[11px] font-mono uppercase tracking-wider transition-all duration-300 text-center border ${
-                          preference === 'all'
-                            ? 'bg-[#FAF8F5] text-[#0A0908] border-white font-semibold shadow-xs'
-                            : 'bg-white/[0.04] text-[#A8A196] border-white/10 hover:border-[#D4A348]/50 hover:text-[#FAF8F5]'
-                        }`}
-                      >
-                        All Drops & Studies
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPreference('commissions')}
-                        className={`py-2.5 px-3 rounded-xl text-[11px] font-mono uppercase tracking-wider transition-all duration-300 text-center border ${
-                          preference === 'commissions'
-                            ? 'bg-[#FAF8F5] text-[#0A0908] border-white font-semibold shadow-xs'
-                            : 'bg-white/[0.04] text-[#A8A196] border-white/10 hover:border-[#D4A348]/50 hover:text-[#FAF8F5]'
-                        }`}
-                      >
-                        Commission Slots Only
-                      </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {PREFERENCES.map((pref) => (
+                        <button
+                          key={pref.id}
+                          type="button"
+                          onClick={() => setPreference(pref.id)}
+                          className={`py-2 px-2 rounded-xl text-[10px] font-mono uppercase tracking-wider transition-all duration-300 text-center border cursor-pointer ${
+                            preference === pref.id
+                              ? 'bg-[#FAF8F5] text-[#0A0908] border-white font-bold shadow-xs'
+                              : 'bg-white/[0.04] text-[#A8A196] border-white/10 hover:border-[#D4A348]/50 hover:text-[#FAF8F5]'
+                          }`}
+                        >
+                          {pref.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
@@ -146,13 +159,13 @@ export default function Newsletter() {
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="collector@domain.com"
                           required
-                          className="w-full py-2.5 text-xs text-[#FAF8F5] bg-transparent outline-none placeholder:text-[#686057]"
+                          className="w-full py-2.5 text-xs text-[#FAF8F5] bg-transparent outline-none placeholder:text-[#686057] font-mono"
                         />
                       </div>
 
                       <button
                         type="submit"
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#D4A348] to-[#C29B38] text-[#0A0908] text-xs uppercase tracking-[0.2em] font-semibold hover:brightness-110 transition-all duration-300 shrink-0 shadow-lg group"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#D4A348] to-[#C29B38] text-[#0A0908] text-xs uppercase tracking-[0.2em] font-semibold hover:brightness-110 transition-all duration-300 shrink-0 shadow-lg group cursor-pointer"
                       >
                         <span>Request Access</span>
                         <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -164,10 +177,10 @@ export default function Newsletter() {
                   <div className="flex items-center justify-between text-[11px] text-[#A8A196] pt-1 font-light">
                     <span className="flex items-center gap-1.5 font-mono text-[10px]">
                       <Bell className="w-3 h-3 text-[#D4A348]" />
-                      Max 1 dispatch / month
+                      Strictly maximum 1 bulletin / month
                     </span>
                     <span className="text-[10px] uppercase tracking-wider text-[#E5BF65] font-mono font-medium">
-                      Encrypted & Private
+                      Encrypted &bull; UK 17429707
                     </span>
                   </div>
 
