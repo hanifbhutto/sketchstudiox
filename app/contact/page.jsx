@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Sparkles, 
@@ -11,7 +11,8 @@ import {
   Send, 
   CheckCircle2,
   Building2,
-  Globe2
+  Globe2,
+  Loader2
 } from 'lucide-react';
 
 const INQUIRY_TYPES = [
@@ -25,12 +26,50 @@ const INQUIRY_TYPES = [
 export default function ContactPage() {
   const [inquiryType, setInquiryType] = useState(INQUIRY_TYPES[0]);
   const [submitted, setSubmitted] = useState(false);
+  const [loadingSettings, setLoadingSettings] = useState(true);
+  
+  // Live Studio Settings State
+  const [studioInfo, setStudioInfo] = useState({
+    studioEmail: 'info@sketchstudiox.com',
+    companyName: 'SKETCH X STUDIO LTD',
+    companyNumber: '17429707',
+    incorporationJurisdiction: 'England and Wales (UK)',
+    turnaroundDays: '7 - 14 Business Days',
+    acceptingCommissions: true,
+  });
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     message: '',
   });
+
+  // Fetch live studio settings from database API on load
+  useEffect(() => {
+    async function fetchStudioSettings() {
+      try {
+        setLoadingSettings(true);
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        if (data && !data.error) {
+          setStudioInfo({
+            studioEmail: data.studioEmail || 'info@sketchstudiox.com',
+            companyName: data.companyName || 'SKETCH X STUDIO LTD',
+            companyNumber: data.companyNumber || '17429707',
+            incorporationJurisdiction: data.incorporationJurisdiction || 'England and Wales (UK)',
+            turnaroundDays: data.turnaroundDays || '7 - 14 Business Days',
+            acceptingCommissions: data.acceptingCommissions ?? true,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load contact studio settings', err);
+      } finally {
+        setLoadingSettings(false);
+      }
+    }
+    fetchStudioSettings();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -85,7 +124,7 @@ export default function ContactPage() {
         {/* Main Contact Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* Left Column: Direct Studio Information & Credentials */}
+          {/* Left Column: Direct Studio Information & Credentials (Dynamic) */}
           <div className="lg:col-span-5 space-y-8">
             
             {/* Atelier Information Card */}
@@ -94,48 +133,55 @@ export default function ContactPage() {
                 Direct Channels
               </h3>
 
-              <div className="space-y-4 text-xs">
-                
-                {/* Official Email */}
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-[#D4A348]/30 flex items-center justify-center text-[#C29B38] shrink-0 shadow-2xs">
-                    <Mail className="w-4 h-4" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Official Communications</span>
-                    <a href="mailto:info@sketchstudiox.com" className="text-sm font-mono text-[#1A1A1A] font-bold hover:text-[#C29B38] block transition-colors">
-                      info@sketchstudiox.com
-                    </a>
-                    <p className="text-[11px] text-[#867E74] font-light">Direct desk for commissions, previews & client care</p>
-                  </div>
+              {loadingSettings ? (
+                <div className="py-10 flex items-center justify-center gap-2 text-xs font-mono text-[#867E74]">
+                  <Loader2 className="w-5 h-5 animate-spin text-[#C29B38]" />
+                  <span>Loading live studio credentials...</span>
                 </div>
+              ) : (
+                <div className="space-y-4 text-xs">
+                  
+                  {/* Official Email */}
+                  <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-[#D4A348]/30 flex items-center justify-center text-[#C29B38] shrink-0 shadow-2xs">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Official Communications</span>
+                      <a href={`mailto:${studioInfo.studioEmail}`} className="text-sm font-mono text-[#1A1A1A] font-bold hover:text-[#C29B38] block transition-colors">
+                        {studioInfo.studioEmail}
+                      </a>
+                      <p className="text-[11px] text-[#867E74] font-light">Direct desk for commissions, previews & client care</p>
+                    </div>
+                  </div>
 
-                {/* UK Registration Credentials */}
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-[#D4A348]/30 flex items-center justify-center text-[#C29B38] shrink-0 shadow-2xs">
-                    <Building2 className="w-4 h-4" />
+                  {/* UK Registration Credentials */}
+                  <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-[#D4A348]/30 flex items-center justify-center text-[#C29B38] shrink-0 shadow-2xs">
+                      <Building2 className="w-4 h-4" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Corporate Entity</span>
+                      <p className="text-sm font-serif text-[#1A1A1A] font-bold">{studioInfo.companyName}</p>
+                      <p className="text-[11px] text-[#867E74] font-mono">Company Number: {studioInfo.companyNumber}</p>
+                      <p className="text-[11px] text-[#867E74] font-light">Registered in {studioInfo.incorporationJurisdiction}</p>
+                    </div>
                   </div>
-                  <div className="space-y-0.5">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Corporate Entity</span>
-                    <p className="text-sm font-serif text-[#1A1A1A] font-bold">SKETCH X STUDIO LTD</p>
-                    <p className="text-[11px] text-[#867E74] font-mono">Company Number: 17429707</p>
-                    <p className="text-[11px] text-[#867E74] font-light">Registered in England & Wales (UK)</p>
+
+                  {/* Freight & Worldwide Delivery */}
+                  <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-[#D4A348]/30 flex items-center justify-center text-[#C29B38] shrink-0 shadow-2xs">
+                      <Globe2 className="w-4 h-4" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Global Fulfillment</span>
+                      <p className="text-sm font-mono text-[#1A1A1A] font-semibold">Worldwide Tracked Delivery</p>
+                      <p className="text-[11px] text-[#867E74] font-light">Insured transit with wax-sealed Certificate of Authenticity</p>
+                    </div>
                   </div>
+
                 </div>
-
-                {/* Freight & Worldwide Delivery */}
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7]/70">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-[#D4A348]/30 flex items-center justify-center text-[#C29B38] shrink-0 shadow-2xs">
-                    <Globe2 className="w-4 h-4" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#867E74]">Global Fulfillment</span>
-                    <p className="text-sm font-mono text-[#1A1A1A] font-semibold">Worldwide Tracked Delivery</p>
-                    <p className="text-[11px] text-[#867E74] font-light">Insured transit with wax-sealed Certificate of Authenticity</p>
-                  </div>
-                </div>
-
-              </div>
+              )}
 
               {/* Atelier Commitment */}
               <div className="pt-4 border-t border-[#E5DFD7] flex items-center justify-between text-[11px] font-mono text-[#736B63]">
@@ -145,7 +191,7 @@ export default function ContactPage() {
                 </span>
                 <span className="text-emerald-700 font-medium flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Easel Active
+                  {studioInfo.acceptingCommissions ? 'Easel Active' : 'Easel Paused'}
                 </span>
               </div>
             </div>
@@ -158,7 +204,7 @@ export default function ContactPage() {
                 <span>Strict Photo Confidentiality</span>
               </div>
               <p className="text-xs text-[#A8A196] font-light leading-relaxed">
-                All uploaded family portraits, pet reference photos, and personal memories submitted to Sketch Studio X remain strictly confidential and are never shared publicly without explicit written consent.
+                All uploaded family portraits, pet reference photos, and personal memories submitted to {studioInfo.companyName} remain strictly confidential and are never shared publicly without explicit written consent.
               </p>
             </div>
 
@@ -287,7 +333,7 @@ export default function ContactPage() {
                   </button>
 
                   <p className="text-center text-[10px] text-[#867E74] font-mono">
-                    Official UK Registered Atelier (17429707) &bull; Encrypted Desk Dispatch
+                    Official UK Registered Atelier ({studioInfo.companyNumber}) &bull; Encrypted Desk Dispatch
                   </p>
 
                 </form>

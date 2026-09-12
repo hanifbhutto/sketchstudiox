@@ -12,8 +12,10 @@ import {
   RotateCcw,
   Lock,
   Globe2,
-  Clock,
-  CircleDot
+  CircleDot,
+  UploadCloud,
+  Trash2,
+  Loader2
 } from 'lucide-react';
 
 const DEFAULT_SETTINGS = {
@@ -27,41 +29,114 @@ const DEFAULT_SETTINGS = {
   turnaroundDays: '7 - 14 Business Days',
   acceptingCommissions: true,
   autoConfirmOrders: true,
+  logoUrl: '',
 };
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  // Fetch live settings from database on load
   useEffect(() => {
-    const cached = localStorage.getItem('ssx_studio_config');
-    if (cached) {
+    async function fetchSettings() {
       try {
-        setSettings(JSON.parse(cached));
+        setLoading(true);
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        if (data && !data.error) {
+          setSettings({
+            studioEmail: data.studioEmail || DEFAULT_SETTINGS.studioEmail,
+            companyName: data.companyName || DEFAULT_SETTINGS.companyName,
+            companyNumber: data.companyNumber || DEFAULT_SETTINGS.companyNumber,
+            incorporationJurisdiction: data.incorporationJurisdiction || DEFAULT_SETTINGS.incorporationJurisdiction,
+            currency: data.currency || DEFAULT_SETTINGS.currency,
+            paypalClientId: data.paypalClientId || DEFAULT_SETTINGS.paypalClientId,
+            paypalEnv: data.paypalEnv || DEFAULT_SETTINGS.paypalEnv,
+            turnaroundDays: data.turnaroundDays || DEFAULT_SETTINGS.turnaroundDays,
+            acceptingCommissions: data.acceptingCommissions ?? DEFAULT_SETTINGS.acceptingCommissions,
+            autoConfirmOrders: data.autoConfirmOrders ?? DEFAULT_SETTINGS.autoConfirmOrders,
+            logoUrl: data.logoUrl || '',
+          });
+        }
       } catch (err) {
-        console.error('Failed to parse cached settings', err);
+        console.error('Failed to load settings from database', err);
+      } finally {
+        setLoading(false);
       }
     }
+    fetchSettings();
   }, []);
 
   const handleChange = (field, value) => {
     setSettings((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    localStorage.setItem('ssx_studio_config', JSON.stringify(settings));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
-
-  const handleResetDefaults = () => {
-    if (confirm('Restore baseline factory configurations for Sketch X Studio Ltd?')) {
-      setSettings(DEFAULT_SETTINGS);
-      localStorage.removeItem('ssx_studio_config');
-      setSaved(false);
+  // Handle Logo File Upload (converts to base64 for database storage or direct URL)
+  const handleLogoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSettings((prev) => ({ ...prev, logoUrl: reader.result }));
+      };
+      reader.readAsDataURL(file);
     }
   };
+
+  const removeLogo = () => {
+    setSettings((prev) => ({ ...prev, logoUrl: '' }));
+  };
+
+  // Save to Database API
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+
+      if (!res.ok) throw new Error('Failed to save settings');
+
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error('Save error:', err);
+      alert('Could not synchronize settings with database.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleResetDefaults = async () => {
+    if (confirm('Restore baseline factory configurations for Sketch X Studio Ltd?')) {
+      setSettings(DEFAULT_SETTINGS);
+      try {
+        await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(DEFAULT_SETTINGS),
+        });
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      } catch (err) {
+        console.error('Reset error:', err);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full h-96 flex flex-col items-center justify-center gap-3 text-xs font-mono text-[#867E74]">
+        <Loader2 className="w-6 h-6 animate-spin text-[#C29B38]" />
+        <span>Loading atelier governance settings...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-8">
@@ -71,11 +146,11 @@ export default function AdminSettingsPage() {
         <div className="space-y-1">
           <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] font-semibold flex items-center gap-1.5">
             <Sliders className="w-3.5 h-3.5 text-[#C29B38]" />
-            Atelier Governance
+            Atelier Governance &bull; Database Synchronized
           </span>
           <h1 className="font-serif text-3xl sm:text-4xl text-[#1A1A1A]">Studio Configuration</h1>
           <p className="text-xs text-[#867E74] font-light">
-            Manage legal entities, automated notification endpoints, PayPal gateway keys, and studio capacity.
+            Manage legal entities, studio logo, automated notification endpoints, PayPal gateway keys, and studio capacity.
           </p>
         </div>
 
@@ -94,6 +169,51 @@ export default function AdminSettingsPage() {
         {/* LEFT COLUMN: PRIMARY FORMS (8 COLS) */}
         <div className="lg:col-span-8 space-y-6">
           
+          {/* Studio Brand Logo Management */}
+          <div className="p-6 sm:p-7 rounded-2xl bg-white border border-[#E5DFD7] shadow-xs space-y-5">
+            <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+              <h3 className="font-serif text-base text-[#1A1A1A] flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#C29B38]" />
+                <span>Atelier Brand Seal & Logo</span>
+              </h3>
+              <span className="text-[10px] font-mono text-[#867E74]">Header & Certificate Watermark</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="w-20 h-20 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7] flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                {settings.logoUrl ? (
+                  <img src={settings.logoUrl} alt="Studio Logo" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="font-serif text-xl font-bold text-[#C29B38]">X</span>
+                )}
+              </div>
+
+              <div className="flex-1 space-y-3 w-full">
+                <div className="flex items-center gap-3">
+                  <label className="px-4 py-2 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors cursor-pointer inline-flex items-center gap-2">
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>Upload New Logo</span>
+                    <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                  </label>
+
+                  {settings.logoUrl && (
+                    <button
+                      type="button"
+                      onClick={removeLogo}
+                      className="px-3 py-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Remove</span>
+                    </button>
+                  )}
+                </div>
+                <p className="text-[11px] text-[#867E74] font-light">
+                  Recommended: Square transparent PNG or high-res vector mark (min 200×200px).
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* UK Corporate Registration Credentials */}
           <div className="p-6 sm:p-7 rounded-2xl bg-white border border-[#E5DFD7] shadow-xs space-y-5">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
@@ -267,9 +387,15 @@ export default function AdminSettingsPage() {
 
             <button 
               type="submit" 
-              className="w-full py-3.5 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-xs"
+              disabled={saving}
+              className="w-full py-3.5 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-xs disabled:opacity-50"
             >
-              {saved ? (
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-[#C29B38]" />
+                  <span>Synchronizing...</span>
+                </>
+              ) : saved ? (
                 <>
                   <Check className="w-4 h-4 text-emerald-400" />
                   <span>Configuration Synchronized</span>

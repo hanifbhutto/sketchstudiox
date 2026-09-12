@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 1. ORDERS REGISTRY (Commissions + Gallery Originals)
+model Order {
+  id            String   @id // e.g. "SSX-9821"
+  type          String   @default("Commission") // "Commission" | "Original"
+  customer      String
+  email         String
+  phone         String?
+  size          String   // e.g. "18×24 in", "A3 (12×16 in)"
+  medium        String   // "Raw Willow Charcoal", "8B Fine Graphite", "Vibrant Colored Pencil"
+  persons       Int      @default(0)
+  pets          Int      @default(0)
+  totalSubjects Int      @default(1)
+  price         Float
+  framed        Boolean  @default(false)
+  frameType     String?  // "Ebony Hardwood", "Tuscan Natural Oak", etc.
+  status        String   @default("Phase 01: Photo Ingested")
+  photo         String   @db.Text // High-res image URL / Supabase storage path
+  notes         String?  @db.Text
+  tracking      String?  // Courier waybill (DHL / Royal Mail)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+}
+
+// 2. EXHIBITION ARTWORKS (Gallery Vault Inventory)
+model Artwork {
+  id          String   @id // e.g. "ssx-01"
+  title       String
+  category    String   // "Human Portraits", "Pet & Animal Portraits", "Colored Pencil"
+  medium      String
+  substrate   String   // "300 GSM Arches Pure French Cotton"
+  price       Float
+  dimensions  String
+  status      String   @default("Available Original") // "Available Original" | "Sold & Archived"
+  year        String   @default("2026")
+  edition     String   @default("1-of-1 Master Original")
+  description String   @db.Text
+  image       String   @db.Text
+  isColor     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 3. PRICING RATE MATRIX (Flyer Grid: Size x Subject Count)
+model PricingRate {
+  id           Int      @id @default(autoincrement())
+  canvasSize   String   // "A4 (8×12 in)", "A3 (12×16 in)", "18×24 in", etc.
+  subjectCount Int      // 1 to 10
+  price        Float    // Base USD rate
+  createdAt    DateTime @default(now())
+
+  @@unique([canvasSize, subjectCount])
+}
+
+// 4. STUDIO PREFERENCES & SETTINGS
+model StudioSettings {
+  id                        String   @id @default(uuid())
+  studioEmail               String   @default("info@sketchstudiox.com")
+  companyName               String   @default("SKETCH X STUDIO LTD")
+  companyNumber             String   @default("17429707")
+  incorporationJurisdiction String   @default("England and Wales (UK)")
+  currency                  String   @default("USD")
+  paypalClientId            String   @default("sb-client-id-sample-token-ssx")
+  paypalEnv                 String   @default("sandbox")
+  turnaroundDays            String   @default("7 - 14 Business Days")
+  acceptingCommissions      Boolean  @default(true)
+  autoConfirmOrders         Boolean  @default(true)
+  logoUrl                   String?  @default("")
+  updatedAt                 DateTime @updatedAt
+}

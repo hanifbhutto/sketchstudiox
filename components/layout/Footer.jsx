@@ -1,10 +1,40 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { Sparkles, ShieldCheck, MapPin, Mail, ArrowUpRight } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [studioInfo, setStudioInfo] = useState({
+    studioEmail: 'info@sketchstudiox.com',
+    companyName: 'SKETCH X STUDIO LTD',
+    companyNumber: '17429707',
+    acceptingCommissions: true,
+    logoUrl: '',
+  });
+
+  // Fetch live studio settings and logo from database API
+  useEffect(() => {
+    async function fetchStudioSettings() {
+      try {
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        if (data && !data.error) {
+          setStudioInfo({
+            studioEmail: data.studioEmail || 'info@sketchstudiox.com',
+            companyName: data.companyName || 'SKETCH X STUDIO LTD',
+            companyNumber: data.companyNumber || '17429707',
+            acceptingCommissions: data.acceptingCommissions ?? true,
+            logoUrl: data.logoUrl || '',
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load footer studio settings', err);
+      }
+    }
+    fetchStudioSettings();
+  }, []);
 
   return (
     <footer className="bg-[#0A0908] border-t border-[#D4A348]/20 text-[#FAF8F5] pt-20 pb-12 px-6 sm:px-10 relative overflow-hidden selection:bg-[#D4A348] selection:text-black">
@@ -19,12 +49,20 @@ export default function Footer() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-12 border-b border-white/10 gap-8">
           <div className="space-y-3.5 max-w-lg">
             <Link href="/" className="flex items-center gap-3 group select-none">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#C29B38] to-[#E5BF65] flex items-center justify-center font-serif text-sm text-[#0A0908] font-bold group-hover:scale-105 transition-transform shadow-[0_2px_12px_rgba(212,163,72,0.35)]">
-                X
-              </div>
-              <span className="font-serif text-xl tracking-[0.22em] uppercase font-normal text-[#FAF8F5] group-hover:text-[#D4A348] transition-colors">
-                Sketch Studio X
-              </span>
+              {studioInfo.logoUrl ? (
+                <div className="h-9 max-w-[150px] overflow-hidden flex items-center group-hover:scale-105 transition-transform">
+                  <img src={studioInfo.logoUrl} alt={studioInfo.companyName} className="h-full w-auto object-contain" />
+                </div>
+              ) : (
+                <>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#C29B38] to-[#E5BF65] flex items-center justify-center font-serif text-sm text-[#0A0908] font-bold group-hover:scale-105 transition-transform shadow-[0_2px_12px_rgba(212,163,72,0.35)]">
+                    X
+                  </div>
+                  <span className="font-serif text-xl tracking-[0.22em] uppercase font-normal text-[#FAF8F5] group-hover:text-[#D4A348] transition-colors">
+                    {studioInfo.companyName}
+                  </span>
+                </>
+              )}
             </Link>
             <p className="text-xs text-[#A8A196] font-light leading-relaxed">
               An independent fine art atelier creating bespoke hand-drawn portraits of loved ones and cherished pets. Crafted in pure charcoal, fine graphite, and vibrant colored pencil on 300 GSM French cotton paper.
@@ -34,11 +72,11 @@ export default function Footer() {
           {/* Live Studio Status & Official Direct Mail */}
           <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
             <a 
-              href="mailto:info@sketchstudiox.com"
+              href={`mailto:${studioInfo.studioEmail}`}
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 hover:border-[#D4A348]/50 text-[#E7E2D9] hover:text-[#D4A348] transition-colors shadow-inner backdrop-blur-md"
             >
               <Mail className="w-3.5 h-3.5 text-[#C29B38]" />
-              <span>info@sketchstudiox.com</span>
+              <span>{studioInfo.studioEmail}</span>
             </a>
 
             <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-[#D4A348]/25 text-[#E7E2D9] shadow-inner backdrop-blur-md">
@@ -46,7 +84,9 @@ export default function Footer() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4A348] opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D4A348]" />
               </span>
-              <span className="tracking-wider">Atelier Open &bull; Accepting Commissions</span>
+              <span className="tracking-wider">
+                {studioInfo.acceptingCommissions ? 'Atelier Open • Accepting Commissions' : 'Atelier Queue • Commissions Paused'}
+              </span>
             </div>
 
             <div className="flex items-center gap-1.5 text-[#867E74] text-[11px] font-mono tracking-wider">
@@ -59,7 +99,7 @@ export default function Footer() {
         {/* Middle Section: Categorized Directory */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10 text-xs">
           
-          {/* Column 1: Exhibitions (Updated with Pets) */}
+          {/* Column 1: Exhibitions */}
           <div className="space-y-4">
             <h4 className="font-mono uppercase tracking-[0.22em] text-[10px] text-[#C29B38] font-semibold">
               Exhibitions
@@ -184,11 +224,11 @@ export default function Footer() {
               <span className="font-mono tracking-wider text-[11px] uppercase">UK Incorporation</span>
             </div>
             <p className="text-[11px] text-[#A8A196] font-light leading-relaxed">
-              SKETCH X STUDIO LTD is a registered entity in England & Wales.
+              {studioInfo.companyName} is a registered entity in England & Wales.
             </p>
             <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-[#867E74]">
               <span>Company No.</span>
-              <span className="font-bold text-[#D4A348]">17429707</span>
+              <span className="font-bold text-[#D4A348]">{studioInfo.companyNumber}</span>
             </div>
             <div className="flex items-center justify-between text-[11px] font-mono text-[#867E74]">
               <span>Currency</span>
@@ -202,7 +242,7 @@ export default function Footer() {
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#867E74] gap-4 font-light">
           
           <div className="flex flex-wrap items-center gap-2">
-            <span>&copy; {currentYear} SKETCH X STUDIO LTD (Company No: 17429707). All rights reserved.</span>
+            <span>&copy; {currentYear} {studioInfo.companyName} (Company No: {studioInfo.companyNumber}). All rights reserved.</span>
             <span className="hidden sm:inline text-white/20">&bull;</span>
             <span className="text-[#A8A196] font-mono">sketchstudiox.com</span>
           </div>

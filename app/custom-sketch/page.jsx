@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   UploadCloud, 
   Trash2, 
@@ -10,74 +10,10 @@ import {
   ArrowRight,
   Info,
   Building2,
-  Users
+  Loader2
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import PricingTableSection from './PricingTableModal';
-
-// Exact Rate Card Matrix from Official Sketch X Studio Ltd Pricing
-const SIZE_MATRIX = [
-  {
-    id: 'a4',
-    name: 'A4',
-    dimensions: '8 × 12 in',
-    maxSubjects: 1,
-    desc: 'Single subject portrait or pet study',
-    prices: { 1: 200 }
-  },
-  {
-    id: 'a3',
-    name: 'A3',
-    dimensions: '12 × 16 in',
-    maxSubjects: 2,
-    desc: 'Most requested for single portraits & couples',
-    popular: true,
-    prices: { 1: 250, 2: 400 }
-  },
-  {
-    id: '16x20',
-    name: '16 × 20 in',
-    dimensions: '16 × 20 in',
-    maxSubjects: 3,
-    desc: 'Classic medium scale for 1 to 3 figures',
-    prices: { 1: 300, 2: 450, 3: 550 }
-  },
-  {
-    id: '18x24',
-    name: '18 × 24 in',
-    dimensions: '18 × 24 in',
-    maxSubjects: 4,
-    desc: 'Spacious canvas for families & multi-pets',
-    prices: { 1: 350, 2: 500, 3: 650, 4: 750 }
-  },
-  {
-    id: '20x30',
-    name: '20 × 30 in',
-    dimensions: '20 × 30 in',
-    maxSubjects: 5,
-    desc: 'Gallery exhibition scale for up to 5 subjects',
-    prices: { 1: 400, 2: 550, 3: 700, 4: 800, 5: 900 }
-  },
-  {
-    id: '24x36',
-    name: '24 × 36 in',
-    dimensions: '24 × 36 in',
-    maxSubjects: 6,
-    desc: 'Substantial statement centerpiece up to 6 subjects',
-    prices: { 1: 450, 2: 650, 3: 750, 4: 850, 5: 950, 6: 1050 }
-  },
-  {
-    id: '30x40',
-    name: '30 × 40 in',
-    dimensions: '30 × 40 in',
-    maxSubjects: 10,
-    desc: 'Grand heirloom master study (supports up to 10 subjects)',
-    prices: { 
-      1: 550, 2: 750, 3: 900, 4: 1050, 5: 1150, 
-      6: 1300, 7: 1450, 8: 1600, 9: 1750, 10: 1850 
-    }
-  }
-];
 
 const MEDIUMS = [
   { id: 'charcoal', label: 'Raw Willow Charcoal', desc: 'Deep tonal contrast, velvety shadows & rich matte texture' },
@@ -85,10 +21,34 @@ const MEDIUMS = [
   { id: 'hybrid', label: 'Graphite + Charcoal Blend', desc: 'Precision eye work with charcoal atmospheric depth' },
 ];
 
+// Fallback matrix in case database is empty
+const DEFAULT_FALLBACK_RATES = {
+  'A4 (8×12)': { 1: 200 },
+  'A3 (12×16)': { 1: 250, 2: 400 },
+  '16×20': { 1: 300, 2: 450, 3: 550 },
+  '18×24': { 1: 350, 2: 500, 3: 650, 4: 750 },
+  '20×30': { 1: 400, 2: 550, 3: 700, 4: 800, 5: 900 },
+  '24×36': { 1: 450, 2: 650, 3: 750, 4: 850, 5: 950, 6: 1050 },
+  '30×40': { 1: 550, 2: 750, 3: 900, 4: 1050, 5: 1150, 6: 1300, 7: 1450, 8: 1600, 9: 1750, 10: 1850 }
+};
+
+const AVAILABLE_SIZES = [
+  { id: 'a4', name: 'A4', dimensions: '8×12', desc: 'Single subject portrait or pet study', maxSubjects: 1 },
+  { id: 'a3', name: 'A3', dimensions: '12×16', desc: 'Most requested for single portraits & couples', popular: true, maxSubjects: 2 },
+  { id: '16x20', name: '16×20', dimensions: '16×20', desc: 'Classic medium scale for 1 to 3 figures', maxSubjects: 3 },
+  { id: '18x24', name: '18×24', dimensions: '18×24', desc: 'Spacious canvas for families & multi-pets', maxSubjects: 4 },
+  { id: '20x30', name: '20×30', dimensions: '20×30', desc: 'Gallery exhibition scale for up to 5 subjects', maxSubjects: 5 },
+  { id: '24x36', name: '24×36', dimensions: '24×36', desc: 'Substantial statement centerpiece up to 6 subjects', maxSubjects: 6 },
+  { id: '30x40', name: '30×40', dimensions: '30×40', desc: 'Grand heirloom master study (supports up to 10 subjects)', maxSubjects: 10 },
+];
+
 export default function CustomSketchPage() {
   const { addToCart, setIsCartOpen } = useCart();
 
-  const [selectedSize, setSelectedSize] = useState(SIZE_MATRIX[1]); // Default A3
+  const [liveRates, setLiveRates] = useState(DEFAULT_FALLBACK_RATES);
+  const [loadingRates, setLoadingRates] = useState(true);
+
+  const [selectedSize, setSelectedSize] = useState(AVAILABLE_SIZES[1]); // Default A3
   const [subjectCount, setSubjectCount] = useState(1);
   const [selectedMedium, setSelectedMedium] = useState(MEDIUMS[0]);
   const [includeFrame, setIncludeFrame] = useState(false);
@@ -98,11 +58,41 @@ export default function CustomSketchPage() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [fileName, setFileName] = useState('');
 
+  // Fetch live database pricing matrix on load
+  useEffect(() => {
+    async function fetchRates() {
+      try {
+        const res = await fetch('/api/admin/pricing');
+        const data = await res.json();
+        if (data.rates) {
+          setLiveRates(data.rates);
+        }
+      } catch (err) {
+        console.error('Failed to load live rates, using fallback:', err);
+      } finally {
+        setLoadingRates(false);
+      }
+    }
+    fetchRates();
+  }, []);
+
+  // Match database key with size name (e.g., 'A3' matches 'A3 (12×16)')
+  const findMatchingRateKey = (sizeName) => {
+    const keys = Object.keys(liveRates);
+    return keys.find(k => k.toLowerCase().includes(sizeName.toLowerCase())) || keys[1];
+  };
+
+  const matchedKey = findMatchingRateKey(selectedSize.name);
+  const currentSizeRates = liveRates[matchedKey] || { 1: 250 };
+
   // Auto-adjust subject count if switched to smaller size
   const handleSizeSelect = (size) => {
     setSelectedSize(size);
-    if (subjectCount > size.maxSubjects) {
-      setSubjectCount(size.maxSubjects);
+    const newKey = findMatchingRateKey(size.name);
+    const availableSubjects = Object.keys(liveRates[newKey] || { 1: 250 }).map(Number);
+    const maxSub = Math.max(...availableSubjects);
+    if (subjectCount > maxSub) {
+      setSubjectCount(maxSub);
     }
   };
 
@@ -120,8 +110,8 @@ export default function CustomSketchPage() {
     setFileName('');
   };
 
-  // Calculate official price based on matrix
-  const basePrice = selectedSize.prices[subjectCount] || selectedSize.prices[1];
+  // Calculate official price dynamically from database liveRates
+  const basePrice = currentSizeRates[subjectCount] || currentSizeRates[1] || 250;
   const frameCost = includeFrame ? 75 : 0;
   const totalPrice = basePrice + frameCost;
 
@@ -133,7 +123,7 @@ export default function CustomSketchPage() {
       title: `Bespoke Portrait (${subjectCount} ${subjectCount === 1 ? 'Subject' : 'Subjects'})`,
       category: 'Custom Commission',
       medium: selectedMedium.label,
-      dimensions: `${selectedSize.name} (${selectedSize.dimensions})`,
+      dimensions: `${selectedSize.name} (${selectedSize.dimensions} in)`,
       frame: includeFrame ? 'Museum Solid Hardwood & Matting' : 'Archival Unframed Sheet',
       price: totalPrice,
       image: previewUrl,
@@ -166,12 +156,12 @@ export default function CustomSketchPage() {
 
       <div className="max-w-6xl mx-auto relative z-10">
         
-        {/* Editorial Header with Official UK Company Credentials */}
+        {/* Editorial Header */}
         <div className="max-w-3xl mb-12 space-y-4">
           <div className="flex flex-wrap items-center gap-2.5">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#D4A348]/40 bg-[#D4A348]/10 backdrop-blur-md text-[#8C6415] text-[10px] uppercase tracking-[0.22em] font-mono font-semibold shadow-2xs">
               <Sparkles className="w-3.5 h-3.5 text-[#C29B38]" />
-              <span>Official Atelier Commission Rate Card</span>
+              <span>Official Live Atelier Rate Card</span>
             </div>
 
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#E5DFD7] text-[10px] font-mono text-[#867E74]">
@@ -188,7 +178,7 @@ export default function CustomSketchPage() {
           </h1>
 
           <p className="text-[#686057] font-light text-sm sm:text-base leading-relaxed">
-            Every portrait is 100% hand-drawn from your reference photo (people or pets) on archival French cotton substrate. Select canvas format and number of subjects to compute instant live atelier pricing.
+            Every portrait is 100% hand-drawn from your reference photo (people or pets) on archival French cotton substrate. Select canvas format and number of subjects to compute live database pricing.
           </p>
         </div>
 
@@ -229,7 +219,7 @@ export default function CustomSketchPage() {
                 <div className="relative rounded-2xl overflow-hidden border border-[#E5DFD7] bg-[#FAF8F3] p-2.5 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-stone-200 shrink-0 border border-stone-300">
-                      <img src={previewUrl} alt="Reference Preview" className="w-full h-full object-cover grayscale" />
+                      <img src={previewUrl} alt="Reference Preview" className="w-full h-full object-cover" />
                     </div>
                     <div>
                       <p className="text-xs font-medium text-[#1A1A1A] truncate max-w-[200px] sm:max-w-xs">
@@ -241,6 +231,7 @@ export default function CustomSketchPage() {
                     </div>
                   </div>
                   <button
+                    type="button"
                     onClick={removeImage}
                     className="p-2.5 rounded-xl hover:bg-white text-zinc-400 hover:text-rose-600 transition-colors mr-1 cursor-pointer"
                     title="Remove Photo"
@@ -262,13 +253,16 @@ export default function CustomSketchPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {SIZE_MATRIX.map((size) => {
+                {AVAILABLE_SIZES.map((size) => {
                   const isSelected = selectedSize.id === size.id;
-                  const startingPrice = size.prices[1];
+                  const key = findMatchingRateKey(size.name);
+                  const sizePrices = liveRates[key] || { 1: 200 };
+                  const startingPrice = sizePrices[1] || 200;
 
                   return (
                     <button
                       key={size.id}
+                      type="button"
                       onClick={() => handleSizeSelect(size)}
                       className={`p-4 rounded-2xl border text-left transition-all relative cursor-pointer ${
                         isSelected
@@ -283,23 +277,20 @@ export default function CustomSketchPage() {
                       )}
                       <div className="flex items-baseline justify-between">
                         <h3 className="font-mono text-xs font-bold text-[#1A1A1A]">
-                          {size.name} <span className="text-[11px] text-[#867E74] font-normal">({size.dimensions})</span>
+                          {size.name} <span className="text-[11px] text-[#867E74] font-normal">({size.dimensions} in)</span>
                         </h3>
                         <span className="font-mono text-xs text-[#8C6415] font-bold">
                           From ${startingPrice}
                         </span>
                       </div>
                       <p className="text-[11px] text-[#686057] font-light mt-1.5 leading-snug">{size.desc}</p>
-                      <span className="text-[10px] text-[#867E74] font-mono block mt-2">
-                        Capacity: Up to {size.maxSubjects} {size.maxSubjects === 1 ? 'subject' : 'subjects'}
-                      </span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Step 3: Subjects Count (Dynamic Per Size Limit) */}
+            {/* Step 3: Subjects Count */}
             <div className="rounded-[28px] bg-white p-6 sm:p-8 border border-[#E5DFD7] shadow-[0_12px_35px_-10px_rgba(212,163,72,0.08)] space-y-4">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs font-semibold text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2">
@@ -307,19 +298,20 @@ export default function CustomSketchPage() {
                   Number of Subjects (Person or Pet)
                 </span>
                 <span className="text-[11px] text-[#867E74] font-mono">
-                  Max {selectedSize.maxSubjects} on {selectedSize.name}
+                  Live Database Matrix
                 </span>
               </div>
 
-              {/* Subject selector pills 1 to 10 */}
               <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
-                  const isAvailable = num <= selectedSize.maxSubjects;
+                  const priceForSubject = currentSizeRates[num];
+                  const isAvailable = priceForSubject !== undefined && priceForSubject !== null;
                   const isSelected = subjectCount === num;
 
                   return (
                     <button
                       key={num}
+                      type="button"
                       disabled={!isAvailable}
                       onClick={() => setSubjectCount(num)}
                       className={`py-3 rounded-xl border text-xs font-mono transition-all text-center ${
@@ -335,15 +327,10 @@ export default function CustomSketchPage() {
                   );
                 })}
               </div>
-
-              <p className="text-[11px] text-[#867E74] font-light italic">
-                * Note: Larger subject counts require wider formats (e.g. 30×40 in supports up to 10 subjects).
-              </p>
             </div>
 
             {/* Step 4: Medium & Custom Directives */}
             <div className="rounded-[28px] bg-white p-6 sm:p-8 border border-[#E5DFD7] shadow-[0_12px_35px_-10px_rgba(212,163,72,0.08)] space-y-6">
-              
               <div className="space-y-3">
                 <span className="font-mono text-xs font-semibold text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-[#1A1A1A] text-[#FAF8F5] flex items-center justify-center text-[10px]">4</span>
@@ -354,6 +341,7 @@ export default function CustomSketchPage() {
                   {MEDIUMS.map((med) => (
                     <button
                       key={med.id}
+                      type="button"
                       onClick={() => setSelectedMedium(med)}
                       className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                         selectedMedium.id === med.id
@@ -382,6 +370,7 @@ export default function CustomSketchPage() {
                   </p>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setIncludeFrame(!includeFrame)}
                   className={`w-12 h-6 rounded-full transition-colors relative flex items-center px-0.5 cursor-pointer shrink-0 ${
                     includeFrame ? 'bg-[#1A1A1A]' : 'bg-stone-200'
@@ -420,7 +409,7 @@ export default function CustomSketchPage() {
               <div className="flex items-center justify-between border-b border-[#E5DFD7] pb-4">
                 <div>
                   <span className="font-serif text-xl text-[#1A1A1A] block">Commission Estimate</span>
-                  <span className="text-[10px] font-mono text-[#867E74]">Official Rate Schedule 2026</span>
+                  <span className="text-[10px] font-mono text-[#867E74]">Live Database Schedule</span>
                 </div>
                 <span className="text-[10px] uppercase tracking-widest text-emerald-800 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-full font-mono font-semibold">
                   Proof Guaranteed
@@ -432,14 +421,14 @@ export default function CustomSketchPage() {
                 <div className="flex justify-between">
                   <span>Canvas Scale:</span>
                   <span className="font-mono text-[#1A1A1A] font-semibold">
-                    {selectedSize.name} ({selectedSize.dimensions})
+                    {selectedSize.name} ({selectedSize.dimensions} in)
                   </span>
                 </div>
 
                 <div className="flex justify-between">
                   <span>Selected Subjects:</span>
                   <span className="font-mono text-[#1A1A1A] font-semibold">
-                    {subjectCount} {subjectCount === 1 ? 'Subject (Person/Pet)' : 'Subjects'}
+                    {subjectCount} {subjectCount === 1 ? 'Subject' : 'Subjects'}
                   </span>
                 </div>
 
@@ -453,16 +442,6 @@ export default function CustomSketchPage() {
                   <span className="font-mono text-[#1A1A1A] font-medium">
                     {includeFrame ? '+$75 USD' : 'Unframed Sheet'}
                   </span>
-                </div>
-
-                <div className="flex justify-between text-[#867E74] pt-2 border-t border-stone-100">
-                  <span>High-Res Digital Proof Scan:</span>
-                  <span className="font-mono text-emerald-700 font-medium">Included</span>
-                </div>
-
-                <div className="flex justify-between text-[#867E74]">
-                  <span>Insured Worldwide Transit:</span>
-                  <span className="font-mono text-emerald-700 font-medium">Complimentary</span>
                 </div>
               </div>
 
@@ -505,7 +484,6 @@ export default function CustomSketchPage() {
                 )}
               </button>
 
-              {/* Studio Trust Safeguard */}
               <div className="pt-2 space-y-2.5 border-t border-[#E5DFD7] text-[11px] text-[#686057] font-light">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -521,7 +499,9 @@ export default function CustomSketchPage() {
           </div>
 
         </div>
-      <PricingTableSection/>
+
+        {/* Dynamic Pricing Table Section */}
+        <PricingTableSection />
 
       </div>
     </div>

@@ -8,12 +8,29 @@ import { useCart } from '../../context/CartContext';
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [studioLogo, setStudioLogo] = useState('');
   const { setIsCartOpen, totalItems } = useCart();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Fetch studio settings to check if custom logo is uploaded
+  useEffect(() => {
+    async function fetchLogo() {
+      try {
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        if (data && data.logoUrl) {
+          setStudioLogo(data.logoUrl);
+        }
+      } catch (err) {
+        console.error('Failed to load studio logo config', err);
+      }
+    }
+    fetchLogo();
   }, []);
 
   const navLinks = [
@@ -35,14 +52,22 @@ export default function Navbar() {
               : 'bg-[#FAF8F5]/60 backdrop-blur-md border-black/5 shadow-xs'
           }`}
         >
-          {/* Brand Identity: Footer Wala Exact Monogram Logo */}
+          {/* Brand Identity: If logo exists, show ONLY logo image. If not, show X monogram + text. */}
           <Link href="/" className="flex items-center gap-3 group select-none">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#C29B38] to-[#E5BF65] flex items-center justify-center font-serif text-sm text-[#0A0908] font-bold group-hover:scale-105 transition-transform shadow-[0_2px_12px_rgba(212,163,72,0.35)]">
-              X
-            </div>
-            <span className="font-serif text-base sm:text-lg tracking-[0.22em] uppercase font-normal text-[#1A1A1A] group-hover:text-[#C29B38] transition-colors duration-300">
-              Sketch Studio X
-            </span>
+            {studioLogo ? (
+              <div className="h-9 max-w-[150px] overflow-hidden flex items-center group-hover:scale-105 transition-transform">
+                <img src={studioLogo} alt="Sketch Studio X" className="h-full w-auto object-contain" />
+              </div>
+            ) : (
+              <>
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#C29B38] to-[#E5BF65] flex items-center justify-center font-serif text-sm text-[#0A0908] font-bold group-hover:scale-105 transition-transform shadow-[0_2px_12px_rgba(212,163,72,0.35)]">
+                  X
+                </div>
+                <span className="font-serif text-base sm:text-lg tracking-[0.22em] uppercase font-normal text-[#1A1A1A] group-hover:text-[#C29B38] transition-colors duration-300">
+                  Sketch Studio X
+                </span>
+              </>
+            )}
           </Link>
 
           {/* Center Navigation Links */}

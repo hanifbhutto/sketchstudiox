@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 
 const ADMIN_NAV = [
-  { name: 'Overview', href: '/admin', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Orders & Commissions', href: '/admin/orders', icon: Package, badge: 'Live' },
   { name: 'Gallery Originals', href: '/admin/artworks', icon: Palette },
   { name: 'Rate Matrix Schedule', href: '/admin/pricing', icon: TableProperties },
@@ -29,7 +29,31 @@ const ADMIN_NAV = [
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(true);
+  const [studioLogo, setStudioLogo] = useState('');
+
+  // Fetch live studio settings to check if a custom logo is uploaded
+  useEffect(() => {
+    async function fetchLogo() {
+      try {
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        if (data && data.logoUrl) {
+          setStudioLogo(data.logoUrl);
+        }
+      } catch (err) {
+        console.error('Failed to load studio logo for admin layout', err);
+      }
+    }
+    fetchLogo();
+  }, []);
+
+  const handleLogout = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    router.push('/admin/login');
+    router.refresh();
+  };
 
   return (
     <div className="h-screen w-full bg-[#FAF8F5] flex overflow-hidden selection:bg-[#D4A348] selection:text-black">
@@ -56,19 +80,27 @@ export default function AdminLayout({ children }) {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.15 }}
                 >
-                  <Link href="/admin" className="flex items-center gap-3 group overflow-hidden">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#D4A348] via-[#F3DE9A] to-[#A37424] text-[#0A0908] flex items-center justify-center font-serif text-sm font-bold shrink-0 shadow-[0_4px_16px_rgba(212,163,72,0.3)] group-hover:scale-105 transition-transform duration-300">
-                      X
-                    </div>
-                    <div className="leading-tight overflow-hidden whitespace-nowrap">
-                      <span className="font-serif text-sm font-medium tracking-wider text-[#FAF8F5] block group-hover:text-[#D4A348] transition-colors">
-                        Sketch Studio X
-                      </span>
-                      <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-[#D4A348] font-semibold flex items-center gap-1 mt-0.5">
-                        <Sparkles className="w-2.5 h-2.5 text-[#D4A348]" />
-                        Atelier Desk
-                      </span>
-                    </div>
+                  <Link href="/admin/dashboard" className="flex items-center gap-3 group overflow-hidden">
+                    {studioLogo ? (
+                      <div className="h-9 max-w-[140px] overflow-hidden flex items-center group-hover:scale-105 transition-transform">
+                        <img src={studioLogo} alt="Studio Logo" className="h-full w-auto object-contain" />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#D4A348] via-[#F3DE9A] to-[#A37424] text-[#0A0908] flex items-center justify-center font-serif text-sm font-bold shrink-0 shadow-[0_4px_16px_rgba(212,163,72,0.3)] group-hover:scale-105 transition-transform duration-300">
+                          X
+                        </div>
+                        <div className="leading-tight overflow-hidden whitespace-nowrap">
+                          <span className="font-serif text-sm font-medium tracking-wider text-[#FAF8F5] block group-hover:text-[#D4A348] transition-colors">
+                            Sketch Studio X
+                          </span>
+                          <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-[#D4A348] font-semibold flex items-center gap-1 mt-0.5">
+                            <Sparkles className="w-2.5 h-2.5 text-[#D4A348]" />
+                            Atelier Desk
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </Link>
                 </motion.div>
               )}
@@ -88,25 +120,6 @@ export default function AdminLayout({ children }) {
               )}
             </button>
           </div>
-
-          {/* Verification Chip (Visible only when expanded) */}
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.15 }}
-                className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-[#8C8275] overflow-hidden whitespace-nowrap"
-              >
-                <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>UK Reg: 17429707</span>
-                </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Navigation Bar */}
           <nav className="space-y-1 pt-1">
@@ -161,16 +174,17 @@ export default function AdminLayout({ children }) {
 
         {/* Footer Actions */}
         <div className="pt-3 border-t border-white/5 space-y-2 relative z-10">
-          <Link
-            href="/login"
+          <button
+            type="button"
+            onClick={handleLogout}
             title={!isExpanded ? 'Sign Out Console' : undefined}
-            className={`flex items-center ${
+            className={`w-full flex items-center ${
               isExpanded ? 'justify-start gap-2.5 px-3.5' : 'justify-center px-0'
-            } py-2 rounded-xl text-[11px] font-mono text-[#D9534F] hover:bg-rose-950/30 hover:text-rose-300 transition-colors`}
+            } py-2 rounded-xl text-[11px] font-mono text-[#D9534F] hover:bg-rose-950/30 hover:text-rose-300 transition-colors cursor-pointer`}
           >
             <LogOut className="w-3.5 h-3.5 shrink-0" />
             {isExpanded && <span className="whitespace-nowrap">Sign Out Console</span>}
-          </Link>
+          </button>
         </div>
       </motion.aside>
 

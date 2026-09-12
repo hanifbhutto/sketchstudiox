@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,43 +12,12 @@ import {
   Package, 
   Check, 
   ShoppingBag, 
-  Maximize2,
   Eye,
   Home,
-  FileText,
-  RotateCcw
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
-
-const ARTWORKS_DATABASE = {
-  'ssx-01': {
-    id: 'SSX-01',
-    title: 'The Silent Contemplation',
-    category: 'Portraits',
-    medium: '8B Graphite & Blending Stumps',
-    substrate: '300 GSM Arches Pure French Cotton',
-    price: 340,
-    dimensions: '16 × 20 in (40.6 × 50.8 cm)',
-    status: 'Available Original',
-    year: '2026',
-    edition: 'Original Masterpiece No. 01',
-    description: 'An intimate study focusing on light diffusion across bone structure and skin grain. Hand-rendered using graduated graphite tones with delicate stomping technique.',
-    image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1400&q=90',
-  },
-  'ssx-02': {
-    id: 'SSX-02',
-    title: 'Bonded in Charcoal',
-    category: 'Couples',
-    medium: 'Raw Willow Charcoal',
-    substrate: 'Fabriano Artistico Extra White Cotton',
-    price: 420,
-    dimensions: '18 × 24 in (45.7 × 61.0 cm)',
-    status: 'Available Original',
-    year: '2026',
-    edition: 'Original Study',
-    description: 'Deep contrast composition emphasizing raw textural gestures, deep velvety blacks, and expressive negative space.',
-    image: 'https://images.unsplash.com/photo-1580136579312-94651dfd596d?auto=format&fit=crop&w=1400&q=90',
-  },
-};
+import { useCart } from '../../../context/CartContext';
 
 const FRAMES = [
   { id: 'none', label: 'Unframed Folio', extra: 0, desc: 'Shipped flat in acid-free archival folio', frameClass: 'p-4 sm:p-5 bg-white border-amber-900/15' },
@@ -58,8 +27,12 @@ const FRAMES = [
 
 export default function ArtworkDetailPage() {
   const params = useParams();
-  const artworkKey = (params?.id || 'ssx-01').toLowerCase();
-  const artwork = ARTWORKS_DATABASE[artworkKey] || ARTWORKS_DATABASE['ssx-01'];
+  const artworkId = params?.id;
+  const { addToCart } = useCart();
+
+  const [artwork, setArtwork] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [selectedFrame, setSelectedFrame] = useState(FRAMES[1]);
   const [viewMode, setViewMode] = useState('artwork'); // 'artwork' | 'room'
@@ -70,7 +43,28 @@ export default function ArtworkDetailPage() {
   const [loupeActive, setLoupeActive] = useState(false);
   const [mouseCoord, setMouseCoord] = useState({ x: 0, y: 0, relX: 0, relY: 0 });
 
-  const finalPrice = artwork.price + selectedFrame.extra;
+  // Fetch artwork from Supabase API
+  useEffect(() => {
+    if (!artworkId) return;
+
+    async function fetchArtworkDetails() {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/artworks/${artworkId}`);
+        if (!res.ok) throw new Error('Artwork not found');
+        const data = await res.json();
+        setArtwork(data);
+      } catch (err) {
+        setError('Could not locate this master original in the exhibition vault.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchArtworkDetails();
+  }, [artworkId]);
+
+  const finalPrice = artwork ? artwork.price + selectedFrame.extra : 0;
 
   const handleMouseMove = (e) => {
     if (!imageContainerRef.current) return;
@@ -92,9 +86,49 @@ export default function ArtworkDetailPage() {
   };
 
   const handleAddToCart = () => {
+    if (!artwork) return;
+
+    addToCart({
+      id: artwork.id,
+      title: artwork.title,
+      category: artwork.category,
+      medium: artwork.medium,
+      dimensions: artwork.dimensions,
+      price: finalPrice,
+      image: artwork.image,
+      frame: selectedFrame.label,
+    });
+
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-40 pb-24 flex flex-col items-center justify-center gap-4 bg-[#FAF8F5] text-xs font-mono text-[#867E74]">
+        <Loader2 className="w-8 h-8 animate-spin text-[#C29B38]" />
+        <span>Accessing curator records from vault...</span>
+      </div>
+    );
+  }
+
+  if (error || !artwork) {
+    return (
+      <div className="min-h-screen pt-40 pb-24 px-6 text-center bg-[#FAF8F5]">
+        <div className="max-w-md mx-auto space-y-4 p-8 rounded-3xl bg-white border border-[#E5DFD7]">
+          <AlertCircle className="w-10 h-10 mx-auto text-rose-500 stroke-[1.5]" />
+          <h2 className="font-serif text-2xl text-[#1A1A1A]">Masterpiece Not Found</h2>
+          <p className="text-xs text-[#867E74]">{error || 'The requested artwork identifier is invalid.'}</p>
+          <Link 
+            href="/shop"
+            className="inline-block px-6 py-3 rounded-full bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider"
+          >
+            Return to Exhibition Archive
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-32 pb-24 px-6 sm:px-10 bg-[#FAF8F5] relative overflow-hidden">
@@ -118,8 +152,9 @@ export default function ArtworkDetailPage() {
           {/* Viewport Mode Switcher (Inspect vs Room Preview) */}
           <div className="inline-flex items-center gap-1.5 p-1 rounded-full bg-white/90 border border-[#E5DFD7] shadow-2xs">
             <button
+              type="button"
               onClick={() => setViewMode('artwork')}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all ${
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
                 viewMode === 'artwork'
                   ? 'bg-[#1A1A1A] text-[#FAF8F5] shadow-xs'
                   : 'text-[#867E74] hover:text-[#1A1A1A]'
@@ -129,8 +164,9 @@ export default function ArtworkDetailPage() {
               <span>Studio Inspection</span>
             </button>
             <button
+              type="button"
               onClick={() => setViewMode('room')}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all ${
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
                 viewMode === 'room'
                   ? 'bg-[#1A1A1A] text-[#FAF8F5] shadow-xs'
                   : 'text-[#867E74] hover:text-[#1A1A1A]'
@@ -176,13 +212,13 @@ export default function ArtworkDetailPage() {
                       <img
                         src={artwork.image}
                         alt={artwork.title}
-                        className="w-full h-full object-cover grayscale contrast-125"
+                        className="w-full h-full object-cover contrast-125"
                       />
 
                       {/* Studio Authenticity Badge */}
                       <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-[#FAF8F3]/95 backdrop-blur-md border border-[#C29B38]/40 text-[9px] uppercase tracking-[0.2em] font-mono text-[#736B63] shadow-xs flex items-center gap-1.5 pointer-events-none">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#C29B38]" />
-                        <span>{artwork.id} &bull; MASTER STUDY</span>
+                        <span>{artwork.id.toUpperCase()} &bull; MASTER STUDY</span>
                       </div>
 
                       {/* Floating Micro-Loupe Glass Lens */}
@@ -195,7 +231,7 @@ export default function ArtworkDetailPage() {
                             backgroundPosition: `${mouseCoord.relX}% ${mouseCoord.relY}%`,
                             backgroundSize: '320%',
                           }}
-                          className="absolute pointer-events-none w-36 h-36 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#D4A348] shadow-[0_15px_35px_rgba(0,0,0,0.4)] backdrop-blur-xs z-30 hidden sm:block grayscale contrast-125"
+                          className="absolute pointer-events-none w-36 h-36 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#D4A348] shadow-[0_15px_35px_rgba(0,0,0,0.4)] backdrop-blur-xs z-30 hidden sm:block contrast-125"
                         />
                       )}
                     </div>
@@ -219,7 +255,7 @@ export default function ArtworkDetailPage() {
                   <div className="relative z-10 w-44 sm:w-56 p-2 rounded-lg bg-[#1F1B18] shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-[#3A322C]">
                     <div className="bg-[#FAF8F3] p-2.5 shadow-inner">
                       <div className="aspect-[4/5] overflow-hidden">
-                        <img src={artwork.image} alt={artwork.title} className="w-full h-full object-cover grayscale contrast-125" />
+                        <img src={artwork.image} alt={artwork.title} className="w-full h-full object-cover contrast-125" />
                       </div>
                     </div>
                   </div>
@@ -244,7 +280,7 @@ export default function ArtworkDetailPage() {
             <div className="space-y-3 pb-6 border-b border-[#E5DFD7]">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D4A348]/30 bg-[#D4A348]/10 text-[#8C6415] text-[10px] uppercase tracking-[0.25em] font-mono font-semibold">
                 <Sparkles className="w-3 h-3 text-[#C29B38]" />
-                <span>Original Masterpiece &bull; {artwork.year}</span>
+                <span>Original Masterpiece &bull; {artwork.year || '2026'}</span>
               </div>
 
               <h1 className="font-serif text-3xl sm:text-5xl text-[#1A1A1A] font-normal leading-tight">
@@ -286,7 +322,7 @@ export default function ArtworkDetailPage() {
                     key={f.id}
                     type="button"
                     onClick={() => setSelectedFrame(f)}
-                    className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between ${
+                    className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${
                       selectedFrame.id === f.id
                         ? 'border-[#D4A348] bg-white ring-2 ring-[#D4A348]/30 shadow-xs'
                         : 'border-[#E5DFD7] bg-white/60 hover:border-[#D4A348]/50'
@@ -337,8 +373,10 @@ export default function ArtworkDetailPage() {
             {/* Action Buttons */}
             <div className="space-y-3 pt-1">
               <button
+                type="button"
                 onClick={handleAddToCart}
-                className="w-full py-4 rounded-2xl bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)] flex items-center justify-center gap-2.5 group"
+                disabled={artwork.status !== 'Available' && artwork.status !== 'Available Original'}
+                className="w-full py-4 rounded-2xl bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)] flex items-center justify-center gap-2.5 group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {added ? (
                   <>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { 
@@ -9,7 +10,8 @@ import {
   ArrowRight, 
   CheckCircle2,
   Mail,
-  Palette
+  Palette,
+  Loader2
 } from 'lucide-react';
 
 const CRAFT_STANDARDS = [
@@ -44,6 +46,38 @@ const CRAFT_STANDARDS = [
 ];
 
 export default function AboutPage() {
+  const [loadingSettings, setLoadingSettings] = useState(true);
+  const [studioInfo, setStudioInfo] = useState({
+    studioEmail: 'info@sketchstudiox.com',
+    companyName: 'SKETCH X STUDIO LTD',
+    companyNumber: '17429707',
+    incorporationJurisdiction: 'England and Wales (UK)',
+  });
+
+  // Fetch live studio settings from database API on load
+  useEffect(() => {
+    async function fetchStudioSettings() {
+      try {
+        setLoadingSettings(true);
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        if (data && !data.error) {
+          setStudioInfo({
+            studioEmail: data.studioEmail || 'info@sketchstudiox.com',
+            companyName: data.companyName || 'SKETCH X STUDIO LTD',
+            companyNumber: data.companyNumber || '17429707',
+            incorporationJurisdiction: data.incorporationJurisdiction || 'England and Wales (UK)',
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load about page studio settings', err);
+      } finally {
+        setLoadingSettings(false);
+      }
+    }
+    fetchStudioSettings();
+  }, []);
+
   return (
     <div className="min-h-screen pt-32 pb-24 px-6 sm:px-10 bg-[#FAF8F5] relative overflow-hidden">
       
@@ -68,7 +102,7 @@ export default function AboutPage() {
           </h1>
 
           <p className="text-[#686057] font-light text-base sm:text-lg leading-relaxed pt-2">
-            Sketch Studio X was founded on a singular premise: algorithms and digital filters cannot replicate the subtle weight of human touch on heavy cotton paper. We treat every portrait—whether of a loved one or a faithful companion pet—as a permanent, sacred physical record.
+            {studioInfo.companyName} was founded on a singular premise: algorithms and digital filters cannot replicate the subtle weight of human touch on heavy cotton paper. We treat every portrait—whether of a loved one or a faithful companion pet—as a permanent, sacred physical record.
           </p>
         </div>
 
@@ -87,7 +121,7 @@ export default function AboutPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-5 left-5 right-5 text-white space-y-1 font-mono">
                   <span className="text-[10px] uppercase tracking-widest text-[#D4A348]">Studio Sanctuary</span>
-                  <p className="font-serif text-base text-white/90">Where time slows down for graphite, charcoal & pure cotton.</p>
+                  <p className="font-serif text-base textwhite/90">Where time slows down for graphite, charcoal & pure cotton.</p>
                 </div>
               </div>
             </div>
@@ -189,7 +223,7 @@ export default function AboutPage() {
             </div>
 
             <h3 className="font-serif text-2xl sm:text-4xl font-normal leading-tight text-[#FAF8F5]">
-              Every acquisition is registered under Company No: 17429707.
+              Every acquisition is registered under Company No: {studioInfo.companyNumber}.
             </h3>
 
             <p className="text-xs sm:text-sm text-[#A8A196] font-light leading-relaxed">
@@ -209,8 +243,8 @@ export default function AboutPage() {
                 X
               </div>
               <div>
-                <p className="font-mono text-xs uppercase tracking-widest text-[#D4A348] font-bold">SKETCH X STUDIO LTD</p>
-                <p className="font-mono text-[10px] text-stone-400 mt-0.5">England & Wales &bull; Reg: 17429707</p>
+                <p className="font-mono text-xs uppercase tracking-widest text-[#D4A348] font-bold">{studioInfo.companyName}</p>
+                <p className="font-mono text-[10px] text-stone-400 mt-0.5">{studioInfo.incorporationJurisdiction} &bull; Reg: {studioInfo.companyNumber}</p>
               </div>
               <p className="text-[10px] text-[#A8A196] font-light pt-1 border-t border-white/10">
                 Official Provenance Document included with all commissions and gallery originals.
@@ -238,11 +272,11 @@ export default function AboutPage() {
             </Link>
 
             <a
-              href="mailto:info@sketchstudiox.com"
+              href={`mailto:${studioInfo.studioEmail}`}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full border border-stone-300 bg-white text-[#1A1A1A] text-xs uppercase tracking-[0.2em] font-medium hover:border-[#C29B38] hover:text-[#C29B38] transition-all"
             >
               <Mail className="w-3.5 h-3.5" />
-              <span>info@sketchstudiox.com</span>
+              <span>{studioInfo.studioEmail}</span>
             </a>
           </div>
         </div>
