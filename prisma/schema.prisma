@@ -49,7 +49,7 @@ model Artwork {
   description String   @db.Text
   isColor     Boolean  @default(false)
 
-  mediaId     String?
+  mediaId     String?  @db.Uuid
   media       Media?   @relation(fields: [mediaId], references: [id], onDelete: SetNull)
 
   createdAt   DateTime @default(now())
@@ -80,7 +80,7 @@ model StudioSettings {
   turnaroundDays            String   @default("7 - 14 Business Days")
   acceptingCommissions      Boolean  @default(true)
   autoConfirmOrders         Boolean  @default(true)
-  logoMediaId               String? 
+  logoMediaId               String?  @db.Uuid
   logoMedia                 Media?   @relation(fields: [logoMediaId], references: [id], onDelete: SetNull)
   updatedAt                 DateTime @updatedAt
 }
