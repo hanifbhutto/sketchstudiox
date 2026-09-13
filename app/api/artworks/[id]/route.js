@@ -6,8 +6,10 @@ export async function GET(request, { params }) {
     const { id } = await params;
 
     const artwork = await prisma.artwork.findUnique({
-      where: { id: id.toLowerCase() },  
-      
+      where: { id: id.toLowerCase() },
+      include: {
+        media: true, // <--- Media relation include kiya taake secureUrl mil jaye
+      },
     });
 
     if (!artwork) {
@@ -17,10 +19,11 @@ export async function GET(request, { params }) {
       );
     }
 
-    // Ensure price is returned as a proper number
+    // Ensure price is returned as a proper number and image maps to media vault secureUrl
     const formattedArtwork = {
       ...artwork,
       price: Number(artwork.price) || 0,
+      image: artwork.media?.secureUrl || artwork.image || '',
     };
 
     return NextResponse.json(formattedArtwork);

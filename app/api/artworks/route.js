@@ -13,7 +13,7 @@ export async function GET(request) {
     const skip = (page - 1) * limit;
 
     const where = {};
-    if (category !== 'All Artworks') {
+    if (category !== 'All Artworks' && category !== 'All Works') {
       where.category = { equals: category, mode: 'insensitive' };
     }
 
@@ -27,6 +27,9 @@ export async function GET(request) {
     const [artworks, totalCount] = await Promise.all([
       prisma.artwork.findMany({
         where,
+        include: {
+          media: true, // <--- Yeh relation add karna zaroori hai taake secureUrl mil jaye
+        },
         orderBy,
         skip,
         take: limit,

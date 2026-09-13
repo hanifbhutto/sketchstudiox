@@ -179,56 +179,63 @@ export default function FeaturedExhibition() {
                     <div className="relative aspect-[3/4] bg-[#FAF8F3] p-4 rounded-2xl border border-amber-900/15 overflow-hidden shadow-[0_10px_25px_-5px_rgba(0,0,0,0.04)] group-hover:shadow-[0_20px_45px_-12px_rgba(212,163,72,0.25)] group-hover:border-amber-400/50 transition-all duration-500">
                       
                       {/* Inner Artwork Viewport */}
-                      <div className="relative w-full h-full overflow-hidden rounded-xl bg-stone-200 border border-stone-300/80">
-                        <img
-                          src={artwork.image}
-                          alt={artwork.title}
-                          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                        />
+                      <div className="relative w-full h-full overflow-hidden rounded-xl bg-stone-200 border border-stone-300/80 flex items-center justify-center">
+  {artwork.media?.secureUrl || artwork.image ? (
+    <img
+      src={artwork.media?.secureUrl || artwork.image}
+      alt={artwork.title}
+      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+    />
+  ) : (
+    <div className="flex flex-col items-center justify-center text-stone-400 gap-1.5 p-4 text-center">
+      <Sparkles className="w-5 h-5 text-amber-600/60" />
+      <span className="text-[9px] font-mono tracking-widest uppercase text-stone-500">No Image Recorded</span>
+    </div>
+  )}
 
-                        {/* Top Serial Stamp */}
-                        <div className="absolute top-3 left-3 bg-black/75 border border-amber-500/30 backdrop-blur-md text-amber-200 text-[9px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-md font-mono shadow-xs">
-                          {artwork.id.toUpperCase()}
-                        </div>
+  {/* Top Serial Stamp */}
+  <div className="absolute top-3 left-3 bg-black/75 border border-amber-500/30 backdrop-blur-md text-amber-200 text-[9px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-md font-mono shadow-xs z-10">
+    {artwork.id.toUpperCase()}
+  </div>
 
-                        {/* Top Right Availability Pill */}
-                        <div className="absolute top-3 right-3">
-                          <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-mono font-medium backdrop-blur-md border ${
-                            isAvailable
-                              ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-xs'
-                              : 'bg-black/60 text-zinc-300 border-white/10'
-                          }`}>
-                            {artwork.status}
-                          </span>
-                        </div>
+  {/* Top Right Availability Pill */}
+  <div className="absolute top-3 right-3 z-10">
+    <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-mono font-medium backdrop-blur-md border ${
+      isAvailable
+        ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-xs'
+        : 'bg-black/60 text-zinc-300 border-white/10'
+    }`}>
+      {artwork.status}
+    </span>
+  </div>
 
-                        {/* Interactive Floating Action Dock on Hover */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-2.5 backdrop-blur-[2px]">
-                          <Link
-                            href={`/shop/${artwork.id}`}
-                            className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#1A1A1A] hover:bg-amber-400 hover:text-black transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
-                            title="Inspect Artwork"
-                          >
-                            <Eye className="w-3.5 h-3.5 stroke-[2]" />
-                            <span>Inspect</span>
-                          </Link>
+  {/* Interactive Floating Action Dock on Hover */}
+  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-2.5 backdrop-blur-[2px] z-20">
+    <Link
+      href={`/shop/${artwork.id}`}
+      className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#1A1A1A] hover:bg-amber-400 hover:text-black transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
+      title="Inspect Artwork"
+    >
+      <Eye className="w-3.5 h-3.5 stroke-[2]" />
+      <span>Inspect</span>
+    </Link>
 
-                          {isAvailable && (
-                            <button
-                              type="button"
-                              onClick={() => handleQuickAdd(artwork)}
-                              className="p-2.5 rounded-xl bg-zinc-950 text-amber-300 hover:bg-amber-500 hover:text-black transition-all shadow-lg cursor-pointer"
-                              title="Acquire Artwork"
-                            >
-                              {addedItem === artwork.id ? (
-                                <Check className="w-4 h-4 stroke-[2.5]" />
-                              ) : (
-                                <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
-                              )}
-                            </button>
-                          )}
-                        </div>
-                      </div>
+    {isAvailable && (
+      <button
+        type="button"
+        onClick={() => handleQuickAdd(artwork)}
+        className="p-2.5 rounded-xl bg-zinc-950 text-amber-300 hover:bg-amber-500 hover:text-black transition-all shadow-lg cursor-pointer"
+        title="Acquire Artwork"
+      >
+        {addedItem === artwork.id ? (
+          <Check className="w-4 h-4 stroke-[2.5]" />
+        ) : (
+          <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
+        )}
+      </button>
+    )}
+  </div>
+</div>
                     </div>
 
                     {/* Museum Label / Plaque Under Card */}

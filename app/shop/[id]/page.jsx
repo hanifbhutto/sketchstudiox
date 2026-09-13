@@ -202,39 +202,48 @@ export default function ArtworkDetailPage() {
                       : ''
                   }`}>
                     
-                    {/* Artwork Container */}
-                    <div 
-                      ref={imageContainerRef}
-                      onMouseMove={handleMouseMove}
-                      onMouseLeave={() => setLoupeActive(false)}
-                      className="relative aspect-[4/5] overflow-hidden rounded-xl bg-stone-200 border border-stone-300 shadow-inner select-none"
-                    >
-                      <img
-                        src={artwork.image}
-                        alt={artwork.title}
-                        className="w-full h-full object-cover contrast-125"
-                      />
+                  {/* Artwork Container */}
+<div 
+  ref={imageContainerRef}
+  onMouseMove={handleMouseMove}
+  onMouseLeave={() => setLoupeActive(false)}
+  className="relative aspect-[4/5] overflow-hidden rounded-xl bg-stone-200 border border-stone-300 shadow-inner select-none flex items-center justify-center"
+>
+  {artwork.media?.secureUrl || artwork.image ? (
+    <>
+      <img
+        src={artwork.media?.secureUrl || artwork.image}
+        alt={artwork.title}
+        className="w-full h-full object-cover contrast-125"
+      />
 
-                      {/* Studio Authenticity Badge */}
-                      <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-[#FAF8F3]/95 backdrop-blur-md border border-[#C29B38]/40 text-[9px] uppercase tracking-[0.2em] font-mono text-[#736B63] shadow-xs flex items-center gap-1.5 pointer-events-none">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#C29B38]" />
-                        <span>{artwork.id.toUpperCase()} &bull; MASTER STUDY</span>
-                      </div>
+      {/* Studio Authenticity Badge */}
+      <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-[#FAF8F3]/95 backdrop-blur-md border border-[#C29B38]/40 text-[9px] uppercase tracking-[0.2em] font-mono text-[#736B63] shadow-xs flex items-center gap-1.5 pointer-events-none z-20">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#C29B38]" />
+        <span>{artwork.id.toUpperCase()} &bull; MASTER STUDY</span>
+      </div>
 
-                      {/* Floating Micro-Loupe Glass Lens */}
-                      {loupeActive && (
-                        <div
-                          style={{
-                            left: `${mouseCoord.relX}%`,
-                            top: `${mouseCoord.relY}%`,
-                            backgroundImage: `url(${artwork.image})`,
-                            backgroundPosition: `${mouseCoord.relX}% ${mouseCoord.relY}%`,
-                            backgroundSize: '320%',
-                          }}
-                          className="absolute pointer-events-none w-36 h-36 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#D4A348] shadow-[0_15px_35px_rgba(0,0,0,0.4)] backdrop-blur-xs z-30 hidden sm:block contrast-125"
-                        />
-                      )}
-                    </div>
+      {/* Floating Micro-Loupe Glass Lens */}
+      {loupeActive && (
+        <div
+          style={{
+            left: `${mouseCoord.relX}%`,
+            top: `${mouseCoord.relY}%`,
+            backgroundImage: `url(${artwork.media?.secureUrl || artwork.image})`,
+            backgroundPosition: `${mouseCoord.relX}% ${mouseCoord.relY}%`,
+            backgroundSize: '320%',
+          }}
+          className="absolute pointer-events-none w-36 h-36 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#D4A348] shadow-[0_15px_35px_rgba(0,0,0,0.4)] backdrop-blur-xs z-30 hidden sm:block contrast-125"
+        />
+      )}
+    </>
+  ) : (
+    <div className="flex flex-col items-center justify-center text-stone-400 gap-2 p-6 text-center z-10">
+      <Sparkles className="w-8 h-8 text-amber-600/60" />
+      <span className="text-[10px] font-mono tracking-widest uppercase text-stone-500">No Image Recorded</span>
+    </div>
+  )}
+</div>
 
                   </div>
                 </motion.div>
@@ -251,14 +260,19 @@ export default function ArtworkDetailPage() {
                 >
                   <div className="absolute inset-0 bg-stone-900/30 backdrop-blur-[1px]" />
 
-                  {/* Scaled Hanging Artwork Frame */}
-                  <div className="relative z-10 w-44 sm:w-56 p-2 rounded-lg bg-[#1F1B18] shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-[#3A322C]">
-                    <div className="bg-[#FAF8F3] p-2.5 shadow-inner">
-                      <div className="aspect-[4/5] overflow-hidden">
-                        <img src={artwork.image} alt={artwork.title} className="w-full h-full object-cover contrast-125" />
-                      </div>
-                    </div>
-                  </div>
+                 {/* Scaled Hanging Artwork Frame */}
+<div className="relative z-10 w-44 sm:w-56 p-2 rounded-lg bg-[#1F1B18] shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-[#3A322C]">
+  <div className="bg-[#FAF8F3] p-2.5 shadow-inner flex items-center justify-center aspect-[4/5] overflow-hidden bg-stone-200">
+    {artwork.media?.secureUrl || artwork.image ? (
+      <img src={artwork.media?.secureUrl || artwork.image} alt={artwork.title} className="w-full h-full object-cover contrast-125" />
+    ) : (
+      <div className="flex flex-col items-center justify-center text-stone-400 gap-1 text-center">
+        <Sparkles className="w-5 h-5 text-amber-600/60" />
+        <span className="text-[8px] font-mono tracking-widest uppercase text-stone-500">No Image</span>
+      </div>
+    )}
+  </div>
+</div>
 
                   <span className="absolute bottom-4 right-4 z-10 text-[10px] font-mono uppercase tracking-widest text-white/90 bg-black/60 px-3 py-1 rounded-full backdrop-blur-md">
                     Relative Scale: {artwork.dimensions}

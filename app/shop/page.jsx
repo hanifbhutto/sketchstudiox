@@ -89,7 +89,9 @@ export default function ShopPage() {
     setCurrentPage(1);
   };
 
-  const handleQuickAdd = (artwork) => {
+ const handleQuickAdd = (artwork) => {
+    const imageUrl = artwork.media?.secureUrl || artwork.image || '';
+
     addToCart({
       id: artwork.id,
       title: artwork.title,
@@ -97,7 +99,7 @@ export default function ShopPage() {
       medium: artwork.medium,
       dimensions: artwork.dimensions,
       price: artwork.price,
-      image: artwork.image,
+      image: imageUrl, // <--- Secure URL mapping
       frame: 'Museum Hardwood (+Mat Board)',
     });
 
@@ -242,53 +244,60 @@ export default function ShopPage() {
                   className="rounded-[30px] bg-white border border-[#E5DFD7] p-5 flex flex-col justify-between group shadow-[0_12px_35px_-10px_rgba(212,163,72,0.08)] hover:shadow-[0_22px_50px_-12px_rgba(212,163,72,0.2)] hover:border-[#D4A348]/50 transition-all duration-400"
                 >
                   <div>
-                    <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-stone-200 border border-stone-300/80 mb-5">
-                      <img
-                        src={artwork.image}
-                        alt={artwork.title}
-                        className="w-full h-full object-cover contrast-125 group-hover:scale-105 transition-transform duration-700 ease-out"
-                      />
+                    <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-stone-200 border border-stone-300/80 mb-5 flex items-center justify-center">
+  {artwork.media?.secureUrl || artwork.image ? (
+    <img
+      src={artwork.media?.secureUrl || artwork.image}
+      alt={artwork.title}
+      className="w-full h-full object-cover contrast-125 group-hover:scale-105 transition-transform duration-700 ease-out"
+    />
+  ) : (
+    <div className="flex flex-col items-center justify-center text-stone-400 gap-1.5 p-4 text-center z-10">
+      <Sparkles className="w-5 h-5 text-amber-600/60" />
+      <span className="text-[9px] font-mono tracking-widest uppercase text-stone-500">No Image Recorded</span>
+    </div>
+  )}
 
-                      <div className="absolute top-3.5 left-3.5 px-2.5 py-1 rounded-md bg-black/75 border border-[#D4A348]/40 backdrop-blur-md text-[9px] uppercase tracking-widest text-[#FAF8F5] font-mono shadow-xs">
-                        {artwork.id.toUpperCase()}
-                      </div>
+  <div className="absolute top-3.5 left-3.5 px-2.5 py-1 rounded-md bg-black/75 border border-[#D4A348]/40 backdrop-blur-md text-[9px] uppercase tracking-widest text-[#FAF8F5] font-mono shadow-xs z-20">
+    {artwork.id.toUpperCase()}
+  </div>
 
-                      <div className="absolute top-3.5 right-3.5">
-                        <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-mono font-medium backdrop-blur-md border ${
-                          artwork.status === 'Available' || artwork.status === 'Available Original'
-                            ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-xs'
-                            : 'bg-black/60 text-zinc-300 border-white/10'
-                        }`}>
-                          {artwork.status}
-                        </span>
-                      </div>
+  <div className="absolute top-3.5 right-3.5 z-20">
+    <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-mono font-medium backdrop-blur-md border ${
+      artwork.status === 'Available' || artwork.status === 'Available Original'
+        ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-xs'
+        : 'bg-black/60 text-zinc-300 border-white/10'
+    }`}>
+      {artwork.status}
+    </span>
+  </div>
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-3 backdrop-blur-[2px]">
-                        <Link
-                          href={`/shop/${artwork.id}`}
-                          className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#1A1A1A] hover:bg-[#C29B38] hover:text-white transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
-                          title="Inspect Detail"
-                        >
-                          <Eye className="w-3.5 h-3.5 stroke-[2]" />
-                          <span>Inspect Detail</span>
-                        </Link>
+  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-3 backdrop-blur-[2px] z-30">
+    <Link
+      href={`/shop/${artwork.id}`}
+      className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#1A1A1A] hover:bg-[#C29B38] hover:text-white transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
+      title="Inspect Detail"
+    >
+      <Eye className="w-3.5 h-3.5 stroke-[2]" />
+      <span>Inspect Detail</span>
+    </Link>
 
-                        {(artwork.status === 'Available' || artwork.status === 'Available Original') && (
-                          <button
-                            type="button"
-                            onClick={() => handleQuickAdd(artwork)}
-                            className="p-2.5 rounded-xl bg-[#1A1A1A] text-[#D4A348] hover:bg-[#C29B38] hover:text-white transition-all shadow-lg cursor-pointer"
-                            title="Add to Acquisition Bag"
-                          >
-                            {addedItem === artwork.id ? (
-                              <Check className="w-4 h-4 stroke-[2.5] text-emerald-400" />
-                            ) : (
-                              <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
-                            )}
-                          </button>
-                        )}
-                      </div>
-                    </div>
+    {(artwork.status === 'Available' || artwork.status === 'Available Original') && (
+      <button
+        type="button"
+        onClick={() => handleQuickAdd(artwork)}
+        className="p-2.5 rounded-xl bg-[#1A1A1A] text-[#D4A348] hover:bg-[#C29B38] hover:text-white transition-all shadow-lg cursor-pointer"
+        title="Add to Acquisition Bag"
+      >
+        {addedItem === artwork.id ? (
+          <Check className="w-4 h-4 stroke-[2.5] text-emerald-400" />
+        ) : (
+          <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
+        )}
+      </button>
+    )}
+  </div>
+</div>
 
                     <div className="space-y-1.5 px-1">
                       <div className="flex items-baseline justify-between gap-2">
