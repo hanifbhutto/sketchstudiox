@@ -47,8 +47,11 @@ model Artwork {
   year        String   @default("2026")
   edition     String   @default("1-of-1 Master Original")
   description String   @db.Text
-  image       String   @db.Text
   isColor     Boolean  @default(false)
+
+  mediaId     String?
+  media       Media?   @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -77,6 +80,19 @@ model StudioSettings {
   turnaroundDays            String   @default("7 - 14 Business Days")
   acceptingCommissions      Boolean  @default(true)
   autoConfirmOrders         Boolean  @default(true)
-  logoUrl                   String?  @default("")
+  logoMediaId               String? 
+  logoMedia                 Media?   @relation(fields: [logoMediaId], references: [id], onDelete: SetNull)
   updatedAt                 DateTime @updatedAt
+}
+
+
+model Media {
+  id        String   @id @default(uuid()) @db.Uuid
+  publicId  String   @unique @map("public_id")
+  secureUrl String   @map("secure_url")
+  filename  String?
+  createdAt DateTime @default(now()) @map("created_at")
+    artworks  Artwork[]
+    studioSettings StudioSettings[] @relation
+  @@map("media")
 }

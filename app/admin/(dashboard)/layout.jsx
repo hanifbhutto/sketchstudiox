@@ -16,13 +16,15 @@ import {
   LogOut,
   Sparkles,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  FolderOpen
 } from 'lucide-react';
 
 const ADMIN_NAV = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Orders & Commissions', href: '/admin/orders', icon: Package, badge: 'Live' },
   { name: 'Gallery Originals', href: '/admin/artworks', icon: Palette },
+  { name: 'Media Library', href: '/admin/media', icon: FolderOpen }, // <--- Yeh naya item add ho gaya
   { name: 'Rate Matrix Schedule', href: '/admin/pricing', icon: TableProperties },
   { name: 'Studio Settings', href: '/admin/settings', icon: Settings },
 ];

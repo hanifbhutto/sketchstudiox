@@ -7,15 +7,17 @@ import {
   Palette, 
   UploadCloud, 
   Check, 
-  ShieldCheck, 
   Loader2,
   Trash2,
   Edit3,
   RefreshCw,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import DeleteConfirmModal from '../../../../components/admin/DeleteConfirmModal';
+import MediaPickerModal from '../../../../components/admin/MediaPickerModal';
 
 const CATEGORIES = [
   'Human Portraits',
@@ -52,15 +54,24 @@ const DEFAULT_TOUCHED = {
   medium: false,
 };
 
+const ITEMS_PER_PAGE = 10; // Per page 10 items limit
+
 export default function AdminArtworksPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Media Picker Modal State
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
+  
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState(DEFAULT_FORM);
   const [imagePreview, setImagePreview] = useState(null);
+  const [selectedMediaId, setSelectedMediaId] = useState(null);
   const [touched, setTouched] = useState(DEFAULT_TOUCHED);
 
   // Delete modal state
@@ -99,17 +110,16 @@ export default function AdminArtworksPage() {
     fetchArtworks();
   }, []);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
+  // Pagination calculations
+  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE) || 1;
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentItems = items.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handleOpenAdd = () => {
     setEditingId(null);
     setFormData(DEFAULT_FORM);
     setImagePreview(null);
+    setSelectedMediaId(null);
     setTouched(DEFAULT_TOUCHED);
     setShowModal(true);
   };
@@ -128,7 +138,8 @@ export default function AdminArtworksPage() {
       framed: false,
       signed: true,
     });
-    setImagePreview(art.image || null);
+    setImagePreview(art.image || art.media?.secureUrl || null);
+    setSelectedMediaId(art.mediaId || null);
     setTouched({ title: true, price: true, dimensions: true, medium: true });
     setShowModal(true);
   };
@@ -157,12 +168,10 @@ export default function AdminArtworksPage() {
     }
   };
 
-  // Open the custom delete modal
   const handleTriggerDelete = (art) => {
     setDeleteTarget({ id: art.id, title: art.title });
   };
 
-  // Confirm delete handler
   const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
 
@@ -175,6 +184,11 @@ export default function AdminArtworksPage() {
 
       setItems((prev) => prev.filter((art) => art.id !== deleteTarget.id));
       setDeleteTarget(null);
+
+      // Adjust page if items run out on current page
+      if (currentItems.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      }
     } catch (err) {
       alert('Could not delete artwork from database.');
       fetchArtworks();
@@ -201,7 +215,7 @@ export default function AdminArtworksPage() {
         body: JSON.stringify({
           ...formData,
           price: Number(formData.price),
-          ...(imagePreview && { image: imagePreview }),
+          mediaId: selectedMediaId,
         }),
       });
 
@@ -212,12 +226,14 @@ export default function AdminArtworksPage() {
         setItems((prev) => prev.map((art) => (art.id === editingId ? savedItem : art)));
       } else {
         setItems((prev) => [savedItem, ...prev]);
+        setCurrentPage(1); // Go to first page on new publish
       }
 
       setShowModal(false);
       setEditingId(null);
       setFormData(DEFAULT_FORM);
       setImagePreview(null);
+      setSelectedMediaId(null);
       setTouched(DEFAULT_TOUCHED);
     } catch (err) {
       alert('Error saving artwork to database.');
@@ -273,103 +289,149 @@ export default function AdminArtworksPage() {
             No artworks recorded in database. Click "Publish New Original" to add one.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono border-collapse">
-              <thead>
-                <tr className="border-b border-[#E5DFD7] bg-[#FAF8F3] text-[10px] text-[#867E74] uppercase tracking-wider">
-                  <th className="p-4 font-semibold">Asset</th>
-                  <th className="p-4 font-semibold">Catalog Ref</th>
-                  <th className="p-4 font-semibold">Title & Category</th>
-                  <th className="p-4 font-semibold">Medium & Substrate</th>
-                  <th className="p-4 font-semibold">Dimensions</th>
-                  <th className="p-4 font-semibold">Acquisition Price</th>
-                  <th className="p-4 font-semibold">Current State</th>
-                  <th className="p-4 text-right font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100">
-                {items.map((art) => (
-                  <tr key={art.id} className="hover:bg-[#FAF8F3]/50 transition-colors">
-                    
-                    <td className="p-4">
-                      <div className="w-12 h-14 rounded-lg overflow-hidden bg-stone-100 border border-stone-200 shrink-0">
-                        <img src={art.image} alt={art.title} className="w-full h-full object-cover grayscale" />
-                      </div>
-                    </td>
-
-                    <td className="p-4 font-bold text-[#C29B38] uppercase whitespace-nowrap">
-                      {art.id}
-                    </td>
-
-                    <td className="p-4">
-                      <span className="font-serif text-sm font-medium text-[#1A1A1A] block">
-                        {art.title}
-                      </span>
-                      <span className="text-[10px] text-[#867E74] block font-mono">
-                        {art.category} &bull; Certified {art.year || '2026'}
-                      </span>
-                    </td>
-
-                    <td className="p-4 text-[#686057]">
-                      <span className="text-[#1A1A1A] block">{art.medium}</span>
-                      <span className="text-[10px] text-[#867E74]">{art.substrate}</span>
-                    </td>
-
-                    <td className="p-4 text-[#1A1A1A] whitespace-nowrap">
-                      {art.dimensions}
-                    </td>
-
-                    <td className="p-4 font-bold text-[#1A1A1A] whitespace-nowrap">
-                      ${art.price} <span className="text-[10px] font-normal text-[#867E74]">USD</span>
-                    </td>
-
-                    <td className="p-4 whitespace-nowrap">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-mono border ${
-                        art.status === 'Available'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold'
-                          : art.status === 'Reserved'
-                          ? 'bg-amber-50 text-amber-700 border-amber-200 font-semibold'
-                          : 'bg-stone-100 text-stone-500 border-stone-200'
-                      }`}>
-                        {art.status}
-                      </span>
-                    </td>
-
-                    <td className="p-4 text-right whitespace-nowrap space-x-1.5">
-                      <button
-                        onClick={() => handleToggleStatus(art.id, art.status)}
-                        className="px-2.5 py-1.5 rounded-lg border border-[#E5DFD7] hover:border-[#C29B38] hover:bg-[#FAF8F3] text-[10px] text-[#1A1A1A] font-mono uppercase tracking-wider transition-colors cursor-pointer"
-                        title="Cycle state"
-                      >
-                        Cycle
-                      </button>
-
-                      <button
-                        onClick={() => handleOpenEdit(art)}
-                        className="p-1.5 rounded-lg border border-[#E5DFD7] text-stone-600 hover:text-[#C29B38] hover:border-[#C29B38] hover:bg-[#FAF8F3] transition-colors cursor-pointer inline-flex items-center"
-                        title="Edit Masterpiece Details"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </button>
-
-                      <button
-                        onClick={() => handleTriggerDelete(art)}
-                        className="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer inline-flex items-center"
-                        title="Delete Artwork"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </td>
-
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs font-mono border-collapse">
+                <thead>
+                  <tr className="border-b border-[#E5DFD7] bg-[#FAF8F3] text-[10px] text-[#867E74] uppercase tracking-wider">
+                    <th className="p-4 font-semibold">Asset</th>
+                    <th className="p-4 font-semibold">Catalog Ref</th>
+                    <th className="p-4 font-semibold">Title & Category</th>
+                    <th className="p-4 font-semibold">Medium & Substrate</th>
+                    <th className="p-4 font-semibold">Dimensions</th>
+                    <th className="p-4 font-semibold">Acquisition Price</th>
+                    <th className="p-4 font-semibold">Current State</th>
+                    <th className="p-4 text-right font-semibold">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-stone-100">
+                  {currentItems.map((art) => (
+                    <tr key={art.id} className="hover:bg-[#FAF8F3]/50 transition-colors">
+                      
+                      <td className="p-4">
+                        <div className="w-12 h-14 rounded-lg overflow-hidden bg-stone-100 border border-stone-200 shrink-0 flex items-center justify-center">
+  {art.media?.secureUrl || art.image ? (
+    <img 
+      src={art.media?.secureUrl || art.image} 
+      alt={art.title} 
+      className="w-full h-full object-cover" 
+    />
+  ) : (
+    <div className="flex flex-col items-center justify-center text-stone-400 gap-0.5">
+      <Palette className="w-4 h-4 text-stone-300" />
+      <span className="text-[8px] font-mono tracking-tighter uppercase">No Image</span>
+    </div>
+  )}
+</div>
+                      </td>
+
+                      <td className="p-4 font-bold text-[#C29B38] uppercase whitespace-nowrap">
+                        {art.id}
+                      </td>
+
+                      <td className="p-4">
+                        <span className="font-serif text-sm font-medium text-[#1A1A1A] block">
+                          {art.title}
+                        </span>
+                        <span className="text-[10px] text-[#867E74] block font-mono">
+                          {art.category} &bull; Certified {art.year || '2026'}
+                        </span>
+                      </td>
+
+                      <td className="p-4 text-[#686057]">
+                        <span className="text-[#1A1A1A] block">{art.medium}</span>
+                        <span className="text-[10px] text-[#867E74]">{art.substrate}</span>
+                      </td>
+
+                      <td className="p-4 text-[#1A1A1A] whitespace-nowrap">
+                        {art.dimensions}
+                      </td>
+
+                      <td className="p-4 font-bold text-[#1A1A1A] whitespace-nowrap">
+                        ${art.price} <span className="text-[10px] font-normal text-[#867E74]">USD</span>
+                      </td>
+
+                      <td className="p-4 whitespace-nowrap">
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-mono border ${
+                          art.status === 'Available'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold'
+                            : art.status === 'Reserved'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200 font-semibold'
+                            : 'bg-stone-100 text-stone-500 border-stone-200'
+                        }`}>
+                          {art.status}
+                        </span>
+                      </td>
+
+                      <td className="p-4 text-right whitespace-nowrap space-x-1.5">
+                        <button
+                          onClick={() => handleToggleStatus(art.id, art.status)}
+                          className="px-2.5 py-1.5 rounded-lg border border-[#E5DFD7] hover:border-[#C29B38] hover:bg-[#FAF8F3] text-[10px] text-[#1A1A1A] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                          title="Cycle state"
+                        >
+                          Cycle
+                        </button>
+
+                        <button
+                          onClick={() => handleOpenEdit(art)}
+                          className="p-1.5 rounded-lg border border-[#E5DFD7] text-stone-600 hover:text-[#C29B38] hover:border-[#C29B38] hover:bg-[#FAF8F3] transition-colors cursor-pointer inline-flex items-center"
+                          title="Edit Masterpiece Details"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+
+                        <button
+                          onClick={() => handleTriggerDelete(art)}
+                          className="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer inline-flex items-center"
+                          title="Delete Artwork"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination Footer Controls */}
+            {items.length > ITEMS_PER_PAGE && (
+              <div className="flex items-center justify-between px-6 py-4 border-t border-[#E5DFD7] bg-[#FAF8F3]/60 text-xs font-mono text-[#867E74]">
+                <span>
+                  Showing <span className="font-semibold text-[#1A1A1A]">{startIndex + 1}</span> to <span className="font-semibold text-[#1A1A1A]">{Math.min(startIndex + ITEMS_PER_PAGE, items.length)}</span> of <span className="font-semibold text-[#1A1A1A]">{items.length}</span> entries
+                </span>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg border border-[#E5DFD7] bg-white text-[#1A1A1A] hover:bg-[#FAF8F3] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span>Prev</span>
+                  </button>
+
+                  <span className="px-3 py-1 font-semibold text-[#1A1A1A]">
+                    {currentPage} / {totalPages}
+                  </span>
+
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg border border-[#E5DFD7] bg-white text-[#1A1A1A] hover:bg-[#FAF8F3] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                  >
+                    <span>Next</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* Shared Publish / Edit Modal with Inline Live Validation */}
+      {/* Shared Publish / Edit Modal with Media Picker Integration */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs overflow-y-auto">
           <div className="bg-white rounded-[32px] p-6 sm:p-10 max-w-2xl w-full border border-[#E5DFD7] shadow-2xl space-y-6 my-8">
@@ -396,25 +458,28 @@ export default function AdminArtworksPage() {
 
             <form onSubmit={handleSubmit} noValidate className="space-y-6 text-xs font-mono">
               
-              {/* Photo Input Preview */}
+              {/* Exhibition Asset Selector via Media Vault */}
               <div className="space-y-1.5">
                 <label className="text-[#1A1A1A] uppercase tracking-wider text-[11px] block font-semibold">
-                  Exhibition Preview
+                  Exhibition Asset Vault
                 </label>
                 
                 {!imagePreview ? (
-                  <label className="border-2 border-dashed border-[#E5DFD7] hover:border-[#C29B38] rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#FAF8F3]/60 group">
+                  <button
+                    type="button"
+                    onClick={() => setShowMediaPicker(true)}
+                    className="w-full border-2 border-dashed border-[#E5DFD7] hover:border-[#C29B38] rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#FAF8F3]/60 group"
+                  >
                     <UploadCloud className="w-6 h-6 text-[#8C6415] mb-2 group-hover:scale-110 transition-transform" />
                     <span className="text-xs uppercase tracking-wider text-[#1A1A1A] font-semibold">
-                      Select Local Photo Preview
+                      Select Asset from Media Vault
                     </span>
-                    <span className="text-[10px] text-[#867E74] mt-0.5">Loads local preview for exhibition card</span>
-                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                  </label>
+                    <span className="text-[10px] text-[#867E74] mt-0.5">Browse cloud repository & direct upload</span>
+                  </button>
                 ) : (
                   <div className="relative rounded-2xl overflow-hidden border border-[#E5DFD7] bg-[#FAF8F3] p-2 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <img src={imagePreview} alt="Preview" className="w-14 h-14 object-cover rounded-xl grayscale" />
+                      <img src={imagePreview} alt="Preview" className="w-14 h-14 object-cover rounded-xl" />
                       <div>
                         <span className="text-[#1A1A1A] font-bold block">Asset Linked</span>
                         <span className="text-[10px] text-emerald-700 flex items-center gap-1">
@@ -424,10 +489,10 @@ export default function AdminArtworksPage() {
                     </div>
                     <button 
                       type="button" 
-                      onClick={() => setImagePreview(null)}
-                      className="px-3 py-1.5 rounded-lg text-rose-600 hover:bg-rose-50 text-[10px] cursor-pointer"
+                      onClick={() => setShowMediaPicker(true)}
+                      className="px-3 py-1.5 rounded-lg text-[#C29B38] hover:bg-[#C29B38]/10 text-[10px] cursor-pointer font-bold uppercase"
                     >
-                      Replace
+                      Change Asset
                     </button>
                   </div>
                 )}
@@ -662,8 +727,6 @@ export default function AdminArtworksPage() {
                   />
                   <span>Hand-signed + Certificate Included</span>
                 </label>
-
-               
               </div>
 
               {/* Action Submit with Active State */}
@@ -686,6 +749,16 @@ export default function AdminArtworksPage() {
           </div>
         </div>
       )}
+
+      {/* Reusable Media Picker Modal */}
+      <MediaPickerModal
+        isOpen={showMediaPicker}
+        onClose={() => setShowMediaPicker(false)}
+        onSelect={(mediaItem) => {
+          setImagePreview(mediaItem.secureUrl);
+          setSelectedMediaId(mediaItem.id);
+        }}
+      />
 
       {/* Standalone Reusable Delete Confirmation Modal */}
       <DeleteConfirmModal

@@ -17,6 +17,7 @@ import {
   Trash2,
   Loader2
 } from 'lucide-react';
+import MediaPickerModal from '../../../../components/admin/MediaPickerModal';
 
 const DEFAULT_SETTINGS = {
   studioEmail: 'info@sketchstudiox.com',
@@ -30,6 +31,7 @@ const DEFAULT_SETTINGS = {
   acceptingCommissions: true,
   autoConfirmOrders: true,
   logoUrl: '',
+  logoMediaId: null,
 };
 
 export default function AdminSettingsPage() {
@@ -37,6 +39,9 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  // Media Picker Modal State for Logo
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
 
   // Fetch live settings from database on load
   useEffect(() => {
@@ -57,7 +62,8 @@ export default function AdminSettingsPage() {
             turnaroundDays: data.turnaroundDays || DEFAULT_SETTINGS.turnaroundDays,
             acceptingCommissions: data.acceptingCommissions ?? DEFAULT_SETTINGS.acceptingCommissions,
             autoConfirmOrders: data.autoConfirmOrders ?? DEFAULT_SETTINGS.autoConfirmOrders,
-            logoUrl: data.logoUrl || '',
+            logoUrl: data.logoMedia?.secureUrl || data.logoUrl || '',
+            logoMediaId: data.logoMediaId || null,
           });
         }
       } catch (err) {
@@ -73,20 +79,8 @@ export default function AdminSettingsPage() {
     setSettings((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Handle Logo File Upload (converts to base64 for database storage or direct URL)
-  const handleLogoUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSettings((prev) => ({ ...prev, logoUrl: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const removeLogo = () => {
-    setSettings((prev) => ({ ...prev, logoUrl: '' }));
+    setSettings((prev) => ({ ...prev, logoUrl: '', logoMediaId: null }));
   };
 
   // Save to Database API
@@ -169,14 +163,14 @@ export default function AdminSettingsPage() {
         {/* LEFT COLUMN: PRIMARY FORMS (8 COLS) */}
         <div className="lg:col-span-8 space-y-6">
           
-          {/* Studio Brand Logo Management */}
+          {/* Studio Brand Logo Management via Media Vault */}
           <div className="p-6 sm:p-7 rounded-2xl bg-white border border-[#E5DFD7] shadow-xs space-y-5">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <h3 className="font-serif text-base text-[#1A1A1A] flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#C29B38]" />
                 <span>Atelier Brand Seal & Logo</span>
               </h3>
-              <span className="text-[10px] font-mono text-[#867E74]">Header & Certificate Watermark</span>
+              <span className="text-[10px] font-mono text-[#867E74]">Media Vault Integration</span>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -190,11 +184,14 @@ export default function AdminSettingsPage() {
 
               <div className="flex-1 space-y-3 w-full">
                 <div className="flex items-center gap-3">
-                  <label className="px-4 py-2 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors cursor-pointer inline-flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowMediaPicker(true)}
+                    className="px-4 py-2 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors cursor-pointer inline-flex items-center gap-2"
+                  >
                     <UploadCloud className="w-3.5 h-3.5" />
-                    <span>Upload New Logo</span>
-                    <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-                  </label>
+                    <span>Select Logo from Vault</span>
+                  </button>
 
                   {settings.logoUrl && (
                     <button
@@ -208,7 +205,7 @@ export default function AdminSettingsPage() {
                   )}
                 </div>
                 <p className="text-[11px] text-[#867E74] font-light">
-                  Recommended: Square transparent PNG or high-res vector mark (min 200×200px).
+                  Choose or upload your studio watermark directly from the centralized Media Vault repository.
                 </p>
               </div>
             </div>
@@ -370,7 +367,6 @@ export default function AdminSettingsPage() {
         {/* RIGHT COLUMN: QUICK SUMMARY & ACTIONS (4 COLS) */}
         <div className="lg:col-span-4 space-y-6">
           
-          {/* Action Box */}
           <div className="p-6 rounded-2xl bg-white border border-[#E5DFD7] shadow-xs space-y-4 sticky top-6">
             <div className="flex items-center justify-between border-b border-stone-100 pb-3">
               <span className="text-[10px] font-mono uppercase tracking-widest text-[#867E74] font-semibold">
@@ -405,7 +401,6 @@ export default function AdminSettingsPage() {
               )}
             </button>
 
-            {/* Quick Status Pillows */}
             <div className="pt-4 border-t border-stone-100 space-y-2.5 text-[11px] font-mono">
               <div className="flex items-center justify-between text-[#867E74]">
                 <span>Gateway Status:</span>
@@ -437,6 +432,19 @@ export default function AdminSettingsPage() {
         </div>
 
       </form>
+
+      {/* Media Picker Modal for Logo Selection */}
+      <MediaPickerModal
+        isOpen={showMediaPicker}
+        onClose={() => setShowMediaPicker(false)}
+        onSelect={(mediaItem) => {
+          setSettings((prev) => ({
+            ...prev,
+            logoUrl: mediaItem.secureUrl,
+            logoMediaId: mediaItem.id,
+          }));
+        }}
+      />
 
     </div>
   );

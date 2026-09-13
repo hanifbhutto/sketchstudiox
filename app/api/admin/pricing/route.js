@@ -16,7 +16,6 @@ export async function GET() {
   try {
     const records = await prisma.pricingRate.findMany();
 
-    // Agar table empty ho to default flyer rates se seed kar dein
     if (records.length === 0) {
       const seedEntries = [];
       for (const [canvasSize, subjects] of Object.entries(DEFAULT_FLYER_RATES)) {
@@ -37,7 +36,6 @@ export async function GET() {
       return NextResponse.json({ rates: DEFAULT_FLYER_RATES });
     }
 
-    // Records ko nested object format mein structure karein: { [canvasSize]: { [subjectCount]: price } }
     const matrix = {};
     for (const row of records) {
       if (!matrix[row.canvasSize]) {
@@ -53,7 +51,7 @@ export async function GET() {
   }
 }
 
-// 2. POST: Upsert updated rates into PricingRate table
+// 2. POST: Upsert updated rates or delete blank cells from PricingRate table
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -63,17 +61,30 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid rates data payload.' }, { status: 400 });
     }
 
-    // Transaction ke zariye safe updates
-    const updates = [];
+    const operations = [];
+
     for (const [canvasSize, subjects] of Object.entries(rates)) {
       for (const [subjectCount, price] of Object.entries(subjects)) {
-        if (price !== '' && price !== undefined && !isNaN(Number(price))) {
-          updates.push(
+        const numSubject = Number(subjectCount);
+
+        // Agar price empty ya blank hai, toh database se us record ko delete kar do
+        if (price === '' || price === null || price === undefined || isNaN(Number(price))) {
+          operations.push(
+            prisma.pricingRate.deleteMany({
+              where: {
+                canvasSize,
+                subjectCount: numSubject,
+              },
+            })
+          );
+        } else {
+          // Warna upsert karo (update ya create)
+          operations.push(
             prisma.pricingRate.upsert({
               where: {
                 canvasSize_subjectCount: {
                   canvasSize,
-                  subjectCount: Number(subjectCount),
+                  subjectCount: numSubject,
                 },
               },
               update: {
@@ -81,7 +92,7 @@ export async function POST(request) {
               },
               create: {
                 canvasSize,
-                subjectCount: Number(subjectCount),
+                subjectCount: numSubject,
                 price: parseFloat(price),
               },
             })
@@ -90,7 +101,7 @@ export async function POST(request) {
       }
     }
 
-    await prisma.$transaction(updates);
+    await prisma.$transaction(operations);
 
     return NextResponse.json({ success: true });
   } catch (error) {

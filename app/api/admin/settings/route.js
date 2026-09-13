@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 
-export const dynamic = 'force-dynamic';
-
+// 1. GET: Fetch studio settings
 export async function GET() {
   try {
-    // Fetch the single settings record (or create default if empty)
-    let settings = await prisma.studioSettings.findFirst();
+    let settings = await prisma.studioSettings.findFirst({
+      include: { logoMedia: true },
+    });
 
+    // Agar settings table empty hai toh default record create karein
     if (!settings) {
       settings = await prisma.studioSettings.create({
         data: {
@@ -21,63 +22,80 @@ export async function GET() {
           turnaroundDays: '7 - 14 Business Days',
           acceptingCommissions: true,
           autoConfirmOrders: true,
-          logoUrl: '',
+          logoMediaId: null,
         },
+        include: { logoMedia: true },
       });
     }
 
-    return NextResponse.json(settings);
+    // Frontend compatibility ke liye logoUrl field attach kar rahe hain
+    const formatted = {
+      ...settings,
+      logoUrl: settings.logoMedia?.secureUrl || '',
+    };
+
+    return NextResponse.json(formatted);
   } catch (error) {
-    console.error('Failed to fetch studio settings:', error);
-    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+    console.error('Fetch studio settings error:', error);
+    return NextResponse.json({ error: 'Failed to retrieve settings.' }, { status: 500 });
   }
 }
 
+// 2. POST: Upsert studio settings
 export async function POST(request) {
   try {
     const body = await request.json();
-    
-    // Find existing settings record or create one
+    const {
+      studioEmail,
+      companyName,
+      companyNumber,
+      incorporationJurisdiction,
+      currency,
+      paypalClientId,
+      paypalEnv,
+      turnaroundDays,
+      acceptingCommissions,
+      autoConfirmOrders,
+      logoMediaId,
+    } = body;
+
     let settings = await prisma.studioSettings.findFirst();
+
+    const dataPayload = {
+      studioEmail,
+      companyName,
+      companyNumber,
+      incorporationJurisdiction,
+      currency,
+      paypalClientId,
+      paypalEnv,
+      turnaroundDays,
+      acceptingCommissions,
+      autoConfirmOrders,
+      logoMediaId: logoMediaId || null,
+    };
 
     if (settings) {
       settings = await prisma.studioSettings.update({
         where: { id: settings.id },
-        data: {
-          studioEmail: body.studioEmail,
-          companyName: body.companyName,
-          companyNumber: body.companyNumber,
-          incorporationJurisdiction: body.incorporationJurisdiction,
-          currency: body.currency,
-          paypalClientId: body.paypalClientId,
-          paypalEnv: body.paypalEnv,
-          turnaroundDays: body.turnaroundDays,
-          acceptingCommissions: Boolean(body.acceptingCommissions),
-          autoConfirmOrders: Boolean(body.autoConfirmOrders),
-          logoUrl: body.logoUrl || '',
-        },
+        data: dataPayload,
+        include: { logoMedia: true },
       });
     } else {
       settings = await prisma.studioSettings.create({
-        data: {
-          studioEmail: body.studioEmail,
-          companyName: body.companyName,
-          companyNumber: body.companyNumber,
-          incorporationJurisdiction: body.incorporationJurisdiction,
-          currency: body.currency,
-          paypalClientId: body.paypalClientId,
-          paypalEnv: body.paypalEnv,
-          turnaroundDays: body.turnaroundDays,
-          acceptingCommissions: Boolean(body.acceptingCommissions),
-          autoConfirmOrders: Boolean(body.autoConfirmOrders),
-          logoUrl: body.logoUrl || '',
-        },
+        data: dataPayload,
+        include: { logoMedia: true },
       });
     }
 
-    return NextResponse.json({ success: true, settings });
+    const formatted = {
+      ...settings,
+      logoUrl: settings.logoMedia?.secureUrl || '',
+    };
+
+    return NextResponse.json(formatted);
   } catch (error) {
-    console.error('Failed to save studio settings:', error);
-    return NextResponse.json({ error: 'Failed to save settings' }, { status: 500 });
+    console.error('Save studio settings error:', error);
+    return NextResponse.json({ error: 'Failed to update settings.' }, { status: 500 });
   }
 }

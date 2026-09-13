@@ -4,9 +4,17 @@ import { prisma } from '../../../../lib/prisma';
 export async function GET() {
   try {
     const artworks = await prisma.artwork.findMany({
+      include: { media: true }, // Media relation include kar rahe hain taake secureUrl mil sakay
       orderBy: { createdAt: 'desc' },
     });
-    return NextResponse.json(artworks);
+
+    // Frontend ke liye data format adjust karna taake art.image mein media ka secureUrl mil jaye
+    const formattedArtworks = artworks.map((art) => ({
+      ...art,
+      image: art.media?.secureUrl || '', // Agar media linked hai toh uska URL, warna empty
+    }));
+
+    return NextResponse.json(formattedArtworks);
   } catch (error) {
     console.error('Fetch artworks error:', error);
     return NextResponse.json({ error: 'Failed to fetch artworks.' }, { status: 500 });
@@ -25,7 +33,7 @@ export async function POST(request) {
       dimensions,
       status = 'Available',
       description = '',
-      image,
+      mediaId, // <--- Purane image ki jagah ab mediaId receive ho rahi hai
       year = '2026',
     } = body;
 
@@ -47,13 +55,19 @@ export async function POST(request) {
         dimensions: dimensions || '16 × 20 in',
         status,
         description,
-        image: image || 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80',
+        mediaId: mediaId || null, // <--- Database mein mediaId save ho rahi hai
         year: String(year),
         isColor: false,
       },
+      include: { media: true }, // Response mein media relation sath bhejne ke liye
     });
 
-    return NextResponse.json(newArtwork, { status: 201 });
+    const formatted = {
+      ...newArtwork,
+      image: newArtwork.media?.secureUrl || '',
+    };
+
+    return NextResponse.json(formatted, { status: 201 });
   } catch (error) {
     console.error('Create artwork error:', error);
     return NextResponse.json({ error: 'Failed to create artwork.' }, { status: 500 });

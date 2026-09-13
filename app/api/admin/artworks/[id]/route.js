@@ -15,7 +15,7 @@ export async function PUT(request, { params }) {
       dimensions,
       status,
       description,
-      image,
+      mediaId, // <--- Purane image ki jagah ab mediaId aa rahi hai
     } = body;
 
     const updated = await prisma.artwork.update({
@@ -29,11 +29,18 @@ export async function PUT(request, { params }) {
         ...(dimensions && { dimensions }),
         ...(status && { status }),
         ...(description !== undefined && { description }),
-        ...(image && { image }),
+        ...(mediaId !== undefined && { mediaId: mediaId || null }), // <--- Database mein mediaId update ho rahi hai
       },
+      include: { media: true }, // <--- Media relation sath fetch kar rahe hain
     });
 
-    return NextResponse.json(updated);
+    // Frontend compatibility ke liye formatted object return kar rahe hain
+    const formatted = {
+      ...updated,
+      image: updated.media?.secureUrl || '',
+    };
+
+    return NextResponse.json(formatted);
   } catch (error) {
     console.error('Artwork update error:', error);
     return NextResponse.json(
