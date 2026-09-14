@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight, Sparkles, ShieldCheck, Award } from 'lucide-react';
@@ -12,8 +12,8 @@ const curatedExhibits = [
     medium: 'Raw Charcoal & 8B Graphite',
     year: '2026',
     edition: 'Master Portrait Study',
-    image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1000&q=80',
-    grayscale: true,
+    image: 'images/fr-1.jpg',
+    grayscale: false,
   },
   {
     id: '02',
@@ -21,8 +21,8 @@ const curatedExhibits = [
     medium: 'Fine Vine Charcoal on Arches',
     year: '2026',
     edition: 'Custom Pet Commission',
-    image: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1000&q=80',
-    grayscale: true,
+    image: 'images/fr-2.jpg',
+    grayscale: false,
   },
   {
     id: '03',
@@ -30,13 +30,23 @@ const curatedExhibits = [
     medium: 'Vibrant Colored Pencil & Prismacolor',
     year: '2026',
     edition: 'Full Color Masterpiece',
-    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80',
-    grayscale: false, // Color artwork as shown on flyer
+    image: 'images/fr-3.jpg',
+    grayscale: false,
   },
 ];
 
 export default function Hero() {
-  const [activeExhibit, setActiveExhibit] = useState(curatedExhibits[0]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeExhibit = curatedExhibits[activeIndex];
+
+  // Auto slide every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % curatedExhibits.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // 3D Tilt Physics
   const x = useMotionValue(0);
@@ -85,7 +95,7 @@ export default function Hero() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
             </span>
-            <span className="font-semibold">Bespoke Portraits &bull; UK Reg: 17429707</span>
+            <span className="font-semibold">Bespoke Portraits</span>
           </div>
 
           {/* Luxury Main Title (Graphite, Charcoal & Colored Pencil) */}
@@ -220,12 +230,12 @@ export default function Hero() {
               Curations:
             </span>
             <div className="flex items-center gap-2.5">
-              {curatedExhibits.map((item) => (
+              {curatedExhibits.map((item, index) => (
                 <button
                   key={item.id}
-                  onClick={() => setActiveExhibit(item)}
+                  onClick={() => setActiveIndex(index)}
                   className={`relative w-11 h-13 rounded-lg overflow-hidden border transition-all duration-300 ${
-                    activeExhibit.id === item.id
+                    activeIndex === index
                       ? 'border-amber-500 ring-2 ring-amber-400/50 scale-105 shadow-md'
                       : 'border-zinc-300 opacity-60 hover:opacity-100 hover:border-amber-300'
                   }`}

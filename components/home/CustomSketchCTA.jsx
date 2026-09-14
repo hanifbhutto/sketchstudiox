@@ -118,9 +118,9 @@ export default function CustomSketchCTA() {
               >
                 {/* After: Handcrafted Charcoal Portrait (Base Layer) */}
                 <img
-                  src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=900&q=85"
+                  src="images/after.jpg"
                   alt="Finished Handcrafted Charcoal Portrait"
-                  className="absolute inset-0 w-full h-full object-cover grayscale contrast-125 pointer-events-none"
+                  className="absolute inset-0 w-full h-full object-cover contrast-125 pointer-events-none"
                 />
                 
                 {/* After Pill */}
@@ -135,7 +135,7 @@ export default function CustomSketchCTA() {
                   style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=900&q=85"
+                    src="images/before.jpg"
                     alt="Original Reference Photograph"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
