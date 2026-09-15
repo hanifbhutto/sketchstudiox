@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
   ShieldCheck, 
@@ -84,12 +85,9 @@ export default function CheckoutPage() {
     setErrorMessage('');
 
     try {
-      // Save temporary details in localStorage before redirecting to PayPal
       localStorage.setItem('pending_shipping', JSON.stringify(formData));
       localStorage.setItem('pending_cart', JSON.stringify(cartItems));
 
-      // Simulate official PayPal sandbox redirect flow returning a success token
-      // In full production, this points to PayPal's API approval URL.
       setTimeout(() => {
         const mockPayPalToken = 'PAYPAL-TOKEN-' + Date.now();
         router.push(`/checkout/success?token=${mockPayPalToken}`);
@@ -103,27 +101,31 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-24 px-6 sm:px-10 bg-[#FAF8F5] relative overflow-hidden">
+    <div className="min-h-screen pt-32 pb-24 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] relative overflow-hidden">
+      
+      {/* Studio Ambient Glows */}
+      <div className="absolute top-20 left-1/3 -translate-x-1/2 w-[850px] h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.12)_0%,transparent_70%)] blur-[140px] pointer-events-none" />
+
       <div className="max-w-7xl mx-auto space-y-10 relative z-10">
         
         {/* Navigation Bar */}
-        <div className="flex items-center justify-between pb-6 border-b border-[#E5DFD7]">
+        <div className="flex items-center justify-between pb-6 border-b border-white/10">
           <Link
             href="/shop"
-            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-mono text-[#867E74] hover:text-[#1A1A1A] transition-colors"
+            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-mono text-[#A8A196] hover:text-[#FAF8F5] transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 text-[#C29B38]" />
+            <ArrowLeft className="w-4 h-4 text-[#e4c577]" />
             <span>Return to Gallery</span>
           </Link>
 
-          <div className="flex items-center gap-2 text-xs font-mono text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200">
-            <Lock className="w-3.5 h-3.5 text-emerald-600" />
+          <div className="flex items-center gap-2 text-xs font-mono text-emerald-300 bg-emerald-500/20 px-3.5 py-1.5 rounded-full border border-emerald-400/40">
+            <Lock className="w-3.5 h-3.5 text-emerald-400" />
             <span>PayPal Secure Gateway Redirect</span>
           </div>
         </div>
 
         {errorMessage && (
-          <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-mono">
+          <div className="p-4 rounded-2xl bg-rose-500/20 border border-rose-400/40 text-rose-300 text-xs font-mono">
             {errorMessage}
           </div>
         )}
@@ -134,27 +136,27 @@ export default function CheckoutPage() {
           <div className="lg:col-span-7 space-y-6">
             
             {/* Identity */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E5DFD7] shadow-xs space-y-4">
-              <h2 className="font-serif text-xl text-[#1A1A1A] border-b border-stone-100 pb-3">
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#171513] border border-white/10 shadow-xl space-y-4">
+              <h2 className="font-serif text-xl text-[#FAF8F5] border-b border-white/10 pb-3" style={{ fontFamily: 'Georgia, serif' }}>
                 1. Collector Identity
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
                 
                 {/* First Name */}
                 <div className="space-y-1.5">
-                  <label className="text-[#1A1A1A] block font-semibold">First Name *</label>
+                  <label className="text-[#FAF8F5] block font-semibold">First Name *</label>
                   <input
                     type="text"
                     placeholder="Eleanor"
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
                     onBlur={() => handleBlur('firstName')}
-                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
-                      touched.firstName && !isFirstNameValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    className={`w-full px-4 py-2.5 rounded-xl bg-black/50 border outline-none transition-colors text-[#FAF8F5] placeholder:text-white/30 ${
+                      touched.firstName && !isFirstNameValid ? 'border-rose-400' : 'border-white/10 focus:border-[#e4c577]'
                     }`}
                   />
                   {touched.firstName && !isFirstNameValid && (
-                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                    <p className="text-[10px] text-rose-400 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" /> Min 2 characters required.
                     </p>
                   )}
@@ -162,19 +164,19 @@ export default function CheckoutPage() {
 
                 {/* Last Name */}
                 <div className="space-y-1.5">
-                  <label className="text-[#1A1A1A] block font-semibold">Last Name *</label>
+                  <label className="text-[#FAF8F5] block font-semibold">Last Name *</label>
                   <input
                     type="text"
                     placeholder="Vance"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
                     onBlur={() => handleBlur('lastName')}
-                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
-                      touched.lastName && !isLastNameValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    className={`w-full px-4 py-2.5 rounded-xl bg-black/50 border outline-none transition-colors text-[#FAF8F5] placeholder:text-white/30 ${
+                      touched.lastName && !isLastNameValid ? 'border-rose-400' : 'border-white/10 focus:border-[#e4c577]'
                     }`}
                   />
                   {touched.lastName && !isLastNameValid && (
-                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                    <p className="text-[10px] text-rose-400 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" /> Min 2 characters required.
                     </p>
                   )}
@@ -182,19 +184,19 @@ export default function CheckoutPage() {
 
                 {/* Email */}
                 <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-[#1A1A1A] block font-semibold">Transmission Email *</label>
+                  <label className="text-[#FAF8F5] block font-semibold">Transmission Email *</label>
                   <input
                     type="email"
                     placeholder="collector@domain.com"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     onBlur={() => handleBlur('email')}
-                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
-                      touched.email && !isEmailValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    className={`w-full px-4 py-2.5 rounded-xl bg-black/50 border outline-none transition-colors text-[#FAF8F5] placeholder:text-white/30 ${
+                      touched.email && !isEmailValid ? 'border-rose-400' : 'border-white/10 focus:border-[#e4c577]'
                     }`}
                   />
                   {touched.email && !isEmailValid && (
-                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                    <p className="text-[10px] text-rose-400 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" /> Please enter a valid email address.
                     </p>
                   )}
@@ -202,41 +204,41 @@ export default function CheckoutPage() {
 
                 {/* Phone */}
                 <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-[#1A1A1A] block font-semibold">Phone Number (Optional)</label>
+                  <label className="text-[#FAF8F5] block font-semibold">Phone Number (Optional)</label>
                   <input
                     type="tel"
                     placeholder="+44 7911 123456"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5] placeholder:text-white/30"
                   />
                 </div>
               </div>
             </div>
 
             {/* Address */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E5DFD7] shadow-xs space-y-4">
-              <h2 className="font-serif text-xl text-[#1A1A1A] flex items-center gap-2 border-b border-stone-100 pb-3">
-                <Truck className="w-4 h-4 text-[#C29B38]" />
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#171513] border border-white/10 shadow-xl space-y-4">
+              <h2 className="font-serif text-xl text-[#FAF8F5] flex items-center gap-2 border-b border-white/10 pb-3" style={{ fontFamily: 'Georgia, serif' }}>
+                <Truck className="w-4 h-4 text-[#e4c577]" />
                 <span>2. Insured Courier Dispatch Address</span>
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
                 
                 {/* Street Address */}
                 <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-[#1A1A1A] block font-semibold">Street Address *</label>
+                  <label className="text-[#FAF8F5] block font-semibold">Street Address *</label>
                   <input
                     type="text"
                     placeholder="14 Kensington Gardens"
                     value={formData.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
                     onBlur={() => handleBlur('address')}
-                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
-                      touched.address && !isAddressValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    className={`w-full px-4 py-2.5 rounded-xl bg-black/50 border outline-none transition-colors text-[#FAF8F5] placeholder:text-white/30 ${
+                      touched.address && !isAddressValid ? 'border-rose-400' : 'border-white/10 focus:border-[#e4c577]'
                     }`}
                   />
                   {touched.address && !isAddressValid && (
-                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                    <p className="text-[10px] text-rose-400 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" /> Please provide a valid street address.
                     </p>
                   )}
@@ -244,19 +246,19 @@ export default function CheckoutPage() {
 
                 {/* City */}
                 <div className="space-y-1.5">
-                  <label className="text-[#1A1A1A] block font-semibold">Town / City *</label>
+                  <label className="text-[#FAF8F5] block font-semibold">Town / City *</label>
                   <input
                     type="text"
                     placeholder="London"
                     value={formData.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
                     onBlur={() => handleBlur('city')}
-                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
-                      touched.city && !isCityValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    className={`w-full px-4 py-2.5 rounded-xl bg-black/50 border outline-none transition-colors text-[#FAF8F5] placeholder:text-white/30 ${
+                      touched.city && !isCityValid ? 'border-rose-400' : 'border-white/10 focus:border-[#e4c577]'
                     }`}
                   />
                   {touched.city && !isCityValid && (
-                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                    <p className="text-[10px] text-rose-400 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" /> City is required.
                     </p>
                   )}
@@ -264,19 +266,19 @@ export default function CheckoutPage() {
 
                 {/* Postal Code */}
                 <div className="space-y-1.5">
-                  <label className="text-[#1A1A1A] block font-semibold">Postal Code *</label>
+                  <label className="text-[#FAF8F5] block font-semibold">Postal Code *</label>
                   <input
                     type="text"
                     placeholder="W2 4BH"
                     value={formData.postalCode}
                     onChange={(e) => handleInputChange('postalCode', e.target.value)}
                     onBlur={() => handleBlur('postalCode')}
-                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
-                      touched.postalCode && !isPostalValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    className={`w-full px-4 py-2.5 rounded-xl bg-black/50 border outline-none transition-colors text-[#FAF8F5] placeholder:text-white/30 ${
+                      touched.postalCode && !isPostalValid ? 'border-rose-400' : 'border-white/10 focus:border-[#e4c577]'
                     }`}
                   />
                   {touched.postalCode && !isPostalValid && (
-                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                    <p className="text-[10px] text-rose-400 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" /> Valid postal code required.
                     </p>
                   )}
@@ -285,18 +287,18 @@ export default function CheckoutPage() {
             </div>
 
             {/* Payment Choice */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E5DFD7] shadow-xs space-y-4">
-              <h2 className="font-serif text-xl text-[#1A1A1A] flex items-center gap-2 border-b border-stone-100 pb-3">
-                <CreditCard className="w-4 h-4 text-[#C29B38]" />
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#171513] border border-white/10 shadow-xl space-y-4">
+              <h2 className="font-serif text-xl text-[#FAF8F5] flex items-center gap-2 border-b border-white/10 pb-3" style={{ fontFamily: 'Georgia, serif' }}>
+                <CreditCard className="w-4 h-4 text-[#e4c577]" />
                 <span>3. Payment Gateway Choice</span>
               </h2>
               <div className="space-y-3 font-mono text-xs">
-                <label className="p-4 rounded-2xl border border-[#C29B38] bg-[#FAF8F3] flex items-center justify-between cursor-pointer">
+                <label className="p-4 rounded-2xl border border-[#e4c577] bg-[#e4c577]/10 flex items-center justify-between cursor-pointer">
                   <div className="flex items-center gap-3">
-                    <input type="radio" defaultChecked className="accent-[#C29B38]" />
-                    <span className="text-[#1A1A1A] font-bold">PayPal Secure Standard Checkout</span>
+                    <input type="radio" defaultChecked className="accent-[#e4c577]" />
+                    <span className="text-[#FAF8F5] font-bold">PayPal Secure Standard Checkout</span>
                   </div>
-                  <CreditCard className="w-5 h-5 text-stone-600" />
+                  <CreditCard className="w-5 h-5 text-[#e4c577]" />
                 </label>
               </div>
             </div>
@@ -305,14 +307,14 @@ export default function CheckoutPage() {
 
           {/* RIGHT: SUMMARY (5 COLS) */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E5DFD7] shadow-xs space-y-5 sticky top-28">
-              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] font-bold block border-b border-stone-100 pb-2">
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#171513] border border-white/10 shadow-xl space-y-5 sticky top-28">
+              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#e4c577] font-bold block border-b border-white/10 pb-2">
                 Order Ledger Manifest
               </span>
 
-              <div className="space-y-4 max-h-72 overflow-y-auto pr-1">
+              <div className="space-y-4 max-h-72 overflow-y-auto pr-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {cartItems.length === 0 ? (
-                  <p className="text-xs text-[#867E74] font-mono">No items in acquisition bag.</p>
+                  <p className="text-xs text-[#A8A196] font-mono">No items in acquisition bag.</p>
                 ) : (
                   cartItems.map((item, idx) => {
                     const art = item.artwork || {};
@@ -321,21 +323,23 @@ export default function CheckoutPage() {
                     const price = art.price || item.price || 0;
 
                     return (
-                      <div key={idx} className="flex gap-4 items-start pb-4 border-b border-stone-100">
-                        <div className="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shrink-0 relative flex items-center justify-center">
+                      <div key={idx} className="flex gap-4 items-start pb-4 border-b border-white/10">
+                        <div className="w-16 h-20 rounded-xl overflow-hidden bg-stone-900 border border-white/10 shrink-0 relative flex items-center justify-center">
                           {imageUrl ? (
-                            <img 
+                            <Image 
                               src={imageUrl} 
                               alt={title} 
-                              className="w-full h-full object-cover" 
+                              fill
+                              sizes="100px"
+                              className="object-cover contrast-110" 
                             />
                           ) : null}
                         </div>
 
                         <div className="space-y-0.5 flex-1 text-xs font-mono">
-                          <h4 className="font-serif text-sm text-[#1A1A1A] font-medium leading-snug">{title}</h4>
-                          <p className="text-[11px] text-[#867E74]">{item.frame || 'Standard Presentation'}</p>
-                          <div className="pt-1 font-bold text-[#1A1A1A]">${price.toFixed(2)} USD</div>
+                          <h4 className="font-serif text-sm text-[#FAF8F5] font-medium leading-snug" style={{ fontFamily: 'Georgia, serif' }}>{title}</h4>
+                          <p className="text-[11px] text-[#A8A196]">{item.frame || 'Standard Presentation'}</p>
+                          <div className="pt-1 font-bold text-[#e4c577]">${price.toFixed(2)} USD</div>
                         </div>
                       </div>
                     );
@@ -344,22 +348,22 @@ export default function CheckoutPage() {
               </div>
 
               <div className="space-y-2 pt-1 text-xs font-mono">
-                <div className="flex justify-between text-[#867E74]">
+                <div className="flex justify-between text-[#A8A196]">
                   <span>Subtotal</span>
-                  <span className="text-[#1A1A1A] font-bold">${subtotal.toFixed(2)} USD</span>
+                  <span className="text-[#FAF8F5] font-bold">${subtotal.toFixed(2)} USD</span>
                 </div>
-                <div className="flex justify-between text-[#867E74]">
+                <div className="flex justify-between text-[#A8A196]">
                   <span>Global Freight</span>
-                  <span className="text-emerald-700 font-bold uppercase">Complimentary</span>
+                  <span className="text-emerald-400 font-bold uppercase">Complimentary</span>
                 </div>
-                <div className="pt-3 border-t border-stone-200 flex justify-between items-baseline">
-                  <span className="font-serif text-base text-[#1A1A1A]">Total Payable</span>
-                  <span className="font-serif text-2xl text-[#1A1A1A] font-bold">${orderTotal.toFixed(2)}</span>
+                <div className="pt-3 border-t border-white/10 flex justify-between items-baseline">
+                  <span className="font-serif text-base text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>Total Payable</span>
+                  <span className="font-serif text-2xl text-[#e4c577] font-bold" style={{ fontFamily: 'Georgia, serif' }}>${orderTotal.toFixed(2)}</span>
                 </div>
               </div>
 
               {!isFormValid && (
-                <p className="text-[10px] text-amber-700 font-mono text-center">
+                <p className="text-[10px] text-amber-300 font-mono text-center">
                   * Please complete all required billing fields correctly to unlock PayPal redirect.
                 </p>
               )}
@@ -367,20 +371,20 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={isProcessing || !isFormValid || cartItems.length === 0}
-                className={`w-full py-4 rounded-2xl text-xs font-mono uppercase tracking-[0.2em] font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
+                className={`w-full py-4 rounded-full text-xs font-mono uppercase tracking-[0.2em] font-semibold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer ${
                   !isFormValid || cartItems.length === 0
-                    ? 'bg-stone-300 text-stone-500 cursor-not-allowed'
-                    : 'bg-[#1A1A1A] text-white hover:bg-[#C29B38]'
+                    ? 'bg-white/10 text-white/30 cursor-not-allowed border border-white/10'
+                    : 'bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] hover:brightness-110'
                 }`}
               >
                 {isProcessing ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#0A0908]" />
                     <span>Redirecting to PayPal...</span>
                   </>
                 ) : (
                   <>
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <ShieldCheck className="w-4 h-4 text-[#0A0908]" />
                     <span>Proceed to PayPal &bull; ${orderTotal.toFixed(2)}</span>
                   </>
                 )}

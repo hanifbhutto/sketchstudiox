@@ -116,17 +116,17 @@ export default function AdminPricingPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-[#FAF8F5]">
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E5DFD7] pb-6 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-6 gap-4">
         <div className="space-y-1">
-          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] font-semibold flex items-center gap-1.5">
-            <TableProperties className="w-3.5 h-3.5 text-[#C29B38]" />
+          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#e4c577] font-semibold flex items-center gap-1.5">
+            <TableProperties className="w-3.5 h-3.5 text-[#e4c577]" />
             Official Rate Schedule &bull; Live Database
           </span>
-          <h1 className="font-serif text-3xl sm:text-4xl text-[#1A1A1A]">Rate Matrix Control</h1>
-          <p className="text-xs text-[#867E74] font-light">
+          <h1 className="font-serif text-3xl sm:text-4xl text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>Rate Matrix Control</h1>
+          <p className="text-xs text-[#A8A196] font-light">
             Directly update commission pricing across all canvas dimensions and subject allocations (Person or Pet).
           </p>
         </div>
@@ -135,17 +135,17 @@ export default function AdminPricingPage() {
           <button
             onClick={fetchRates}
             disabled={loading}
-            className="p-2.5 rounded-full border border-[#E5DFD7] text-[#686057] hover:bg-stone-100 transition-colors cursor-pointer disabled:opacity-50"
+            className="p-2.5 rounded-full border border-white/10 text-[#A8A196] hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-50"
             title="Reload live database values"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#C29B38]' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#e4c577]' : ''}`} />
           </button>
 
           <button
             type="button"
             onClick={() => setShowResetModal(true)}
             disabled={saving || isResetting}
-            className="px-4 py-2.5 rounded-full border border-[#E5DFD7] text-xs font-mono text-[#686057] hover:bg-stone-100 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="px-4 py-2.5 rounded-full border border-white/10 text-xs font-mono text-[#A8A196] hover:bg-white/5 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset Schedule</span>
@@ -154,21 +154,21 @@ export default function AdminPricingPage() {
           <button
             onClick={handleSaveRates}
             disabled={saving || isResetting}
-            className="px-5 py-2.5 rounded-full bg-[#1A1A1A] hover:bg-[#C29B38] text-white text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer shadow-xs font-bold disabled:opacity-50"
+            className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] hover:brightness-110 text-[#0A0908] text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-2 cursor-pointer shadow-md font-bold disabled:opacity-50"
           >
             {saving ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin text-[#0A0908]" />
                 <span>Syncing Database...</span>
               </>
             ) : isSaved ? (
               <>
-                <Check className="w-4 h-4 text-emerald-400" />
+                <Check className="w-4 h-4 text-[#0A0908]" />
                 <span>Schedule Saved</span>
               </>
             ) : (
               <>
-                <Save className="w-4 h-4" />
+                <Save className="w-4 h-4 text-[#0A0908]" />
                 <span>Save Live Rates</span>
               </>
             )}
@@ -177,62 +177,62 @@ export default function AdminPricingPage() {
       </div>
 
       {/* Notice Banner */}
-      <div className="p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7] flex items-start gap-3 text-xs text-[#686057]">
-        <Info className="w-4 h-4 text-[#C29B38] shrink-0 mt-0.5" />
+      <div className="p-4 rounded-2xl bg-[#171513] border border-white/10 flex items-start gap-3 text-xs text-[#A8A196]">
+        <Info className="w-4 h-4 text-[#e4c577] shrink-0 mt-0.5" />
         <div className="leading-relaxed">
-          <span className="font-bold text-[#1A1A1A]">Operational Pricing Rule: </span>
+          <span className="font-bold text-[#FAF8F5]">Operational Pricing Rule: </span>
           Each active cell reflects the base acquisition price ($ USD). You can now enter prices into any previously blank cell to enable custom combinations. The public storefront intake form directly queries this table to generate live customer quotes.
         </div>
       </div>
 
       {/* Editable Matrix Table */}
-      <div className="rounded-2xl bg-white border border-[#E5DFD7] shadow-xs overflow-hidden">
+      <div className="rounded-[32px] bg-[#171513] border border-white/10 shadow-xl overflow-hidden">
         {loading ? (
-          <div className="p-16 flex flex-col items-center justify-center gap-3 text-xs font-mono text-[#867E74]">
-            <Loader2 className="w-6 h-6 animate-spin text-[#C29B38]" />
+          <div className="p-16 flex flex-col items-center justify-center gap-3 text-xs font-mono text-[#A8A196]">
+            <Loader2 className="w-6 h-6 animate-spin text-[#e4c577]" />
             <span>Retrieving rate matrix from database...</span>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             <table className="w-full text-center text-xs font-mono border-collapse">
               <thead>
-                <tr className="border-b border-[#E5DFD7] bg-[#FAF8F3] text-[10px] text-[#867E74] uppercase tracking-wider">
-                  <th className="p-4 text-left font-semibold sticky left-0 bg-[#FAF8F3] z-10 border-r border-[#E5DFD7]">
+                <tr className="border-b border-white/10 bg-black/30 text-[10px] text-[#A8A196] uppercase tracking-wider">
+                  <th className="p-4 text-left font-semibold sticky left-0 bg-[#171513] z-10 border-r border-white/10">
                     Canvas Size (Inches)
                   </th>
                   {SUBJECT_COLUMNS.map((count) => (
                     <th key={count} className="p-3 font-semibold min-w-[75px]">
-                      <span className="block text-[11px] text-[#1A1A1A]">{count}</span>
-                      <span className="text-[9px] text-[#867E74]">
+                      <span className="block text-[11px] text-[#FAF8F5]">{count}</span>
+                      <span className="text-[9px] text-[#A8A196]">
                         {count === 1 ? 'Subject' : 'Subjects'}
                       </span>
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100">
+              <tbody className="divide-y divide-white/5">
                 {Object.keys(rates).map((size) => (
-                  <tr key={size} className="hover:bg-[#FAF8F3]/30 transition-colors">
+                  <tr key={size} className="hover:bg-white/[0.02] transition-colors">
 
                     {/* Size Column */}
-                    <td className="p-4 text-left font-bold text-[#1A1A1A] sticky left-0 bg-white border-r border-[#E5DFD7] whitespace-nowrap">
+                    <td className="p-4 text-left font-bold text-[#FAF8F5] sticky left-0 bg-[#171513] border-r border-white/10 whitespace-nowrap">
                       {size}
                     </td>
 
-                    {/* Subject Cell Columns (All cells now have active inputs) */}
+                    {/* Subject Cell Columns */}
                     {SUBJECT_COLUMNS.map((count) => {
                       const price = rates[size]?.[count] !== undefined && rates[size]?.[count] !== null ? rates[size][count] : '';
 
                       return (
                         <td key={count} className="p-2">
                           <div className="relative inline-flex items-center">
-                            <span className="absolute left-2.5 text-[10px] text-stone-400">$</span>
+                            <span className="absolute left-2.5 text-[10px] text-stone-500">$</span>
                             <input
                               type="number"
                               value={price}
                               placeholder="&mdash;"
                               onChange={(e) => handlePriceChange(size, count, e.target.value)}
-                              className="w-18 pl-5 pr-2 py-1.5 rounded-lg bg-[#FAF8F3] border border-[#E5DFD7] text-xs font-mono font-semibold text-[#1A1A1A] text-center outline-none focus:border-[#C29B38] focus:bg-white transition-all placeholder:text-stone-300"
+                              className="w-18 pl-5 pr-2 py-1.5 rounded-xl bg-black/50 border border-white/10 text-xs font-mono font-semibold text-[#FAF8F5] text-center outline-none focus:border-[#e4c577] focus:bg-black transition-all placeholder:text-stone-600"
                             />
                           </div>
                         </td>
@@ -247,7 +247,7 @@ export default function AdminPricingPage() {
         )}
       </div>
 
-      {/* INLINED CUSTOM RESET CONFIRMATION MODAL WITH BLUR OVERLAY */}
+      {/* CUSTOM RESET CONFIRMATION MODAL WITH BLUR OVERLAY */}
       <AnimatePresence>
         {showResetModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -258,7 +258,7 @@ export default function AdminPricingPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={isResetting ? undefined : () => setShowResetModal(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+              className="fixed inset-0 bg-black/80 backdrop-blur-xs transition-opacity"
             />
 
             {/* Modal Dialog Card */}
@@ -267,48 +267,48 @@ export default function AdminPricingPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ duration: 0.18, ease: 'easeOut' }}
-              className="relative w-full max-w-md bg-white rounded-3xl border border-[#E5DFD7] p-6 sm:p-8 shadow-[0_24px_60px_rgba(0,0,0,0.18)] z-10 select-none overflow-hidden"
+              className="relative w-full max-w-md bg-[#171513] text-[#FAF8F5] rounded-[32px] border border-white/15 p-6 sm:p-8 shadow-2xl z-10 select-none overflow-hidden"
             >
               {/* Gold Ambient Glow Background */}
-              <div className="absolute top-0 right-0 w-36 h-36 bg-[#D4A348]/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-36 h-36 bg-[#e4c577]/10 rounded-full blur-3xl pointer-events-none" />
 
               {/* Close Icon Button */}
               <button
                 type="button"
                 onClick={() => setShowResetModal(false)}
                 disabled={isResetting}
-                className="absolute top-5 right-5 p-2 rounded-xl text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors disabled:opacity-50 cursor-pointer"
+                className="absolute top-5 right-5 p-2 rounded-xl text-[#A8A196] hover:text-[#FAF8F5] hover:bg-white/10 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
 
               {/* Icon & Heading */}
               <div className="flex flex-col items-center text-center space-y-3 pt-2">
-                <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-center justify-center text-[#A37424] shadow-xs">
+                <div className="w-14 h-14 rounded-2xl bg-[#e4c577]/20 border border-[#e4c577]/40 flex items-center justify-center text-[#e4c577] shadow-xs">
                   <RotateCcw className="w-6 h-6 stroke-[2]" />
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#C29B38] font-bold flex items-center justify-center gap-1.5">
+                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#e4c577] font-bold flex items-center justify-center gap-1.5">
                     <AlertCircle className="w-3.5 h-3.5" /> Studio Tariff Ledger
                   </span>
-                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1A1A1A]">
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>
                     Reset Official Rate Schedule
                   </h3>
                 </div>
 
-                <p className="text-xs text-[#736B63] leading-relaxed font-sans max-w-xs">
+                <p className="text-xs text-[#A8A196] leading-relaxed font-sans max-w-xs">
                   Are you sure you want to restore the entire pricing matrix back to the official flyer schedule? This will overwrite all custom rates in the database.
                 </p>
               </div>
 
               {/* Actions */}
-              <div className="grid grid-cols-2 gap-3 mt-7 pt-5 border-t border-[#E5DFD7] text-xs font-mono">
+              <div className="grid grid-cols-2 gap-3 mt-7 pt-5 border-t border-white/10 text-xs font-mono">
                 <button
                   type="button"
                   disabled={isResetting}
                   onClick={() => setShowResetModal(false)}
-                  className="w-full py-3 px-4 rounded-xl border border-[#E5DFD7] hover:bg-stone-100 text-[#1A1A1A] transition-colors cursor-pointer disabled:opacity-50 font-medium"
+                  className="w-full py-3 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-[#FAF8F5] transition-colors cursor-pointer disabled:opacity-50 font-medium"
                 >
                   Retain Current
                 </button>
@@ -317,16 +317,16 @@ export default function AdminPricingPage() {
                   type="button"
                   disabled={isResetting}
                   onClick={handleConfirmReset}
-                  className="w-full py-3 px-4 rounded-xl bg-[#1A1A1A] hover:bg-[#C29B38] text-white font-medium flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#e4c577] to-[#cfae59] hover:brightness-110 text-[#0A0908] font-medium flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md disabled:opacity-50 font-bold"
                 >
                   {isResetting ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin text-[#0A0908]" />
                       <span>Restoring...</span>
                     </>
                   ) : (
                     <>
-                      <RotateCcw className="w-3.5 h-3.5" />
+                      <RotateCcw className="w-3.5 h-3.5 text-[#0A0908]" />
                       <span>Restore Defaults</span>
                     </>
                   )}

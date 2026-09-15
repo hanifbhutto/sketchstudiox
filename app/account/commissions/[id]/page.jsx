@@ -16,6 +16,7 @@ import {
   Truck
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const PRODUCTION_STEPS = [
   'Phase 01: Photo Ingested',
@@ -52,17 +53,17 @@ export default function CommissionDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center bg-[#FAF8F5]">
-        <p className="text-xs font-mono text-[#867E74] animate-pulse">Accessing atelier master ledger...</p>
+      <div className="min-h-[60vh] flex items-center justify-center bg-[#0A0908] text-[#FAF8F5]">
+        <p className="text-xs font-mono text-[#A8A196] animate-pulse">Accessing atelier master ledger...</p>
       </div>
     );
   }
 
   if (!commission) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4 bg-[#FAF8F5]">
-        <p className="font-serif text-xl text-[#1A1A1A]">Commission Record Not Found</p>
-        <Link href="/account/commissions" className="text-xs font-mono text-[#C29B38] underline">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4 bg-[#0A0908] text-[#FAF8F5]">
+        <p className="font-serif text-xl text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>Commission Record Not Found</p>
+        <Link href="/account/commissions" className="text-xs font-mono text-[#e4c577] underline">
           &larr; Back to Commissions
         </Link>
       </div>
@@ -71,17 +72,14 @@ export default function CommissionDetailPage() {
 
   const firstItem = commission.items?.[0] || {};
   
-  // Clean Architecture Mappings (Directly from OrderItem & its Media relation)
   const artTitle = firstItem.title || 'Bespoke Heirloom Portrait';
   const medium = firstItem.medium || 'Raw Willow Charcoal';
   const size = firstItem.dimensions || 'A3 Format';
   const frame = firstItem.frame || 'Archival Unframed Sheet';
   const notes = firstItem.description || 'Standard atelier lighting & facial balance';
   
-  // Cloudinary Secure Permanent URL retrieval (Direct from OrderItem media relation)
   const imageUrl = firstItem.media?.secureUrl || firstItem.artwork?.media?.secureUrl || '';
 
-  // Smart status matcher function for exact admin phases
   const getStepIndex = (status) => {
     if (!status) return 0;
     const lower = status.toLowerCase();
@@ -96,44 +94,48 @@ export default function CommissionDetailPage() {
   const currentStepIndex = getStepIndex(currentStatus);
 
   return (
-    <div className="min-h-screen pb-24 px-6 sm:px-10 bg-[#FAF8F5]">
-      <div className="max-w-5xl mx-auto space-y-8">
+    <div className="min-h-screen pb-24 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] relative overflow-hidden">
+      
+      {/* Studio Ambient Glows */}
+      <div className="absolute top-20 left-1/3 -translate-x-1/2 w-[850px] h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.12)_0%,transparent_70%)] blur-[140px] pointer-events-none" />
+
+      <div className="max-w-5xl mx-auto space-y-8 relative z-10">
         
         {/* Navigation & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E5DFD7]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
           <div className="space-y-1">
             <Link 
               href="/account/commissions" 
-              className="inline-flex items-center gap-2 text-xs font-mono text-[#867E74] hover:text-[#1A1A1A] transition-colors mb-2"
+              className="inline-flex items-center gap-2 text-xs font-mono text-[#A8A196] hover:text-[#FAF8F5] transition-colors mb-2"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
+              <ArrowLeft className="w-3.5 h-3.5 text-[#e4c577]" />
               <span>Back to Commissions Ledger</span>
             </Link>
             <div className="flex items-center gap-3">
-              <h1 className="font-serif text-3xl text-[#1A1A1A]">
+              <h1 className="font-serif text-3xl text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>
                 {commission.orderNumber || `#${commission.id.slice(0, 8)}`}
               </h1>
-              <span className="px-3 py-1 rounded-full bg-[#D4A348]/10 border border-[#D4A348]/30 text-[#8C6415] text-[10px] font-mono uppercase tracking-widest font-semibold">
+              <span className="px-3 py-1 rounded-full bg-[#e4c577]/10 border border-[#e4c577]/30 text-[#e4c577] text-[10px] font-mono uppercase tracking-widest font-semibold">
                 Custom Commission Tracker
               </span>
             </div>
           </div>
 
           <div className="text-right sm:block">
-            <span className="text-[10px] uppercase font-mono tracking-widest text-[#867E74] block">Total Acquisition</span>
-            <span className="font-serif text-2xl text-[#1A1A1A]">${commission.totalAmount.toFixed(2)} USD</span>
+            <span className="text-[10px] uppercase font-mono tracking-widest text-[#A8A196] block">Total Acquisition</span>
+            <span className="font-serif text-2xl text-[#e4c577]" style={{ fontFamily: 'Georgia, serif' }}>${commission.totalAmount.toFixed(2)} USD</span>
           </div>
         </div>
 
         {/* Live Atelier Production Timeline */}
-        <div className="rounded-[28px] bg-white p-6 sm:p-10 border border-[#E5DFD7] shadow-[0_12px_35px_-10px_rgba(212,163,72,0.08)] space-y-6">
-          <div className="flex items-center justify-between">
+        <div className="rounded-[28px] bg-[#171513] p-6 sm:p-10 border border-white/10 shadow-xl space-y-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h3 className="font-serif text-xl text-[#1A1A1A]">Live Production Lifecycle</h3>
-              <p className="text-xs text-[#867E74] font-mono mt-0.5">Master artisan hand-rendering progression</p>
+              <h3 className="font-serif text-xl text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>Live Production Lifecycle</h3>
+              <p className="text-xs text-[#A8A196] font-mono mt-0.5">Master artisan hand-rendering progression</p>
             </div>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-xs font-mono text-amber-800 font-medium">
-              <Clock className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-xs font-mono text-amber-300 font-medium">
+              <Clock className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               <span>Current Phase: {currentStatus}</span>
             </span>
           </div>
@@ -149,22 +151,22 @@ export default function CommissionDetailPage() {
                   key={step} 
                   className={`p-4 rounded-2xl border transition-all relative ${
                     isCurrent 
-                      ? 'bg-[#FAF8F3] border-[#C29B38] ring-1 ring-[#C29B38]/30 shadow-xs' 
+                      ? 'bg-[#e4c577]/10 border-[#e4c577] ring-1 ring-[#e4c577]/40 shadow-xs text-[#FAF8F5]' 
                       : isCompleted 
-                      ? 'bg-white border-[#1A1A1A]/30 text-[#1A1A1A]' 
-                      : 'bg-stone-50 border-stone-200 text-stone-400 opacity-60'
+                      ? 'bg-black/50 border-white/20 text-[#FAF8F5]' 
+                      : 'bg-black/20 border-white/5 text-white/30 opacity-50'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono font-bold ${
-                      isCompleted ? 'bg-[#1A1A1A] text-white' : 'bg-stone-200 text-stone-500'
+                      isCompleted ? 'bg-[#e4c577] text-[#0A0908]' : 'bg-white/10 text-white/40'
                     }`}>
                       {idx + 1}
                     </span>
-                    {isCompleted && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
+                    {isCompleted && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
                   </div>
-                  <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#1A1A1A]">{step}</h4>
-                  <p className="text-[10px] text-[#867E74] font-light mt-1">
+                  <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#FAF8F5]">{step}</h4>
+                  <p className="text-[10px] text-[#A8A196] font-light mt-1">
                     {idx === 0 && 'Photo ingested & verified'}
                     {idx === 1 && 'Hand-rendering progression'}
                     {idx === 2 && 'Digital proof transmitted'}
@@ -176,15 +178,15 @@ export default function CommissionDetailPage() {
           </div>
         </div>
 
-        {/* 🌟 TRACKING WAYBILL CARD (If present) */}
+        {/* TRACKING WAYBILL CARD (If present) */}
         {commission.trackingNumber && (
-          <div className="p-6 rounded-[24px] bg-[#1A1A1A] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md">
+          <div className="p-6 rounded-[24px] bg-[#171513] border border-white/10 text-[#FAF8F5] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#C29B38]/20 border border-[#C29B38]/40 flex items-center justify-center shrink-0 text-[#C29B38]">
+              <div className="w-12 h-12 rounded-xl bg-[#e4c577]/20 border border-[#e4c577]/40 flex items-center justify-center shrink-0 text-[#e4c577]">
                 <Truck className="w-6 h-6" />
               </div>
               <div className="space-y-0.5">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#C29B38] font-bold block">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#e4c577] font-bold block">
                   Insured Courier Waybill Registered
                 </span>
                 <span className="font-mono text-lg font-bold tracking-wider text-[#FAF8F5]">
@@ -192,7 +194,7 @@ export default function CommissionDetailPage() {
                 </span>
               </div>
             </div>
-            <div className="text-[11px] font-mono text-[#9E9486] bg-white/[0.06] px-4 py-2 rounded-xl border border-white/10">
+            <div className="text-[11px] font-mono text-[#A8A196] bg-black/50 px-4 py-2 rounded-xl border border-white/10">
               Use this reference on the courier transit portal.
             </div>
           </div>
@@ -202,22 +204,22 @@ export default function CommissionDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Reference Photo Card (Cloudinary Persistent Asset) */}
-          <div className="lg:col-span-5 rounded-[28px] bg-white p-6 border border-[#E5DFD7] shadow-xs space-y-4">
+          <div className="lg:col-span-5 rounded-[28px] bg-[#171513] p-6 border border-white/10 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-mono text-xs font-bold text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2">
-                <Palette className="w-4 h-4 text-[#C29B38]" /> Cloudinary Reference Vault
+              <h3 className="font-mono text-xs font-bold text-[#FAF8F5] uppercase tracking-widest flex items-center gap-2">
+                <Palette className="w-4 h-4 text-[#e4c577]" /> Cloudinary Reference Vault
               </h3>
-              <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full font-mono font-medium border border-emerald-200">
+              <span className="text-[10px] text-emerald-400 bg-emerald-500/20 px-2.5 py-0.5 rounded-full font-mono font-medium border border-emerald-400/40">
                 Secured
               </span>
             </div>
 
             {imageUrl ? (
-              <div className="rounded-2xl overflow-hidden bg-stone-100 border border-stone-200 aspect-square shadow-inner">
-                <img src={imageUrl} alt="Atelier Reference Photo" className="w-full h-full object-cover" />
+              <div className="rounded-2xl overflow-hidden bg-stone-900 border border-white/10 aspect-square shadow-inner relative">
+                <Image src={imageUrl} alt="Atelier Reference Photo" fill sizes="400px" className="object-cover contrast-110" />
               </div>
             ) : (
-              <div className="p-8 text-center bg-[#FAF8F3] rounded-2xl border border-[#E5DFD7] text-xs text-[#867E74]">
+              <div className="p-8 text-center bg-black/40 rounded-2xl border border-white/10 text-xs text-[#A8A196]">
                 No reference image attached to this commission.
               </div>
             )}
@@ -227,46 +229,46 @@ export default function CommissionDetailPage() {
           <div className="lg:col-span-7 space-y-6">
             
             {/* Specs Card */}
-            <div className="rounded-[28px] bg-white p-6 sm:p-8 border border-[#E5DFD7] shadow-xs space-y-4">
-              <h3 className="font-mono text-xs font-bold text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2">
-                <FileText className="w-4 h-4 text-[#C29B38]" /> Commission Specifications
+            <div className="rounded-[28px] bg-[#171513] p-6 sm:p-8 border border-white/10 shadow-xl space-y-4">
+              <h3 className="font-mono text-xs font-bold text-[#FAF8F5] uppercase tracking-widest flex items-center gap-2">
+                <FileText className="w-4 h-4 text-[#e4c577]" /> Commission Specifications
               </h3>
 
-              <div className="space-y-3 text-xs text-[#686057] font-light divide-y divide-[#E5DFD7]">
+              <div className="space-y-3 text-xs text-[#A8A196] font-light divide-y divide-white/10">
                 <div className="flex justify-between pt-2">
-                  <span className="font-mono uppercase tracking-wider text-[#867E74]">Artwork Title:</span>
-                  <span className="font-serif font-normal text-[#1A1A1A]">{artTitle}</span>
+                  <span className="font-mono uppercase tracking-wider text-[#A8A196]">Artwork Title:</span>
+                  <span className="font-serif font-normal text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>{artTitle}</span>
                 </div>
                 <div className="flex justify-between pt-3">
-                  <span className="font-mono uppercase tracking-wider text-[#867E74]">Artistic Medium:</span>
-                  <span className="font-mono text-[#1A1A1A]">{medium}</span>
+                  <span className="font-mono uppercase tracking-wider text-[#A8A196]">Artistic Medium:</span>
+                  <span className="font-mono text-[#FAF8F5]">{medium}</span>
                 </div>
                 <div className="flex justify-between pt-3">
-                  <span className="font-mono uppercase tracking-wider text-[#867E74]">Canvas Dimensions:</span>
-                  <span className="font-mono text-[#1A1A1A]">{size}</span>
+                  <span className="font-mono uppercase tracking-wider text-[#A8A196]">Canvas Dimensions:</span>
+                  <span className="font-mono text-[#FAF8F5]">{size}</span>
                 </div>
                 <div className="flex justify-between pt-3">
-                  <span className="font-mono uppercase tracking-wider text-[#867E74]">Framing & Matting:</span>
-                  <span className="font-mono text-[#1A1A1A]">{frame}</span>
+                  <span className="font-mono uppercase tracking-wider text-[#A8A196]">Framing & Matting:</span>
+                  <span className="font-mono text-[#FAF8F5]">{frame}</span>
                 </div>
                 <div className="flex justify-between pt-3">
-                  <span className="font-mono uppercase tracking-wider text-[#867E74]">Composition Directives:</span>
-                  <span className="font-light text-[#1A1A1A] max-w-xs text-right italic">{notes}</span>
+                  <span className="font-mono uppercase tracking-wider text-[#A8A196]">Composition Directives:</span>
+                  <span className="font-light text-[#FAF8F5] max-w-xs text-right italic">{notes}</span>
                 </div>
               </div>
             </div>
 
             {/* Delivery Details Card */}
-            <div className="rounded-[28px] bg-white p-6 sm:p-8 border border-[#E5DFD7] shadow-xs space-y-4">
-              <h3 className="font-mono text-xs font-bold text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-[#C29B38]" /> Secure Delivery Destination
+            <div className="rounded-[28px] bg-[#171513] p-6 sm:p-8 border border-white/10 shadow-xl space-y-4">
+              <h3 className="font-mono text-xs font-bold text-[#FAF8F5] uppercase tracking-widest flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[#e4c577]" /> Secure Delivery Destination
               </h3>
 
-              <div className="space-y-2 text-xs text-[#686057] font-light bg-[#FAF8F3] p-4 rounded-2xl border border-[#E5DFD7]">
-                <p className="font-bold text-[#1A1A1A]">{commission.name || 'Valued Patron'}</p>
+              <div className="space-y-2 text-xs text-[#A8A196] font-light bg-black/50 p-4 rounded-2xl border border-white/10">
+                <p className="font-bold text-[#FAF8F5]">{commission.name || 'Valued Patron'}</p>
                 <p>{commission.address}</p>
                 <p>{commission.city}, {commission.postalCode}</p>
-                <p className="font-mono text-[11px] text-[#867E74] pt-1">{commission.country}</p>
+                <p className="font-mono text-[11px] text-[#A8A196] pt-1">{commission.country}</p>
               </div>
             </div>
 

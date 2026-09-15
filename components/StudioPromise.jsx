@@ -9,11 +9,11 @@ const PROMISES = [
     desc: 'Every portrait is hand-drawn stroke by stroke on archival cotton.',
     icon: CheckCircle2,
   },
-  {
-    title: 'Unlimited Modifications',
-    desc: 'Digital proof revisions until you are completely satisfied.',
-    icon: RefreshCw,
-  },
+//   {
+//     title: 'Unlimited Modifications',
+//     desc: 'Digital proof revisions until you are completely satisfied.',
+//     icon: RefreshCw,
+//   },
   {
     title: 'Flexible Secure Payment',
     desc: 'Secure deposit options with full encrypted processing.',

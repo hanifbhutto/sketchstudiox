@@ -50,20 +50,24 @@ export default function AccountLayout({ children }) {
   const isProfileActive = pathname === '/account/profile';
 
   return (
-    <main className="min-h-screen pt-32 pb-24 px-6 sm:px-10 bg-[#FAF8F5]">
-      <div className="max-w-7xl mx-auto space-y-10">
+    <main className="min-h-screen pt-32 pb-24 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] relative overflow-hidden">
+      
+      {/* Studio Ambient Glows */}
+      <div className="absolute top-20 left-1/3 -translate-x-1/2 w-[850px] h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.12)_0%,transparent_70%)] blur-[140px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto space-y-10 relative z-10">
         
         {/* Top Header & Patron Welcome Bar */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[#E5DFD7]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-white/10">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D4A348]/30 bg-[#D4A348]/10 text-[10px] uppercase tracking-[0.25em] text-[#5C4514] font-mono font-semibold">
-              <Sparkles className="w-3 h-3 text-[#C29B38]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#e4c577]/30 bg-[#e4c577]/15 text-[10px] uppercase tracking-[0.25em] text-[#e4c577] font-mono font-semibold shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#e4c577]" />
               <span>Verified Patron Ledger</span>
             </div>
-            <h1 className="font-serif text-3xl sm:text-4xl text-[#1A1A1A]">
+            <h1 className="font-serif text-3xl sm:text-4xl text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>
               {patronName}
             </h1>
-            <p className="text-xs text-[#867E74] font-mono">
+            <p className="text-xs text-[#A8A196] font-mono">
               {patronEmail}
             </p>
           </div>
@@ -71,15 +75,15 @@ export default function AccountLayout({ children }) {
           <div className="flex items-center gap-3 relative z-30">
             <Link
               href="/custom-sketch"
-              className="px-6 py-3 rounded-full bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all shadow-sm flex items-center gap-2"
+              className="px-6 py-3.5 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-xs uppercase tracking-[0.2em] font-semibold hover:brightness-110 transition-all shadow-md flex items-center gap-2 cursor-pointer"
             >
               <span>New Commission</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-[#0A0908]" />
             </Link>
             <button
               type="button"
               onClick={handleLogout}
-              className="p-3 rounded-full bg-white border border-[#E5DFD7] text-[#867E74] hover:text-rose-600 hover:border-rose-300 transition-colors cursor-pointer relative z-40 shadow-xs"
+              className="p-3.5 rounded-full bg-[#171513] border border-white/10 text-[#A8A196] hover:text-rose-400 hover:border-rose-400/50 transition-colors cursor-pointer relative z-40 shadow-xs"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4 pointer-events-none" />
@@ -91,8 +95,8 @@ export default function AccountLayout({ children }) {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
           
           {/* Left Sidebar Menu with Separate Modules */}
-          <aside className="lg:col-span-1 bg-white rounded-[28px] border border-[#E5DFD7] p-4 sm:p-6 shadow-xs space-y-2">
-            <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#867E74] px-4 pb-2">
+          <aside className="lg:col-span-1 bg-[#171513] rounded-[28px] border border-white/10 p-4 sm:p-6 shadow-xl space-y-2">
+            <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#A8A196] px-4 pb-2">
               Navigation Menu
             </div>
 
@@ -101,8 +105,8 @@ export default function AccountLayout({ children }) {
               href="/account/orders"
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
                 isGalleryOrdersActive
-                  ? 'bg-[#1A1A1A] text-[#FAF8F5] font-bold shadow-xs'
-                  : 'text-[#867E74] hover:bg-[#FAF8F3] hover:text-[#1A1A1A]'
+                  ? 'bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] font-bold shadow-xs'
+                  : 'text-[#A8A196] hover:bg-white/5 hover:text-[#FAF8F5]'
               }`}
             >
               <Package className="w-4 h-4" />
@@ -114,8 +118,8 @@ export default function AccountLayout({ children }) {
               href="/account/commissions"
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
                 isCommissionsActive
-                  ? 'bg-[#1A1A1A] text-[#FAF8F5] font-bold shadow-xs'
-                  : 'text-[#867E74] hover:bg-[#FAF8F3] hover:text-[#1A1A1A]'
+                  ? 'bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] font-bold shadow-xs'
+                  : 'text-[#A8A196] hover:bg-white/5 hover:text-[#FAF8F5]'
               }`}
             >
               <Palette className="w-4 h-4" />
@@ -127,8 +131,8 @@ export default function AccountLayout({ children }) {
               href="/account/profile"
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
                 isProfileActive
-                  ? 'bg-[#1A1A1A] text-[#FAF8F5] font-bold shadow-xs'
-                  : 'text-[#867E74] hover:bg-[#FAF8F3] hover:text-[#1A1A1A]'
+                  ? 'bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] font-bold shadow-xs'
+                  : 'text-[#A8A196] hover:bg-white/5 hover:text-[#FAF8F5]'
               }`}
             >
               <UserIcon className="w-4 h-4" />
