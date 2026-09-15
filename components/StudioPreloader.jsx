@@ -8,10 +8,10 @@ export default function StudioPreloader() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // 2.2 seconds ka luxury entrance animation timer
+    // Speed optimized: 0.8 seconds luxury entrance timer
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2200);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, []);
@@ -22,16 +22,16 @@ export default function StudioPreloader() {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
+          transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
           className="fixed inset-0 z-50 bg-[#0A0908] flex flex-col items-center justify-center px-4 overflow-hidden"
         >
           {/* Subtle Ambient Gold Glow behind title */}
           <div className="absolute w-[400px] h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.15)_0%,transparent_70%)] blur-[120px] pointer-events-none" />
 
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 15, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1, ease: 'easeOut' }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
             className="relative z-10 text-center space-y-4"
           >
             {/* Atelier Badge */}
@@ -53,7 +53,7 @@ export default function StudioPreloader() {
               <motion.div
                 initial={{ x: '-100%' }}
                 animate={{ x: '0%' }}
-                transition={{ duration: 1.8, ease: 'easeInOut' }}
+                transition={{ duration: 0.6, ease: 'easeInOut' }}
                 className="w-full h-full bg-gradient-to-r from-[#e4c577] to-[#cfae59]"
               />
             </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Eye, ShoppingBag, Sparkles, Check, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
@@ -56,7 +57,7 @@ export default function FeaturedExhibition() {
   const handleQuickAdd = async (artwork) => {
     setAddingId(artwork.id);
     
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 400));
 
     addToCart({
       id: artwork.id,
@@ -72,31 +73,23 @@ export default function FeaturedExhibition() {
     setAddingId(null);
     setToastMessage(`"${artwork.title}" successfully added to acquisition bag.`);
     setShowToast(true);
-    setTimeout(() => setShowToast(false), 3500);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   return (
     <section className="relative py-24 sm:py-28 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-white/10 overflow-hidden">
       
       {/* Animated Breathing Ambient Glows */}
-      <motion.div 
-        animate={{ scale: [1, 1.06, 1], opacity: [0.1, 0.16, 0.1] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/3 left-10 w-[300px] sm:w-[550px] h-[300px] sm:h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" 
-      />
-      <motion.div 
-        animate={{ scale: [1, 1.08, 1], opacity: [0.06, 0.1, 0.06] }}
-        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-10 right-10 w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" 
-      />
+      <div className="absolute top-1/3 left-10 w-[300px] sm:w-[550px] h-[300px] sm:h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" />
 
       {/* Floating Success Toast Notification */}
       <AnimatePresence>
         {showToast && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            exit={{ opacity: 0, y: 15, scale: 0.95 }}
             className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-50 bg-[#171513] text-[#FAF8F5] px-5 sm:px-6 py-3.5 sm:py-4 rounded-2xl shadow-2xl border border-[#e4c577]/40 flex items-center gap-3 font-mono text-xs"
           >
             <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center shrink-0">
@@ -110,13 +103,7 @@ export default function FeaturedExhibition() {
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         
         {/* Editorial Section Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="flex flex-col items-start justify-between gap-8"
-        >
+        <div className="flex flex-col items-start justify-between gap-8">
           <div className="space-y-4 max-w-2xl">
             {/* Atelier Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#e4c577]/30 bg-[#e4c577]/10 backdrop-blur-md text-[10px] uppercase tracking-[0.25em] text-[#e4c577] font-mono font-semibold">
@@ -167,7 +154,7 @@ export default function FeaturedExhibition() {
                     <motion.div
                       layoutId="activeExhibitionTab"
                       className="absolute inset-0 bg-gradient-to-r from-[#e4c577] to-[#cfae59] rounded-full shadow-2xs"
-                      transition={{ type: 'spring', damping: 24, stiffness: 300 }}
+                      transition={{ type: 'spring', damping: 25, stiffness: 350 }}
                     />
                   )}
                   <span className="relative z-10">{cat}</span>
@@ -185,7 +172,7 @@ export default function FeaturedExhibition() {
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Loading / Exhibition Grid */}
         {loading ? (
@@ -199,123 +186,112 @@ export default function FeaturedExhibition() {
             <p className="text-xs text-[#A8A196]">No authenticated originals currently match this category filter.</p>
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
-            <AnimatePresence>
-              {filteredItems.slice(0, 4).map((artwork, index) => {
-                const isAvailable = artwork.status === 'Available' || artwork.status === 'Available Original';
-                const isAdding = addingId === artwork.id;
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
+            {filteredItems.slice(0, 4).map((artwork) => {
+              const isAvailable = artwork.status === 'Available' || artwork.status === 'Available Original';
+              const isAdding = addingId === artwork.id;
+              const imgSrc = artwork.media?.secureUrl || artwork.image;
 
-                return (
-                  <motion.div
-                    key={artwork.id}
-                    layout
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="group flex flex-col justify-between"
-                  >
-                    {/* Dark Luxury Frame Card */}
-                    <div className="relative aspect-[3/4] bg-[#171513] p-4 rounded-2xl border border-white/10 overflow-hidden shadow-[0_15px_35px_-5px_rgba(0,0,0,0.8)] sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] sm:group-hover:border-[#e4c577]/60 transition-all duration-500">
-                      
-                      {/* Inner Viewport with full object-cover */}
-                      <div className="bg-[#141210] p-3 rounded-xl shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] relative w-full h-full border border-white/10 flex items-center justify-center overflow-hidden">
-                        {artwork.media?.secureUrl || artwork.image ? (
-                          <img
-                            src={artwork.media?.secureUrl || artwork.image}
-                            alt={artwork.title}
-                            className="w-full h-full object-cover rounded-lg transition-transform duration-700 ease-out sm:group-hover:scale-105 contrast-110"
-                          />
-                        ) : (
-                          <div className="flex flex-col items-center justify-center text-stone-400 gap-1.5 p-4 text-center">
-                            <Sparkles className="w-5 h-5 text-[#e4c577]" />
-                            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400">No Image Recorded</span>
-                          </div>
-                        )}
-
-                        {/* Top Serial Stamp */}
-                        <div className="absolute top-4 left-4 sm:top-5 sm:left-5 bg-black/80 border border-[#e4c577]/40 backdrop-blur-md text-[#FAF8F5] text-[9px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-md font-mono shadow-xs z-10">
-                          {artwork.id.toUpperCase()}
+              return (
+                <div
+                  key={artwork.id}
+                  className="group flex flex-col justify-between will-change-transform"
+                >
+                  {/* Dark Luxury Frame Card */}
+                  <div className="relative aspect-[3/4] bg-[#171513] p-4 rounded-2xl border border-white/10 overflow-hidden shadow-[0_15px_35px_-5px_rgba(0,0,0,0.8)] sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] sm:group-hover:border-[#e4c577]/60 transition-all duration-500">
+                    
+                    {/* Inner Viewport with Next.js Optimized Image */}
+                    <div className="bg-[#141210] p-3 rounded-xl shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] relative w-full h-full border border-white/10 flex items-center justify-center overflow-hidden">
+                      {imgSrc ? (
+                        <Image
+                          src={imgSrc}
+                          alt={artwork.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                          className="object-cover rounded-lg transition-transform duration-700 ease-out sm:group-hover:scale-105 contrast-110"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-stone-400 gap-1.5 p-4 text-center">
+                          <Sparkles className="w-5 h-5 text-[#e4c577]" />
+                          <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400">No Image Recorded</span>
                         </div>
+                      )}
 
-                        {/* Top Right Availability Pill */}
-                        <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-10">
-                          <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-mono font-medium backdrop-blur-md border ${
-                            isAvailable
-                              ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-xs'
-                              : 'bg-black/60 text-zinc-300 border-white/10'
-                          }`}>
-                            {artwork.status}
-                          </span>
-                        </div>
-
-                        {/* Interactive Floating Action Dock (Clear on mobile, blur-reveal on desktop) */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-2.5 backdrop-blur-none sm:backdrop-blur-[2px] z-20">
-                          <Link
-                            href={`/shop/${artwork.id}`}
-                            className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#0A0908] hover:bg-[#e4c577] hover:text-black transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
-                            title="Inspect Artwork"
-                          >
-                            <Eye className="w-3.5 h-3.5 stroke-[2]" />
-                            <span>Inspect</span>
-                          </Link>
-
-                          {isAvailable && (
-                            <button
-                              type="button"
-                              disabled={isAdding}
-                              onClick={() => handleQuickAdd(artwork)}
-                              className="p-2.5 rounded-xl bg-[#0A0908] text-[#e4c577] hover:bg-[#e4c577] hover:text-[#0A0908] transition-all shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[40px]"
-                              title="Acquire Artwork"
-                            >
-                              {isAdding ? (
-                                <Loader2 className="w-4 h-4 animate-spin text-[#e4c577]" />
-                              ) : (
-                                <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
-                              )}
-                            </button>
-                          )}
-                        </div>
+                      {/* Top Serial Stamp */}
+                      <div className="absolute top-4 left-4 sm:top-5 sm:left-5 bg-black/80 border border-[#e4c577]/40 backdrop-blur-md text-[#FAF8F5] text-[9px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-md font-mono shadow-xs z-10">
+                        {artwork.id.toUpperCase()}
                       </div>
-                    </div>
 
-                    {/* Museum Label / Plaque Under Card */}
-                    <div className="pt-4 px-1 space-y-1.5">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <h3 className="font-serif text-base text-[#FAF8F5] group-hover:text-[#e4c577] transition-colors truncate" style={{ fontFamily: 'Georgia, serif' }}>
-                          {artwork.title}
-                        </h3>
-                        <span className="font-mono text-sm text-[#e4c577] font-bold shrink-0">
-                          ${Number(artwork.price) || 0}
+                      {/* Top Right Availability Pill */}
+                      <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-10">
+                        <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-mono font-medium backdrop-blur-md border ${
+                          isAvailable
+                            ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-xs'
+                            : 'bg-black/60 text-zinc-300 border-white/10'
+                        }`}>
+                          {artwork.status}
                         </span>
                       </div>
 
-                      <p className="text-[10px] uppercase tracking-[0.18em] text-[#A8A196] font-mono truncate">
-                        {artwork.medium}
-                      </p>
-                      
-                      <div className="flex items-center justify-between text-[10px] text-[#867E74] pt-2 border-t border-white/10 font-mono">
-                        <span>{artwork.dimensions}</span>
-                        <span className="italic font-serif text-[#e4c577]/80">{artwork.year || '2026'}</span>
+                      {/* Interactive Floating Action Dock */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-2.5 backdrop-blur-none sm:backdrop-blur-[2px] z-20">
+                        <Link
+                          href={`/shop/${artwork.id}`}
+                          className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#0A0908] hover:bg-[#e4c577] hover:text-black transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
+                          title="Inspect Artwork"
+                        >
+                          <Eye className="w-3.5 h-3.5 stroke-[2]" />
+                          <span>Inspect</span>
+                        </Link>
+
+                        {isAvailable && (
+                          <button
+                            type="button"
+                            disabled={isAdding}
+                            onClick={() => handleQuickAdd(artwork)}
+                            className="p-2.5 rounded-xl bg-[#0A0908] text-[#e4c577] hover:bg-[#e4c577] hover:text-[#0A0908] transition-all shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[40px]"
+                            title="Acquire Artwork"
+                          >
+                            {isAdding ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-[#e4c577]" />
+                            ) : (
+                              <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
+                            )}
+                          </button>
+                        )}
                       </div>
                     </div>
+                  </div>
 
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
+                  {/* Museum Label / Plaque Under Card */}
+                  <div className="pt-4 px-1 space-y-1.5">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <h3 className="font-serif text-base text-[#FAF8F5] group-hover:text-[#e4c577] transition-colors truncate" style={{ fontFamily: 'Georgia, serif' }}>
+                        {artwork.title}
+                      </h3>
+                      <span className="font-mono text-sm text-[#e4c577] font-bold shrink-0">
+                        ${Number(artwork.price) || 0}
+                      </span>
+                    </div>
+
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-[#A8A196] font-mono truncate">
+                      {artwork.medium}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-[10px] text-[#867E74] pt-2 border-t border-white/10 font-mono">
+                      <span>{artwork.dimensions}</span>
+                      <span className="italic font-serif text-[#e4c577]/80">{artwork.year || '2026'}</span>
+                    </div>
+                  </div>
+
+                </div>
+              );
+            })}
+          </div>
         )}
 
         {/* Bottom Exhibition Catalog CTA */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-14 sm:mt-16 text-center"
-        >
+        <div className="mt-14 sm:mt-16 text-center">
           <Link
             href="/shop"
             className="inline-flex items-center gap-3 px-8 py-4 sm:py-3.5 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-xs sm:text-[11px] uppercase tracking-[0.2em] font-semibold hover:brightness-110 hover:scale-[1.02] transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(228,197,119,0.35)] group"
@@ -323,7 +299,7 @@ export default function FeaturedExhibition() {
             <span>View Full Studio Catalog</span>
             <ArrowRight className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[#0A0908] group-hover:translate-x-1 transition-transform" />
           </Link>
-        </motion.div>
+        </div>
 
       </div>
     </section>

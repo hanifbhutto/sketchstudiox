@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, CheckCircle2, Sliders, ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
 
 export default function CustomSketchCTA() {
   const [sliderPosition, setSliderPosition] = useState(50);
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -28,16 +28,8 @@ export default function CustomSketchCTA() {
     <section className="relative py-24 sm:py-28 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-white/10 overflow-hidden">
       
       {/* Animated Breathing Ambient Glows */}
-      <motion.div 
-        animate={{ scale: [1, 1.06, 1], opacity: [0.1, 0.16, 0.1] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/4 right-10 w-[300px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(ellipse_at_top,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" 
-      />
-      <motion.div 
-        animate={{ scale: [1, 1.08, 1], opacity: [0.06, 0.1, 0.06] }}
-        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-10 left-10 w-[250px] sm:w-[550px] h-[250px] sm:h-[400px] bg-[radial-gradient(ellipse_at_bottom,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" 
-      />
+      <div className="absolute top-1/4 right-10 w-[300px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(ellipse_at_top,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 left-10 w-[250px] sm:w-[550px] h-[250px] sm:h-[400px] bg-[radial-gradient(ellipse_at_bottom,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="rounded-[28px] sm:rounded-[32px] bg-[#171513] border border-[#e4c577]/30 p-6 sm:p-12 lg:p-16 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center shadow-[0_20px_60px_-15px_rgba(0,0,0,0.9)]">
@@ -83,7 +75,7 @@ export default function CustomSketchCTA() {
               ))}
             </div>
 
-            {/* Price Preview & CTA (Completely cleaned up without vertical border line) */}
+            {/* Price Preview & CTA */}
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5">
               <Link
                 href="/custom-sketch"
@@ -105,20 +97,20 @@ export default function CustomSketchCTA() {
           <div className="lg:col-span-6 flex flex-col items-center">
             
             {/* Museum Mat Frame Wrapper */}
-            <div className="relative p-4 rounded-3xl bg-[#141210] border border-white/15 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] max-w-md w-full">
+            <div className="relative p-4 rounded-3xl bg-[#141210] border border-white/15 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] max-w-md w-full will-change-transform">
               
               <div
                 className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden select-none cursor-ew-resize bg-stone-900 border border-white/10 shadow-inner"
                 onMouseMove={handleMove}
                 onTouchMove={handleTouchMove}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
               >
                 {/* After: Handcrafted Charcoal Portrait (Base Layer) */}
-                <img
-                  src="images/after.jpg"
+                <Image
+                  src="/images/after.jpg"
                   alt="Finished Handcrafted Charcoal Portrait"
-                  className="absolute inset-0 w-full h-full object-cover contrast-110 pointer-events-none"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 450px"
+                  className="absolute inset-0 object-cover contrast-110 pointer-events-none"
                 />
                 
                 {/* After Pill */}
@@ -132,10 +124,12 @@ export default function CustomSketchCTA() {
                   className="absolute inset-0 overflow-hidden pointer-events-none"
                   style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
                 >
-                  <img
-                    src="images/before.jpg"
+                  <Image
+                    src="/images/before.jpg"
                     alt="Original Reference Photograph"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 450px"
+                    className="absolute inset-0 object-cover"
                   />
                   
                   {/* Before Pill */}
@@ -146,7 +140,7 @@ export default function CustomSketchCTA() {
 
                 {/* Vertical Divider Line with Gold Accents */}
                 <div
-                  className="absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#e4c577] via-white to-[#e4c577] shadow-[0_0_12px_rgba(228,197,119,0.7)] pointer-events-none"
+                  className="absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#e4c577] via-white to-[#e4c577] shadow-[0_0_12px_rgba(228,197,119,0.7)] pointer-events-none z-20"
                   style={{ left: `${sliderPosition}%` }}
                 >
                   {/* Circular Tactile Handle */}

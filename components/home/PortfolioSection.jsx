@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { Sparkles, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const PORTFOLIO_ITEMS = [
   // 1. Dog Portraits (Priority First)
@@ -163,7 +164,7 @@ const PORTFOLIO_ITEMS = [
     title: 'Generational Bond',
     category: 'Man',
     medium: 'Graphite & Charcoal Hybrid',
-    image: 'images/home-frames/fr-6.jpeg',
+    image: '/images/home-frames/fr-6.jpeg',
     dimensions: '24×36 in',
   },
 
@@ -247,7 +248,7 @@ const PORTFOLIO_ITEMS = [
     title: 'Heritage Bridal Radiance',
     category: 'Couple',
     medium: 'Vibrant Colored Pencil & Prismacolor',
-    image: 'images/home-frames/fr-3.jpeg',
+    image: '/images/home-frames/fr-3.jpeg',
     dimensions: '20×30 in',
   },
 ];
@@ -350,22 +351,24 @@ export default function PortfolioSection() {
         <div className="relative">
           <div 
             ref={galleryScrollRef}
-            className="flex items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            className="flex items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden will-change-transform"
           >
             {filteredItems.map((item) => (
               <div
                 key={item.id}
                 className="group relative min-w-[280px] sm:min-w-[320px] lg:min-w-[360px] aspect-[4/5] rounded-[24px] bg-[#171513] border border-[#e4c577]/30 overflow-hidden shadow-[0_20px_40px_-12px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_55px_-10px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/60 transition-all duration-500 cursor-pointer flex flex-col justify-end p-6"
               >
-                {/* Artwork Image Background with object-cover */}
+                {/* Artwork Image Background with Next.js Optimized Image */}
                 <div className="absolute inset-0 bg-[#141210]">
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.title}
+                    fill
+                    sizes="(max-width: 768px) 280px, 360px"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out contrast-110 opacity-90 group-hover:opacity-100"
                   />
                   {/* Dark Gradient Overlay for text readability at bottom */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0908] via-black/40 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0908] via-black/40 to-transparent z-10" />
                 </div>
 
                 {/* Top Category Badge */}

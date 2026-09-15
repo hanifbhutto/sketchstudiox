@@ -1,12 +1,15 @@
-import HowItWorks from '../components/home/HowItWorks';
-import CustomSketchCTA from '../components/home/CustomSketchCTA';
-import FeaturedExhibition from '../components/home/FeaturedExhibition';
+import dynamic from 'next/dynamic';
 import Hero from '../components/home/Hero';
-import Testimonials from '../components/home/Testimonials';
-import Newsletter from '../components/home/Newsletter';
-import PortfolioSection from '../components/home/PortfolioSection';
 import MarqueeTicker from '../components/MarqueeTicker';
-import StudioPromise from '../components/StudioPromise';
+
+// Below-the-fold heavy components lazily loaded for instant initial render
+const FeaturedExhibition = dynamic(() => import('../components/home/FeaturedExhibition'));
+const PortfolioSection = dynamic(() => import('../components/home/PortfolioSection'));
+const CustomSketchCTA = dynamic(() => import('../components/home/CustomSketchCTA'));
+const StudioPromise = dynamic(() => import('../components/StudioPromise'));
+const HowItWorks = dynamic(() => import('../components/home/HowItWorks'));
+const Testimonials = dynamic(() => import('../components/home/Testimonials'));
+const Newsletter = dynamic(() => import('../components/home/Newsletter'));
 
 export default function Home() {
   return (
@@ -14,12 +17,12 @@ export default function Home() {
       <Hero />
       <MarqueeTicker />
       <FeaturedExhibition />
-      <PortfolioSection/>
-      <CustomSketchCTA/>
-      <StudioPromise/>
-      <HowItWorks/>
-      <Testimonials/>
-      <Newsletter/>
+      <PortfolioSection />
+      <CustomSketchCTA />
+      <StudioPromise />
+      <HowItWorks />
+      <Testimonials />
+      <Newsletter />
     </>
   );
 }
