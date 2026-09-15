@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingBag, 
@@ -96,8 +97,7 @@ export default function ShopContent() {
   const handleQuickAdd = async (artwork) => {
     setAddingId(artwork.id);
 
-    // Simulate smooth network delay for feedback
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 400));
 
     const imageUrl = artwork.media?.secureUrl || artwork.image || '';
 
@@ -108,27 +108,27 @@ export default function ShopContent() {
       medium: artwork.medium,
       dimensions: artwork.dimensions,
       price: artwork.price,
-      image: imageUrl, // <--- Secure URL mapping
+      image: imageUrl,
       frame: 'Museum Hardwood (+Mat Board)',
     });
 
     setAddingId(null);
     setToastMessage(`"${artwork.title}" successfully added to acquisition bag.`);
     setShowToast(true);
-    setTimeout(() => setShowToast(false), 3500);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-24 px-6 sm:px-10 bg-[#FAF8F5] relative overflow-hidden">
+    <div className="min-h-screen pt-32 pb-24 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] relative overflow-hidden">
       
       {/* Floating Success Toast Notification */}
       <AnimatePresence>
         {showToast && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-8 right-8 z-50 bg-[#1A1A1A] text-white px-6 py-4 rounded-2xl shadow-2xl border border-amber-500/30 flex items-center gap-3 font-mono text-xs"
+            exit={{ opacity: 0, y: 15, scale: 0.95 }}
+            className="fixed bottom-8 right-8 z-50 bg-[#171513] text-[#FAF8F5] px-6 py-4 rounded-2xl shadow-2xl border border-[#e4c577]/40 flex items-center gap-3 font-mono text-xs"
           >
             <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center shrink-0">
               <Check className="w-4 h-4 stroke-[2.5]" />
@@ -138,54 +138,47 @@ export default function ShopContent() {
         )}
       </AnimatePresence>
 
-      <div 
-        className="absolute inset-0 opacity-[0.25] mix-blend-multiply pointer-events-none z-0"
-        style={{
-          backgroundImage: `radial-gradient(#C29B38 0.75px, transparent 0.75px), radial-gradient(#1A1A1A 0.5px, #FAF8F5 0.5px)`,
-          backgroundSize: '24px 24px, 12px 12px',
-          backgroundPosition: '0 0, 6px 6px'
-        }}
-      />
-
-      <div className="absolute top-24 left-1/4 w-[600px] h-[450px] bg-gradient-to-tr from-[#D4A348]/15 via-rose-300/5 to-transparent blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-20 right-1/4 w-[550px] h-[500px] bg-gradient-to-bl from-stone-900/10 via-[#D4A348]/12 to-transparent blur-[140px] pointer-events-none" />
+      {/* Ambient Glows */}
+      <div className="absolute top-24 left-1/4 w-[600px] h-[450px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.12)_0%,transparent_70%)] blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-20 right-1/4 w-[550px] h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-12 relative z-10">
         
-        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-[#E5DFD7] pb-10 gap-6">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#D4A348]/40 bg-[#D4A348]/10 backdrop-blur-md text-[#8C6415] text-[10px] uppercase tracking-[0.25em] font-mono font-semibold shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-[#C29B38]" />
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-10 gap-6">
+          <div className="space-y-4 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#e4c577]/30 bg-[#e4c577]/10 backdrop-blur-md text-[#e4c577] text-[10px] uppercase tracking-[0.25em] font-mono font-semibold shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#e4c577]" />
               <span>Permanent Studio Vault</span>
             </div>
 
-            <h1 className="font-serif text-4xl sm:text-6xl font-normal text-[#1A1A1A] tracking-tight leading-[1.06]">
+            <h1 className="font-serif text-4xl sm:text-6xl font-normal text-[#FAF8F5] tracking-tight leading-[1.06]" style={{ fontFamily: 'Georgia, serif' }}>
               Gallery <br className="hidden sm:inline" />
-              <span className="italic font-light bg-gradient-to-r from-[#D4A348] via-[#B88728] to-[#8C6415] bg-clip-text text-transparent">
+              <span className="italic font-light text-[#e4c577]">
                 Exhibition.
               </span>
             </h1>
 
-            <p className="text-[#686057] font-light text-sm sm:text-base max-w-lg leading-relaxed">
+            <p className="text-[#A8A196] font-light text-sm sm:text-base leading-relaxed">
               Explore authentic charcoal and graphite studies hand-drawn on archival cotton paper. Each original includes a certified wax-sealed provenance document.
             </p>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-mono text-[#867E74]">
-            <span className="text-[#8C6415] font-semibold">{pagination.totalCount} Artworks Indexed</span>
+          <div className="flex items-center gap-4 text-xs font-mono text-[#A8A196]">
+            <span className="text-[#e4c577] font-semibold">{pagination.totalCount} Artworks Indexed</span>
             <span>&bull;</span>
             <span>Archival Cotton 300 GSM</span>
           </div>
         </div>
 
-        {/* Filter & Sort Bar with Smooth Scroll Controls */}
+        {/* Filter & Sort Bar */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           
           <div className="flex items-center gap-2 max-w-full w-full lg:w-auto overflow-hidden">
             <button
               type="button"
               onClick={() => handleScrollTabs('left')}
-              className="p-2 rounded-full bg-white border border-[#E5DFD7] text-[#867E74] hover:text-[#1A1A1A] hover:border-[#C29B38] hover:bg-[#FAF8F3] transition-all shadow-2xs shrink-0 cursor-pointer"
+              className="p-2 rounded-full bg-[#171513] border border-white/10 text-[#A8A196] hover:text-[#FAF8F5] hover:border-[#e4c577] transition-all shadow-2xs shrink-0 cursor-pointer"
               title="Scroll left"
               aria-label="Scroll left"
             >
@@ -194,7 +187,7 @@ export default function ShopContent() {
 
             <div 
               ref={scrollContainerRef}
-              className="flex items-center gap-1.5 overflow-x-auto scroll-smooth bg-white/90 backdrop-blur-md p-1.5 rounded-full border border-[#E5DFD7] shadow-xs whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              className="flex items-center gap-1.5 overflow-x-auto scroll-smooth bg-[#171513]/90 backdrop-blur-md p-1.5 rounded-full border border-white/10 shadow-xs whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full"
             >
               {CATEGORIES.map((cat) => (
                 <button
@@ -203,15 +196,15 @@ export default function ShopContent() {
                   onClick={() => handleCategoryChange(cat)}
                   className={`relative px-4 py-2 rounded-full text-[11px] uppercase tracking-[0.18em] font-medium transition-all duration-300 cursor-pointer shrink-0 whitespace-nowrap ${
                     selectedCategory === cat
-                      ? 'text-amber-950 font-semibold'
-                      : 'text-[#867E74] hover:text-[#1A1A1A]'
+                      ? 'text-[#0A0908] font-semibold'
+                      : 'text-[#A8A196] hover:text-[#FAF8F5]'
                   }`}
                 >
                   {selectedCategory === cat && (
                     <motion.div
                       layoutId="activeShopCategory"
-                      className="absolute inset-0 bg-[#FAF8F3] rounded-full border border-[#D4A348]/40 shadow-2xs"
-                      transition={{ type: 'spring', damping: 24, stiffness: 300 }}
+                      className="absolute inset-0 bg-gradient-to-r from-[#e4c577] to-[#cfae59] rounded-full shadow-xs"
+                      transition={{ type: 'spring', damping: 25, stiffness: 350 }}
                     />
                   )}
                   <span className="relative z-10">{cat}</span>
@@ -222,7 +215,7 @@ export default function ShopContent() {
             <button
               type="button"
               onClick={() => handleScrollTabs('right')}
-              className="p-2 rounded-full bg-white border border-[#E5DFD7] text-[#867E74] hover:text-[#1A1A1A] hover:border-[#C29B38] hover:bg-[#FAF8F3] transition-all shadow-2xs shrink-0 cursor-pointer"
+              className="p-2 rounded-full bg-[#171513] border border-white/10 text-[#A8A196] hover:text-[#FAF8F5] hover:border-[#e4c577] transition-all shadow-2xs shrink-0 cursor-pointer"
               title="Scroll right"
               aria-label="Scroll right"
             >
@@ -230,138 +223,146 @@ export default function ShopContent() {
             </button>
           </div>
 
-          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-[#E5DFD7] shadow-2xs text-xs shrink-0 self-end lg:self-auto">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-[#C29B38]" />
+          <div className="flex items-center gap-2 bg-[#171513] px-4 py-2 rounded-full border border-white/10 shadow-2xs text-xs shrink-0 self-end lg:self-auto">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-[#e4c577]" />
             <select
               value={sortBy}
               onChange={handleSortChange}
-              className="bg-transparent text-[#1A1A1A] outline-none text-xs cursor-pointer font-mono uppercase tracking-wider"
+              className="bg-transparent text-[#FAF8F5] outline-none text-xs cursor-pointer font-mono uppercase tracking-wider"
             >
-              <option value="featured">Featured Curation</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
+              <option value="featured" className="bg-[#171513]">Featured Curation</option>
+              <option value="price-asc" className="bg-[#171513]">Price: Low to High</option>
+              <option value="price-desc" className="bg-[#171513]">Price: High to Low</option>
             </select>
           </div>
 
         </div>
 
+        {/* Content Grid */}
         {loading ? (
-          <div className="py-24 flex flex-col items-center justify-center gap-4 text-xs font-mono text-[#867E74]">
-            <Loader2 className="w-8 h-8 animate-spin text-[#C29B38]" />
+          <div className="py-24 flex flex-col items-center justify-center gap-4 text-xs font-mono text-[#A8A196]">
+            <Loader2 className="w-8 h-8 animate-spin text-[#e4c577]" />
             <span>Curating exhibition works from vault...</span>
           </div>
         ) : artworks.length === 0 ? (
-          <div className="py-24 text-center rounded-3xl bg-white border border-[#E5DFD7] p-12 space-y-3">
-            <PackageOpen className="w-10 h-10 mx-auto text-[#C29B38]/60 stroke-[1.5]" />
-            <h3 className="font-serif text-xl text-[#1A1A1A]">No Originals In This Category</h3>
-            <p className="text-xs text-[#867E74] max-w-sm mx-auto font-sans">
+          <div className="py-24 text-center rounded-3xl bg-[#171513] border border-white/10 p-12 space-y-3">
+            <PackageOpen className="w-10 h-10 mx-auto text-[#e4c577]/60 stroke-[1.5]" />
+            <h3 className="font-serif text-xl text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>No Originals In This Category</h3>
+            <p className="text-xs text-[#A8A196] max-w-sm mx-auto font-sans">
               No authenticated artworks currently match this filter criteria. Select another collection or commission a bespoke study.
             </p>
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <AnimatePresence>
-              {artworks.map((artwork) => {
-                const isAvailable = artwork.status === 'Available' || artwork.status === 'Available Original';
-                const isAdding = addingId === artwork.id;
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            {artworks.map((artwork) => {
+              const isAvailable = artwork.status === 'Available' || artwork.status === 'Available Original';
+              const isAdding = addingId === artwork.id;
+              const imgSrc = artwork.media?.secureUrl || artwork.image || '';
 
-                return (
-                  <motion.div
-                    key={artwork.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.35 }}
-                    className="rounded-[30px] bg-white border border-[#E5DFD7] p-5 flex flex-col justify-between group shadow-[0_12px_35px_-10px_rgba(212,163,72,0.08)] hover:shadow-[0_22px_50px_-12px_rgba(212,163,72,0.2)] hover:border-[#D4A348]/50 transition-all duration-400"
-                  >
-                    <div>
-                      <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-stone-200 border border-stone-300/80 mb-5 flex items-center justify-center">
-                        {artwork.media?.secureUrl || artwork.image ? (
-                          <img
-                            src={artwork.media?.secureUrl || artwork.image}
-                            alt={artwork.title}
-                            className="w-full h-full object-cover contrast-125 group-hover:scale-105 transition-transform duration-700 ease-out"
-                          />
-                        ) : (
-                          <div className="flex flex-col items-center justify-center text-stone-400 gap-1.5 p-4 text-center z-10">
-                            <Sparkles className="w-5 h-5 text-amber-600/60" />
-                            <span className="text-[9px] font-mono tracking-widest uppercase text-stone-500">No Image Recorded</span>
-                          </div>
-                        )}
-
-                        <div className="absolute top-3.5 left-3.5 px-2.5 py-1 rounded-md bg-black/75 border border-[#D4A348]/40 backdrop-blur-md text-[9px] uppercase tracking-widest text-[#FAF8F5] font-mono shadow-xs z-20">
-                          {artwork.id.toUpperCase()}
+              return (
+                <div
+                  key={artwork.id}
+                  className="group flex flex-col justify-between will-change-transform"
+                >
+                  {/* Luxury Frame Card */}
+                  <div className="relative aspect-[3/4] bg-[#171513] p-4 rounded-2xl border border-white/10 overflow-hidden shadow-[0_15px_35px_-5px_rgba(0,0,0,0.8)] sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] sm:group-hover:border-[#e4c577]/60 transition-all duration-500">
+                    
+                    {/* Inner Viewport with Next.js Optimized Image */}
+                    <div className="bg-[#141210] p-3 rounded-xl shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] relative w-full h-full border border-white/10 flex items-center justify-center overflow-hidden">
+                      {imgSrc ? (
+                        <Image
+                          src={imgSrc}
+                          alt={artwork.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover rounded-lg transition-transform duration-700 ease-out sm:group-hover:scale-105 contrast-110"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-stone-400 gap-1.5 p-4 text-center">
+                          <Sparkles className="w-5 h-5 text-[#e4c577]" />
+                          <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400">No Image Recorded</span>
                         </div>
+                      )}
 
-                        <div className="absolute top-3.5 right-3.5 z-20">
-                          <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-mono font-medium backdrop-blur-md border ${
-                            isAvailable
-                              ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-xs'
-                              : 'bg-black/60 text-zinc-300 border-white/10'
-                          }`}>
-                            {artwork.status}
-                          </span>
-                        </div>
+                      {/* Serial Stamp */}
+                      <div className="absolute top-4 left-4 sm:top-5 sm:left-5 bg-black/80 border border-[#e4c577]/40 backdrop-blur-md text-[#FAF8F5] text-[9px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-md font-mono shadow-xs z-10">
+                        {artwork.id.toUpperCase()}
+                      </div>
 
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-3 backdrop-blur-[2px] z-30">
-                          <Link
-                            href={`/shop/${artwork.id}`}
-                            className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#1A1A1A] hover:bg-[#C29B38] hover:text-white transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
-                            title="Inspect Detail"
+                      {/* Availability Pill */}
+                      <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-10">
+                        <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-mono font-medium backdrop-blur-md border ${
+                          isAvailable
+                            ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-xs'
+                            : 'bg-black/60 text-zinc-300 border-white/10'
+                        }`}>
+                          {artwork.status || 'Available'}
+                        </span>
+                      </div>
+
+                      {/* Floating Action Dock */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-2.5 backdrop-blur-none sm:backdrop-blur-[2px] z-20">
+                        <Link
+                          href={`/shop/${artwork.id}`}
+                          className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#0A0908] hover:bg-[#e4c577] hover:text-black transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
+                          title="Inspect Artwork"
+                        >
+                          <Eye className="w-3.5 h-3.5 stroke-[2]" />
+                          <span>Inspect Detail</span>
+                        </Link>
+
+                        {isAvailable && (
+                          <button
+                            type="button"
+                            disabled={isAdding}
+                            onClick={() => handleQuickAdd(artwork)}
+                            className="p-2.5 rounded-xl bg-[#0A0908] text-[#e4c577] hover:bg-[#e4c577] hover:text-[#0A0908] transition-all shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[40px]"
+                            title="Add to Acquisition Bag"
                           >
-                            <Eye className="w-3.5 h-3.5 stroke-[2]" />
-                            <span>Inspect Detail</span>
-                          </Link>
-
-                          {isAvailable && (
-                            <button
-                              type="button"
-                              disabled={isAdding}
-                              onClick={() => handleQuickAdd(artwork)}
-                              className="p-2.5 rounded-xl bg-[#1A1A1A] text-[#D4A348] hover:bg-[#C29B38] hover:text-white transition-all shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[40px]"
-                              title="Add to Acquisition Bag"
-                            >
-                              {isAdding ? (
-                                <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
-                              ) : (
-                                <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
-                              )}
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="space-y-1.5 px-1">
-                        <div className="flex items-baseline justify-between gap-2">
-                          <h3 className="font-serif text-lg text-[#1A1A1A] group-hover:text-[#8C6415] transition-colors">
-                            {artwork.title}
-                          </h3>
-                          <span className="font-mono text-base font-bold text-[#1A1A1A]">
-                            ${artwork.price}
-                          </span>
-                        </div>
-
-                        <p className="text-xs text-[#686057] font-light">{artwork.medium}</p>
+                            {isAdding ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-[#e4c577]" />
+                            ) : (
+                              <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
+                            )}
+                          </button>
+                        )}
                       </div>
                     </div>
+                  </div>
 
-                    <div className="pt-4 mt-5 border-t border-[#E5DFD7] flex items-center justify-between text-[11px] text-[#867E74] font-mono">
+                  {/* Museum Label / Plaque Under Card */}
+                  <div className="pt-4 px-1 space-y-1.5">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <h3 className="font-serif text-base text-[#FAF8F5] group-hover:text-[#e4c577] transition-colors truncate" style={{ fontFamily: 'Georgia, serif' }}>
+                        {artwork.title}
+                      </h3>
+                      <span className="font-mono text-sm text-[#e4c577] font-bold shrink-0">
+                        ${Number(artwork.price) || 0}
+                      </span>
+                    </div>
+
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-[#A8A196] font-mono truncate">
+                      {artwork.medium}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-[10px] text-[#867E74] pt-2 border-t border-white/10 font-mono">
                       <span>{artwork.dimensions}</span>
-                      <span>Original &bull; {artwork.year || '2026'}</span>
+                      <span className="italic font-serif text-[#e4c577]/80">{artwork.year || '2026'}</span>
                     </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
+                  </div>
+
+                </div>
+              );
+            })}
+          </div>
         )}
 
+        {/* Pagination Section */}
         {!loading && pagination.totalPages > 1 && (
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#E5DFD7]">
-            <span className="text-xs font-mono text-[#867E74]">
-              Showing Page <strong className="text-[#1A1A1A]">{pagination.page}</strong> of{' '}
-              <strong className="text-[#1A1A1A]">{pagination.totalPages}</strong> ({pagination.totalCount} Total Originals)
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10">
+            <span className="text-xs font-mono text-[#A8A196]">
+              Showing Page <strong className="text-[#FAF8F5]">{pagination.page}</strong> of{' '}
+              <strong className="text-[#FAF8F5]">{pagination.totalPages}</strong> ({pagination.totalCount} Total Originals)
             </span>
 
             <div className="flex items-center gap-2">
@@ -369,7 +370,7 @@ export default function ShopContent() {
                 type="button"
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={!pagination.hasPrevPage}
-                className="px-4 py-2 rounded-xl bg-white border border-[#E5DFD7] text-xs font-mono text-[#1A1A1A] hover:bg-[#FAF8F3] hover:border-[#C29B38] transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
+                className="px-4 py-2 rounded-xl bg-[#171513] border border-white/10 text-xs font-mono text-[#FAF8F5] hover:border-[#e4c577] transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Previous</span>
@@ -383,8 +384,8 @@ export default function ShopContent() {
                     onClick={() => setCurrentPage(pageNum)}
                     className={`w-9 h-9 rounded-xl text-xs font-mono font-medium transition-all duration-200 cursor-pointer ${
                       currentPage === pageNum
-                        ? 'bg-[#1A1A1A] text-[#FAF8F5] font-bold shadow-xs'
-                        : 'bg-white border border-[#E5DFD7] text-[#686057] hover:border-[#C29B38]'
+                        ? 'bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] font-bold shadow-xs'
+                        : 'bg-[#171513] border border-white/10 text-[#A8A196] hover:text-[#FAF8F5] hover:border-[#e4c577]'
                     }`}
                   >
                     {pageNum}
@@ -396,7 +397,7 @@ export default function ShopContent() {
                 type="button"
                 onClick={() => setCurrentPage((p) => Math.min(pagination.totalPages, p + 1))}
                 disabled={!pagination.hasNextPage}
-                className="px-4 py-2 rounded-xl bg-white border border-[#E5DFD7] text-xs font-mono text-[#1A1A1A] hover:bg-[#FAF8F3] hover:border-[#C29B38] transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
+                className="px-4 py-2 rounded-xl bg-[#171513] border border-white/10 text-xs font-mono text-[#FAF8F5] hover:border-[#e4c577] transition-colors flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
               >
                 <span>Next</span>
                 <ChevronRight className="w-4 h-4" />
@@ -405,11 +406,12 @@ export default function ShopContent() {
           </div>
         )}
 
-        <div className="p-8 sm:p-12 rounded-[32px] bg-[#0E0C0A] border border-[#D4A348]/25 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-[radial-gradient(circle,rgba(212,163,72,0.15)_0%,transparent_70%)] pointer-events-none" />
+        {/* Bottom Custom Commission Banner */}
+        <div className="p-8 sm:p-12 rounded-[32px] bg-[#171513] border border-[#e4c577]/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[radial-gradient(circle,rgba(228,197,119,0.12)_0%,transparent_70%)] pointer-events-none" />
           
           <div className="space-y-2 text-center md:text-left relative z-10">
-            <h3 className="font-serif text-2xl sm:text-3xl text-[#FAF8F5] font-normal">
+            <h3 className="font-serif text-2xl sm:text-3xl text-[#FAF8F5] font-normal" style={{ fontFamily: 'Georgia, serif' }}>
               Seeking a bespoke family or couple portrait?
             </h3>
             <p className="text-xs text-[#A8A196] font-light max-w-lg">
@@ -419,7 +421,7 @@ export default function ShopContent() {
 
           <Link
             href="/custom-sketch"
-            className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-gradient-to-r from-[#D4A348] to-[#C29B38] text-[#0A0908] text-xs uppercase tracking-[0.2em] font-semibold hover:brightness-110 transition-all shadow-md shrink-0 relative z-10 group"
+            className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-xs uppercase tracking-[0.2em] font-semibold hover:brightness-110 transition-all shadow-md shrink-0 relative z-10 group"
           >
             <span>Commission Custom</span>
             <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

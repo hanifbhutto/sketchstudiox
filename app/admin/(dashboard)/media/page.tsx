@@ -177,17 +177,17 @@ export default function AdminMediaPage() {
   const currentItems = mediaList.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-[#FAF8F5]">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E5DFD7] pb-6 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-6 gap-4">
         <div className="space-y-1">
-          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] font-semibold flex items-center gap-1.5">
-            <FolderOpen className="w-3.5 h-3.5 text-[#C29B38]" />
+          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#e4c577] font-semibold flex items-center gap-1.5">
+            <FolderOpen className="w-3.5 h-3.5 text-[#e4c577]" />
             Atelier Asset Vault
           </span>
-          <h1 className="font-serif text-3xl sm:text-4xl text-[#1A1A1A]">Media Manager Library</h1>
-          <p className="text-xs text-[#867E74] font-light">
+          <h1 className="font-serif text-3xl sm:text-4xl text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>Media Manager Library</h1>
+          <p className="text-xs text-[#A8A196] font-light">
             Central repository for Cloudinary image assets and direct database references.
           </p>
         </div>
@@ -195,74 +195,72 @@ export default function AdminMediaPage() {
         <div className="flex items-center gap-3">
           <button 
             onClick={fetchMedia}
-            className="p-2.5 rounded-full border border-[#E5DFD7] text-[#867E74] hover:text-[#1A1A1A] hover:bg-[#FAF8F3] transition-colors cursor-pointer"
+            className="p-2.5 rounded-full border border-white/10 text-[#A8A196] hover:text-[#FAF8F5] hover:bg-white/5 transition-colors cursor-pointer"
             title="Reload library"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#C29B38]' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#e4c577]' : ''}`} />
           </button>
 
           <button 
             onClick={() => { setSelectedPreviews([]); setShowModal(true); }} 
-            className="px-4 py-2.5 rounded-full bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
+            className="px-5 py-3 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-xs font-mono uppercase tracking-wider hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer font-bold shadow-md"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 text-[#0A0908]" />
             <span>Add Media</span>
           </button>
         </div>
       </div>
 
       {/* Gallery Grid with Hover Actions & Pagination */}
-      <div className="rounded-2xl bg-white border border-[#E5DFD7] shadow-xs p-6 space-y-6">
+      <div className="rounded-[32px] bg-[#171513] border border-white/10 shadow-xl p-6 sm:p-8 space-y-6">
         {loading ? (
-          <div className="p-16 flex flex-col items-center justify-center gap-3 text-xs font-mono text-[#867E74]">
-            <Loader2 className="w-6 h-6 animate-spin text-[#C29B38]" />
+          <div className="p-16 flex flex-col items-center justify-center gap-3 text-xs font-mono text-[#A8A196]">
+            <Loader2 className="w-6 h-6 animate-spin text-[#e4c577]" />
             <span>Accessing asset vault...</span>
           </div>
         ) : mediaList.length === 0 ? (
-          <div className="text-center py-20 border-2 border-dashed border-[#E5DFD7] rounded-2xl bg-[#FAF8F3]/40">
-            <FolderOpen className="w-8 h-8 text-[#C29B38] mx-auto mb-3 opacity-60" />
-            <p className="text-xs font-mono text-[#1A1A1A] font-semibold">No media assets found.</p>
-            <p className="text-xs font-mono text-[#867E74] mt-1">Click "Add Media" to upload your first image asset.</p>
+          <div className="text-center py-20 border-2 border-dashed border-white/20 rounded-3xl bg-black/40">
+            <FolderOpen className="w-8 h-8 text-[#e4c577] mx-auto mb-3 opacity-60" />
+            <p className="text-xs font-mono text-[#FAF8F5] font-semibold">No media assets found.</p>
+            <p className="text-xs font-mono text-[#A8A196] mt-1">Click "Add Media" to upload your first image asset.</p>
           </div>
         ) : (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {currentItems.map((item) => (
-                <div key={item.id} className="border border-[#E5DFD7] rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md transition group flex flex-col justify-between">
-                  <div className="aspect-square relative bg-[#FAF8F3] overflow-hidden">
+                <div key={item.id} className="border border-white/10 rounded-2xl overflow-hidden bg-[#171513] shadow-md hover:border-[#e4c577]/50 transition group flex flex-col justify-between">
+                  <div className="aspect-square relative bg-stone-900 overflow-hidden">
                     <Image
                       src={item.secureUrl}
                       alt={item.filename || 'Media asset'}
                       fill
-                      className="object-cover group-hover:scale-105 transition duration-300"
+                      sizes="200px"
+                      className="object-cover group-hover:scale-105 transition duration-300 contrast-110"
                     />
                     
                     {/* Hover Action Overlay */}
-                    <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 p-2">
-                      {/* Copy URL Button */}
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 p-2">
                       <button
                         onClick={() => handleCopyUrl(item)}
-                        className="p-2 rounded-xl bg-white text-stone-900 hover:bg-[#C29B38] hover:text-white transition-colors cursor-pointer shadow-md"
+                        className="p-2.5 rounded-xl bg-white/10 text-white hover:bg-[#e4c577] hover:text-[#0A0908] transition-colors cursor-pointer shadow-md"
                         title="Copy Image URL"
                       >
-                        {copiedId === item.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copiedId === item.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                       </button>
 
-                      {/* View Full Image Button */}
                       <a
                         href={item.secureUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-2 rounded-xl bg-white text-stone-900 hover:bg-[#C29B38] hover:text-white transition-colors cursor-pointer shadow-md"
+                        className="p-2.5 rounded-xl bg-white/10 text-white hover:bg-[#e4c577] hover:text-[#0A0908] transition-colors cursor-pointer shadow-md"
                         title="View Full Image"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
 
-                      {/* Delete Button */}
                       <button
                         onClick={() => setDeleteTarget(item)}
-                        className="p-2 rounded-xl bg-white text-rose-600 hover:bg-rose-600 hover:text-white transition-colors cursor-pointer shadow-md"
+                        className="p-2.5 rounded-xl bg-rose-500/20 text-rose-300 hover:bg-rose-600 hover:text-white transition-colors cursor-pointer shadow-md"
                         title="Delete Asset"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -270,14 +268,14 @@ export default function AdminMediaPage() {
                     </div>
 
                     {copiedId === item.id && (
-                      <div className="absolute top-2 inset-x-2 bg-emerald-600 text-white text-[9px] font-mono py-0.5 rounded text-center shadow-md animate-in fade-in">
+                      <div className="absolute top-2 inset-x-2 bg-emerald-500 text-white text-[9px] font-mono py-0.5 rounded text-center shadow-md animate-in fade-in">
                         URL Copied!
                       </div>
                     )}
                   </div>
 
-                  <div className="p-3 border-t border-[#E5DFD7] bg-white">
-                    <span className="text-[10px] font-mono truncate text-[#1A1A1A] font-medium block" title={item.filename}>
+                  <div className="p-3 border-t border-white/10 bg-black/40">
+                    <span className="text-[10px] font-mono truncate text-[#FAF8F5] font-medium block" title={item.filename}>
                       {item.filename || 'Untitled'}
                     </span>
                   </div>
@@ -287,7 +285,7 @@ export default function AdminMediaPage() {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between border-t border-[#E5DFD7] pt-4 text-xs font-mono text-[#867E74]">
+              <div className="flex items-center justify-between border-t border-white/10 pt-4 text-xs font-mono text-[#A8A196]">
                 <span>
                   Showing {startIndex + 1} to {Math.min(startIndex + ITEMS_PER_PAGE, mediaList.length)} of {mediaList.length} assets
                 </span>
@@ -296,20 +294,20 @@ export default function AdminMediaPage() {
                   <button
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg border border-[#E5DFD7] hover:bg-[#FAF8F3] disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer flex items-center gap-1"
+                    className="p-2 rounded-xl border border-white/10 bg-black/40 hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer flex items-center gap-1 text-[#FAF8F5]"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span>Prev</span>
                   </button>
 
-                  <span className="px-3 py-1 bg-[#FAF8F3] border border-[#E5DFD7] rounded-lg text-[#1A1A1A] font-bold">
+                  <span className="px-3 py-1 bg-black/40 border border-white/10 rounded-xl text-[#FAF8F5] font-bold">
                     {currentPage} / {totalPages}
                   </span>
 
                   <button
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg border border-[#E5DFD7] hover:bg-[#FAF8F3] disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer flex items-center gap-1"
+                    className="p-2 rounded-xl border border-white/10 bg-black/40 hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer flex items-center gap-1 text-[#FAF8F5]"
                   >
                     <span>Next</span>
                     <ChevronRight className="w-4 h-4" />
@@ -324,24 +322,24 @@ export default function AdminMediaPage() {
       {/* Smooth Animated Upload Modal with Square Previews */}
       <AnimatePresence>
         {showModal && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs overflow-y-auto">
+          <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-xs overflow-y-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="bg-white rounded-[32px] p-6 sm:p-10 max-w-lg w-full border border-[#E5DFD7] shadow-2xl space-y-6 my-8"
+              className="bg-[#171513] text-[#FAF8F5] rounded-[32px] p-6 sm:p-10 max-w-lg w-full border border-white/15 shadow-2xl space-y-6 my-8"
             >
-              <div className="flex justify-between items-start border-b border-[#E5DFD7] pb-4">
+              <div className="flex justify-between items-start border-b border-white/10 pb-4">
                 <div>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#C29B38] font-bold">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#e4c577] font-bold">
                     Cloudinary Batch Stream
                   </span>
-                  <h3 className="font-serif text-2xl text-[#1A1A1A] mt-1">Upload Multiple Media Assets</h3>
+                  <h3 className="font-serif text-2xl text-[#FAF8F5] mt-1" style={{ fontFamily: 'Georgia, serif' }}>Upload Multiple Media Assets</h3>
                 </div>
                 <button 
                   onClick={() => setShowModal(false)} 
-                  className="p-2 rounded-xl hover:bg-stone-100 cursor-pointer text-stone-400 hover:text-stone-800 transition-colors"
+                  className="p-2 rounded-xl hover:bg-white/10 cursor-pointer text-stone-400 hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -350,12 +348,12 @@ export default function AdminMediaPage() {
               <form onSubmit={handleUploadAll} className="space-y-6 text-xs font-mono">
                 <div className="space-y-4">
                   {/* Dropzone */}
-                  <label className="border-2 border-dashed border-[#E5DFD7] hover:border-[#C29B38] rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#FAF8F3]/60 group relative">
-                    <UploadCloud className="w-6 h-6 text-[#8C6415] mb-2 group-hover:scale-110 transition-transform" />
-                    <span className="text-xs uppercase tracking-wider text-[#1A1A1A] font-semibold text-center">
+                  <label className="border-2 border-dashed border-white/20 hover:border-[#e4c577]/60 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-black/40 group relative">
+                    <UploadCloud className="w-6 h-6 text-[#e4c577] mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="text-xs uppercase tracking-wider text-[#FAF8F5] font-semibold text-center">
                       Click to browse or drag & drop images
                     </span>
-                    <span className="text-[10px] text-[#867E74] mt-0.5">Select single or multiple files</span>
+                    <span className="text-[10px] text-[#A8A196] mt-0.5">Select single or multiple files</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -368,30 +366,30 @@ export default function AdminMediaPage() {
                   {/* Square Previews Grid Below */}
                   {selectedPreviews.length > 0 && (
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between text-[11px] text-[#867E74]">
+                      <div className="flex items-center justify-between text-[11px] text-[#A8A196]">
                         <span>Selected Queue ({selectedPreviews.length} files)</span>
                         <button
                           type="button"
                           onClick={() => setSelectedPreviews([])}
-                          className="text-rose-600 hover:underline cursor-pointer"
+                          className="text-rose-400 hover:underline cursor-pointer"
                         >
                           Clear All
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 max-h-48 overflow-y-auto p-2 bg-[#FAF8F3] rounded-2xl border border-[#E5DFD7]">
+                      <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 max-h-48 overflow-y-auto p-2 bg-black/50 rounded-2xl border border-white/10 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                         {selectedPreviews.map((item, idx) => (
-                          <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-[#E5DFD7] bg-white group shadow-xs">
+                          <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-stone-900 group shadow-xs">
                             <img src={item.previewUrl} alt="Preview" className="w-full h-full object-cover" />
                             <button
                               type="button"
                               onClick={() => handleRemovePreview(idx)}
-                              className="absolute top-1 right-1 bg-black/70 hover:bg-rose-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                              className="absolute top-1 right-1 bg-black/80 hover:bg-rose-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                               title="Remove"
                             >
                               <X className="w-3 h-3" />
                             </button>
-                            <div className="absolute bottom-0 inset-x-0 bg-black/60 text-[8px] text-white truncate px-1 py-0.5">
+                            <div className="absolute bottom-0 inset-x-0 bg-black/80 text-[8px] text-[#FAF8F5] truncate px-1 py-0.5">
                               {item.file.name}
                             </div>
                           </div>
@@ -409,18 +407,18 @@ export default function AdminMediaPage() {
                       setSelectedPreviews([]);
                     }}
                     disabled={uploading}
-                    className="px-4 py-2.5 border border-[#E5DFD7] rounded-xl text-xs font-mono uppercase tracking-wider text-[#1A1A1A] hover:bg-[#FAF8F3] transition cursor-pointer"
+                    className="px-4 py-2.5 border border-white/15 bg-white/5 rounded-xl text-xs font-mono uppercase tracking-wider text-[#FAF8F5] hover:bg-white/10 transition cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={selectedPreviews.length === 0 || uploading}
-                    className="px-5 py-2.5 bg-[#1A1A1A] text-white rounded-xl text-xs font-mono uppercase tracking-widest hover:bg-[#C29B38] transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 font-bold shadow-xs"
+                    className="px-6 py-2.5 bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] rounded-xl text-xs font-mono uppercase tracking-widest hover:brightness-110 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 font-bold shadow-md"
                   >
                     {uploading ? (
                       <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0A0908]" />
                         <span>Uploading Files...</span>
                       </>
                     ) : (

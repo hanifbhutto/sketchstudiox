@@ -159,14 +159,6 @@ const PORTFOLIO_ITEMS = [
     image: '/images/custom-gallery/man/man-smoking-cigarette-portrait.jpeg',
     dimensions: '16×20 in',
   },
-  {
-    id: 'm2',
-    title: 'Generational Bond',
-    category: 'Man',
-    medium: 'Graphite & Charcoal Hybrid',
-    image: '/images/home-frames/fr-6.jpeg',
-    dimensions: '24×36 in',
-  },
 
   // 6. Woman Portraits
   {
@@ -241,14 +233,6 @@ const PORTFOLIO_ITEMS = [
     category: 'Couple',
     medium: 'Fine Graphite & Charcoal on Arches Paper',
     image: '/images/custom-gallery/couple/titanic-jack-and-rose-sketch.jpeg',
-    dimensions: '20×30 in',
-  },
-  {
-    id: 'c2',
-    title: 'Heritage Bridal Radiance',
-    category: 'Couple',
-    medium: 'Vibrant Colored Pencil & Prismacolor',
-    image: '/images/home-frames/fr-3.jpeg',
     dimensions: '20×30 in',
   },
 ];

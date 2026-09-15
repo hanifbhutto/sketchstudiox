@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Loader2, Sparkles } from 'lucide-react';
 
 export default function ProfilePage() {
   const [patronEmail, setPatronEmail] = useState('');
@@ -72,82 +72,82 @@ export default function ProfilePage() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-8 sm:p-10 rounded-[28px] bg-white border border-[#E5DFD7] space-y-6 shadow-xs"
+      className="p-8 sm:p-10 rounded-[28px] bg-[#171513] border border-white/10 space-y-6 shadow-xl text-[#FAF8F5]"
     >
       <div className="space-y-1">
-        <h2 className="font-serif text-2xl text-[#1A1A1A]">Patron Credentials & Address</h2>
-        <p className="text-xs text-[#867E74]">Update your contact details and archival shipping destination.</p>
+        <h2 className="font-serif text-2xl text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>Patron Credentials & Address</h2>
+        <p className="text-xs text-[#A8A196]">Update your contact details and archival shipping destination.</p>
       </div>
 
       {successMsg && (
-        <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2 font-mono">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="p-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs flex items-center gap-2 font-mono">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       <form onSubmit={handleUpdateProfile} className="space-y-4">
         <div className="space-y-1">
-          <label className="text-[10px] uppercase font-mono text-[#867E74] block">Full Name</label>
+          <label className="text-[10px] uppercase font-mono text-[#A8A196] block">Full Name</label>
           <input
             type="text"
             value={profileData.name}
             onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38]"
+            className="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-xs text-[#FAF8F5] outline-none focus:border-[#e4c577] transition-colors"
           />
         </div>
 
         <div className="space-y-1">
-          <label className="text-[10px] uppercase font-mono text-[#867E74] block">Registered Email (Read-only)</label>
+          <label className="text-[10px] uppercase font-mono text-[#A8A196] block">Registered Email (Read-only)</label>
           <input
             type="email"
             disabled
             value={patronEmail}
-            className="w-full px-4 py-3 rounded-xl bg-stone-100 border border-[#E5DFD7] text-xs text-stone-500 font-mono cursor-not-allowed"
+            className="w-full px-4 py-3 rounded-xl bg-stone-900 border border-white/10 text-xs text-stone-400 font-mono cursor-not-allowed"
           />
         </div>
 
         <div className="space-y-1">
-          <label className="text-[10px] uppercase font-mono text-[#867E74] block">Phone Number</label>
+          <label className="text-[10px] uppercase font-mono text-[#A8A196] block">Phone Number</label>
           <input
             type="text"
             value={profileData.phone}
             onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
             placeholder="+44 20 7946 0912"
-            className="w-full px-4 py-3 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-stone-500 outline-none focus:border-[#C29B38]"
+            className="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-xs text-[#FAF8F5] outline-none focus:border-[#e4c577] transition-colors placeholder:text-white/30"
           />
         </div>
 
         <div className="space-y-1">
-          <label className="text-[10px] uppercase font-mono text-[#867E74] block">Address</label>
+          <label className="text-[10px] uppercase font-mono text-[#A8A196] block">Address</label>
           <textarea
             rows={2}
             value={profileData.address}
             onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
             placeholder="Street address, apartment, suite..."
-            className="w-full px-4 py-3 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38] resize-none"
+            className="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-xs text-[#FAF8F5] outline-none focus:border-[#e4c577] transition-colors resize-none placeholder:text-white/30"
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-[10px] uppercase font-mono text-[#867E74] block">City</label>
+            <label className="text-[10px] uppercase font-mono text-[#A8A196] block">City</label>
             <input
               type="text"
               value={profileData.city}
               onChange={(e) => setProfileData({ ...profileData, city: e.target.value })}
               placeholder="Enter City"
-              className="w-full px-4 py-3 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38]"
+              className="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-xs text-[#FAF8F5] outline-none focus:border-[#e4c577] transition-colors placeholder:text-white/30"
             />
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] uppercase font-mono text-[#867E74] block">Country</label>
+            <label className="text-[10px] uppercase font-mono text-[#A8A196] block">Country</label>
             <input
               type="text"
               value={profileData.country}
               onChange={(e) => setProfileData({ ...profileData, country: e.target.value })}
               placeholder="Enter Country"
-              className="w-full px-4 py-3 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38]"
+              className="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-xs text-[#FAF8F5] outline-none focus:border-[#e4c577] transition-colors placeholder:text-white/30"
             />
           </div>
         </div>
@@ -155,9 +155,16 @@ export default function ProfilePage() {
         <button
           type="submit"
           disabled={updating}
-          className="w-full py-4 rounded-xl bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all cursor-pointer mt-4"
+          className="w-full py-4 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-xs uppercase tracking-[0.2em] font-semibold hover:brightness-110 transition-all cursor-pointer mt-4 shadow-md flex items-center justify-center gap-2"
         >
-          {updating ? 'Saving Records...' : 'Save Profile Changes'}
+          {updating ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin text-[#0A0908]" />
+              <span>Saving Records...</span>
+            </>
+          ) : (
+            <span>Save Profile Changes</span>
+          )}
         </button>
       </form>
     </motion.div>

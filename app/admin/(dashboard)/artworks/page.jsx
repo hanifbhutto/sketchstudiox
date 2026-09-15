@@ -54,7 +54,7 @@ const DEFAULT_TOUCHED = {
   medium: false,
 };
 
-const ITEMS_PER_PAGE = 10; // Per page 10 items limit
+const ITEMS_PER_PAGE = 10;
 
 export default function AdminArtworksPage() {
   const [items, setItems] = useState([]);
@@ -185,7 +185,6 @@ export default function AdminArtworksPage() {
       setItems((prev) => prev.filter((art) => art.id !== deleteTarget.id));
       setDeleteTarget(null);
 
-      // Adjust page if items run out on current page
       if (currentItems.length === 1 && currentPage > 1) {
         setCurrentPage((prev) => prev - 1);
       }
@@ -226,7 +225,7 @@ export default function AdminArtworksPage() {
         setItems((prev) => prev.map((art) => (art.id === editingId ? savedItem : art)));
       } else {
         setItems((prev) => [savedItem, ...prev]);
-        setCurrentPage(1); // Go to first page on new publish
+        setCurrentPage(1);
       }
 
       setShowModal(false);
@@ -243,17 +242,17 @@ export default function AdminArtworksPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-[#FAF8F5]">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E5DFD7] pb-6 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-6 gap-4">
         <div className="space-y-1">
-          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] font-semibold flex items-center gap-1.5">
-            <Palette className="w-3.5 h-3.5 text-[#C29B38]" />
+          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#e4c577] font-semibold flex items-center gap-1.5">
+            <Palette className="w-3.5 h-3.5 text-[#e4c577]" />
             Permanent Master Collection
           </span>
-          <h1 className="font-serif text-3xl sm:text-4xl text-[#1A1A1A]">Gallery Originals Inventory</h1>
-          <p className="text-xs text-[#867E74] font-light">
+          <h1 className="font-serif text-3xl sm:text-4xl text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>Gallery Originals Inventory</h1>
+          <p className="text-xs text-[#A8A196] font-light">
             Registry of one-of-one authentic originals published dynamically across the live exhibition.
           </p>
         </div>
@@ -261,39 +260,39 @@ export default function AdminArtworksPage() {
         <div className="flex items-center gap-3">
           <button 
             onClick={fetchArtworks}
-            className="p-2.5 rounded-full border border-[#E5DFD7] text-[#867E74] hover:text-[#1A1A1A] hover:bg-[#FAF8F3] transition-colors cursor-pointer"
+            className="p-2.5 rounded-full border border-white/10 text-[#A8A196] hover:text-[#FAF8F5] hover:bg-white/5 transition-colors cursor-pointer"
             title="Reload live inventory"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#C29B38]' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#e4c577]' : ''}`} />
           </button>
 
           <button 
             onClick={handleOpenAdd} 
-            className="px-4 py-2.5 rounded-full bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
+            className="px-5 py-3 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-xs font-mono uppercase tracking-wider hover:brightness-110 transition-all flex items-center gap-2 cursor-pointer font-bold shadow-md"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 text-[#0A0908]" />
             <span>Publish New Original</span>
           </button>
         </div>
       </div>
 
       {/* Table Section */}
-      <div className="rounded-2xl bg-white border border-[#E5DFD7] shadow-xs overflow-hidden">
+      <div className="rounded-[32px] bg-[#171513] border border-white/10 shadow-xl overflow-hidden">
         {loading ? (
-          <div className="p-16 flex flex-col items-center justify-center gap-3 text-xs font-mono text-[#867E74]">
-            <Loader2 className="w-6 h-6 animate-spin text-[#C29B38]" />
+          <div className="p-16 flex flex-col items-center justify-center gap-3 text-xs font-mono text-[#A8A196]">
+            <Loader2 className="w-6 h-6 animate-spin text-[#e4c577]" />
             <span>Accessing gallery records...</span>
           </div>
         ) : items.length === 0 ? (
-          <div className="p-16 text-center text-xs font-mono text-[#867E74]">
+          <div className="p-16 text-center text-xs font-mono text-[#A8A196]">
             No artworks recorded in database. Click "Publish New Original" to add one.
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <table className="w-full text-left text-xs font-mono border-collapse">
                 <thead>
-                  <tr className="border-b border-[#E5DFD7] bg-[#FAF8F3] text-[10px] text-[#867E74] uppercase tracking-wider">
+                  <tr className="border-b border-white/10 bg-black/30 text-[10px] text-[#A8A196] uppercase tracking-wider">
                     <th className="p-4 font-semibold">Asset</th>
                     <th className="p-4 font-semibold">Catalog Ref</th>
                     <th className="p-4 font-semibold">Title & Category</th>
@@ -304,60 +303,60 @@ export default function AdminArtworksPage() {
                     <th className="p-4 text-right font-semibold">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-stone-100">
+                <tbody className="divide-y divide-white/5">
                   {currentItems.map((art) => (
-                    <tr key={art.id} className="hover:bg-[#FAF8F3]/50 transition-colors">
+                    <tr key={art.id} className="hover:bg-white/[0.02] transition-colors">
                       
                       <td className="p-4">
-                        <div className="w-12 h-14 rounded-lg overflow-hidden bg-stone-100 border border-stone-200 shrink-0 flex items-center justify-center">
-  {art.media?.secureUrl || art.image ? (
-    <img 
-      src={art.media?.secureUrl || art.image} 
-      alt={art.title} 
-      className="w-full h-full object-cover" 
-    />
-  ) : (
-    <div className="flex flex-col items-center justify-center text-stone-400 gap-0.5">
-      <Palette className="w-4 h-4 text-stone-300" />
-      <span className="text-[8px] font-mono tracking-tighter uppercase">No Image</span>
-    </div>
-  )}
-</div>
+                        <div className="w-12 h-14 rounded-xl overflow-hidden bg-stone-900 border border-white/10 shrink-0 flex items-center justify-center relative">
+                          {art.media?.secureUrl || art.image ? (
+                            <img 
+                              src={art.media?.secureUrl || art.image} 
+                              alt={art.title} 
+                              className="w-full h-full object-cover" 
+                            />
+                          ) : (
+                            <div className="flex flex-col items-center justify-center text-stone-500 gap-0.5">
+                              <Palette className="w-4 h-4 text-stone-500" />
+                              <span className="text-[8px] font-mono tracking-tighter uppercase">No Image</span>
+                            </div>
+                          )}
+                        </div>
                       </td>
 
-                      <td className="p-4 font-bold text-[#C29B38] uppercase whitespace-nowrap">
+                      <td className="p-4 font-bold text-[#e4c577] uppercase whitespace-nowrap">
                         {art.id}
                       </td>
 
                       <td className="p-4">
-                        <span className="font-serif text-sm font-medium text-[#1A1A1A] block">
+                        <span className="font-serif text-sm font-medium text-[#FAF8F5] block" style={{ fontFamily: 'Georgia, serif' }}>
                           {art.title}
                         </span>
-                        <span className="text-[10px] text-[#867E74] block font-mono">
+                        <span className="text-[10px] text-[#A8A196] block font-mono">
                           {art.category} &bull; Certified {art.year || '2026'}
                         </span>
                       </td>
 
-                      <td className="p-4 text-[#686057]">
-                        <span className="text-[#1A1A1A] block">{art.medium}</span>
-                        <span className="text-[10px] text-[#867E74]">{art.substrate}</span>
+                      <td className="p-4 text-[#A8A196]">
+                        <span className="text-[#FAF8F5] block">{art.medium}</span>
+                        <span className="text-[10px] text-[#A8A196]">{art.substrate}</span>
                       </td>
 
-                      <td className="p-4 text-[#1A1A1A] whitespace-nowrap">
+                      <td className="p-4 text-[#FAF8F5] whitespace-nowrap">
                         {art.dimensions}
                       </td>
 
-                      <td className="p-4 font-bold text-[#1A1A1A] whitespace-nowrap">
-                        ${art.price} <span className="text-[10px] font-normal text-[#867E74]">USD</span>
+                      <td className="p-4 font-bold text-[#e4c577] whitespace-nowrap">
+                        ${art.price} <span className="text-[10px] font-normal text-[#A8A196]">USD</span>
                       </td>
 
                       <td className="p-4 whitespace-nowrap">
                         <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-mono border ${
                           art.status === 'Available'
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold'
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40 font-semibold'
                             : art.status === 'Reserved'
-                            ? 'bg-amber-50 text-amber-700 border-amber-200 font-semibold'
-                            : 'bg-stone-100 text-stone-500 border-stone-200'
+                            ? 'bg-amber-500/20 text-amber-300 border-amber-400/40 font-semibold'
+                            : 'bg-white/10 text-white/50 border-white/10'
                         }`}>
                           {art.status}
                         </span>
@@ -366,7 +365,7 @@ export default function AdminArtworksPage() {
                       <td className="p-4 text-right whitespace-nowrap space-x-1.5">
                         <button
                           onClick={() => handleToggleStatus(art.id, art.status)}
-                          className="px-2.5 py-1.5 rounded-lg border border-[#E5DFD7] hover:border-[#C29B38] hover:bg-[#FAF8F3] text-[10px] text-[#1A1A1A] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-lg border border-white/10 hover:border-[#e4c577] hover:bg-white/5 text-[10px] text-[#FAF8F5] font-mono uppercase tracking-wider transition-colors cursor-pointer"
                           title="Cycle state"
                         >
                           Cycle
@@ -374,7 +373,7 @@ export default function AdminArtworksPage() {
 
                         <button
                           onClick={() => handleOpenEdit(art)}
-                          className="p-1.5 rounded-lg border border-[#E5DFD7] text-stone-600 hover:text-[#C29B38] hover:border-[#C29B38] hover:bg-[#FAF8F3] transition-colors cursor-pointer inline-flex items-center"
+                          className="p-1.5 rounded-lg border border-white/10 text-stone-300 hover:text-[#e4c577] hover:border-[#e4c577] hover:bg-white/5 transition-colors cursor-pointer inline-flex items-center"
                           title="Edit Masterpiece Details"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
@@ -382,7 +381,7 @@ export default function AdminArtworksPage() {
 
                         <button
                           onClick={() => handleTriggerDelete(art)}
-                          className="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer inline-flex items-center"
+                          className="p-1.5 rounded-lg text-stone-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer inline-flex items-center"
                           title="Delete Artwork"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -397,29 +396,29 @@ export default function AdminArtworksPage() {
 
             {/* Pagination Footer Controls */}
             {items.length > ITEMS_PER_PAGE && (
-              <div className="flex items-center justify-between px-6 py-4 border-t border-[#E5DFD7] bg-[#FAF8F3]/60 text-xs font-mono text-[#867E74]">
+              <div className="flex items-center justify-between px-6 py-4 border-t border-white/10 bg-black/30 text-xs font-mono text-[#A8A196]">
                 <span>
-                  Showing <span className="font-semibold text-[#1A1A1A]">{startIndex + 1}</span> to <span className="font-semibold text-[#1A1A1A]">{Math.min(startIndex + ITEMS_PER_PAGE, items.length)}</span> of <span className="font-semibold text-[#1A1A1A]">{items.length}</span> entries
+                  Showing <span className="font-semibold text-[#FAF8F5]">{startIndex + 1}</span> to <span className="font-semibold text-[#FAF8F5]">{Math.min(startIndex + ITEMS_PER_PAGE, items.length)}</span> of <span className="font-semibold text-[#FAF8F5]">{items.length}</span> entries
                 </span>
 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg border border-[#E5DFD7] bg-white text-[#1A1A1A] hover:bg-[#FAF8F3] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    className="p-2 rounded-xl border border-white/10 bg-[#171513] text-[#FAF8F5] hover:bg-white/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1 shadow-2xs"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span>Prev</span>
                   </button>
 
-                  <span className="px-3 py-1 font-semibold text-[#1A1A1A]">
+                  <span className="px-3 py-1 font-semibold text-[#FAF8F5]">
                     {currentPage} / {totalPages}
                   </span>
 
                   <button
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg border border-[#E5DFD7] bg-white text-[#1A1A1A] hover:bg-[#FAF8F3] transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                    className="p-2 rounded-xl border border-white/10 bg-[#171513] text-[#FAF8F5] hover:bg-white/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1 shadow-2xs"
                   >
                     <span>Next</span>
                     <ChevronRight className="w-4 h-4" />
@@ -433,24 +432,24 @@ export default function AdminArtworksPage() {
 
       {/* Shared Publish / Edit Modal with Media Picker Integration */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white rounded-[32px] p-6 sm:p-10 max-w-2xl w-full border border-[#E5DFD7] shadow-2xl space-y-6 my-8">
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-[#171513] text-[#FAF8F5] rounded-[32px] p-6 sm:p-10 max-w-2xl w-full border border-white/15 shadow-2xl space-y-6 my-8">
             
-            <div className="flex justify-between items-start border-b border-[#E5DFD7] pb-4">
+            <div className="flex justify-between items-start border-b border-white/10 pb-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#C29B38] font-bold">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#e4c577] font-bold">
                     {editingId ? `Edit Record (${editingId})` : 'Curatorial Ingestion'}
                   </span>
-                  <span className="text-[10px] font-mono text-[#867E74]">&bull; Live Database Sync</span>
+                  <span className="text-[10px] font-mono text-[#A8A196]">&bull; Live Database Sync</span>
                 </div>
-                <h3 className="font-serif text-2xl text-[#1A1A1A] mt-1">
+                <h3 className="font-serif text-2xl text-[#FAF8F5] mt-1" style={{ fontFamily: 'Georgia, serif' }}>
                   {editingId ? 'Modify Master Original' : 'Publish Master Original'}
                 </h3>
               </div>
               <button 
                 onClick={() => setShowModal(false)} 
-                className="p-2 rounded-xl hover:bg-stone-100 cursor-pointer text-stone-400 hover:text-stone-800 transition-colors"
+                className="p-2 rounded-xl hover:bg-white/10 cursor-pointer text-stone-400 hover:text-white transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -460,7 +459,7 @@ export default function AdminArtworksPage() {
               
               {/* Exhibition Asset Selector via Media Vault */}
               <div className="space-y-1.5">
-                <label className="text-[#1A1A1A] uppercase tracking-wider text-[11px] block font-semibold">
+                <label className="text-[#FAF8F5] uppercase tracking-wider text-[11px] block font-semibold">
                   Exhibition Asset Vault
                 </label>
                 
@@ -468,21 +467,21 @@ export default function AdminArtworksPage() {
                   <button
                     type="button"
                     onClick={() => setShowMediaPicker(true)}
-                    className="w-full border-2 border-dashed border-[#E5DFD7] hover:border-[#C29B38] rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#FAF8F3]/60 group"
+                    className="w-full border-2 border-dashed border-white/20 hover:border-[#e4c577]/60 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-black/40 group"
                   >
-                    <UploadCloud className="w-6 h-6 text-[#8C6415] mb-2 group-hover:scale-110 transition-transform" />
-                    <span className="text-xs uppercase tracking-wider text-[#1A1A1A] font-semibold">
+                    <UploadCloud className="w-6 h-6 text-[#e4c577] mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="text-xs uppercase tracking-wider text-[#FAF8F5] font-semibold">
                       Select Asset from Media Vault
                     </span>
-                    <span className="text-[10px] text-[#867E74] mt-0.5">Browse cloud repository & direct upload</span>
+                    <span className="text-[10px] text-[#A8A196] mt-0.5">Browse cloud repository & direct upload</span>
                   </button>
                 ) : (
-                  <div className="relative rounded-2xl overflow-hidden border border-[#E5DFD7] bg-[#FAF8F3] p-2 flex items-center justify-between">
+                  <div className="relative rounded-2xl overflow-hidden border border-white/15 bg-black/50 p-2.5 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <img src={imagePreview} alt="Preview" className="w-14 h-14 object-cover rounded-xl" />
                       <div>
-                        <span className="text-[#1A1A1A] font-bold block">Asset Linked</span>
-                        <span className="text-[10px] text-emerald-700 flex items-center gap-1">
+                        <span className="text-[#FAF8F5] font-bold block">Asset Linked</span>
+                        <span className="text-[10px] text-emerald-400 flex items-center gap-1">
                           <Check className="w-3 h-3" /> Ready for exhibition
                         </span>
                       </div>
@@ -490,7 +489,7 @@ export default function AdminArtworksPage() {
                     <button 
                       type="button" 
                       onClick={() => setShowMediaPicker(true)}
-                      className="px-3 py-1.5 rounded-lg text-[#C29B38] hover:bg-[#C29B38]/10 text-[10px] cursor-pointer font-bold uppercase"
+                      className="px-3 py-1.5 rounded-lg text-[#e4c577] hover:bg-[#e4c577]/15 text-[10px] cursor-pointer font-bold uppercase transition-colors"
                     >
                       Change Asset
                     </button>
@@ -504,9 +503,9 @@ export default function AdminArtworksPage() {
                 {/* Artwork Title with Validation */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-[#1A1A1A] block font-medium">Artwork Title *</label>
+                    <label className="text-[#FAF8F5] block font-medium">Artwork Title *</label>
                     {touched.title && (
-                      <span className={`text-[10px] ${isTitleValid ? 'text-emerald-700' : 'text-rose-600'}`}>
+                      <span className={`text-[10px] ${isTitleValid ? 'text-emerald-400' : 'text-rose-400'}`}>
                         {isTitleValid ? 'Valid' : 'Min 3 chars required'}
                       </span>
                     )}
@@ -519,20 +518,20 @@ export default function AdminArtworksPage() {
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       onBlur={() => handleBlur('title')}
-                      className={`w-full px-3.5 py-2.5 pr-9 rounded-xl bg-[#FAF8F3] border outline-none transition-all duration-200 ${
+                      className={`w-full px-3.5 py-2.5 pr-9 rounded-xl bg-black/50 border outline-none transition-all duration-200 text-[#FAF8F5] placeholder-white/30 ${
                         touched.title && !isTitleValid
-                          ? 'border-rose-400 focus:border-rose-600 focus:ring-1 focus:ring-rose-200'
+                          ? 'border-rose-400 focus:border-rose-400 focus:ring-1 focus:ring-rose-400/30'
                           : touched.title && isTitleValid
-                          ? 'border-emerald-500/70 focus:border-emerald-600'
-                          : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                          ? 'border-emerald-400/70 focus:border-emerald-400'
+                          : 'border-white/10 focus:border-[#e4c577]'
                       }`}
                     />
                     {touched.title && (
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         {isTitleValid ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                         ) : (
-                          <AlertCircle className="w-4 h-4 text-rose-500" />
+                          <AlertCircle className="w-4 h-4 text-rose-400" />
                         )}
                       </div>
                     )}
@@ -541,14 +540,14 @@ export default function AdminArtworksPage() {
 
                 {/* Collection / Category */}
                 <div className="space-y-1.5">
-                  <label className="text-[#1A1A1A] block font-medium">Collection / Category</label>
+                  <label className="text-[#FAF8F5] block font-medium">Collection / Category</label>
                   <select 
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
                   >
                     {CATEGORIES.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat} value={cat} className="bg-[#171513] text-[#FAF8F5]">{cat}</option>
                     ))}
                   </select>
                 </div>
@@ -560,9 +559,9 @@ export default function AdminArtworksPage() {
                 {/* Price with Validation */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-[#1A1A1A] block font-medium">Price ($ USD) *</label>
+                    <label className="text-[#FAF8F5] block font-medium">Price ($ USD) *</label>
                     {touched.price && (
-                      <span className={`text-[10px] ${isPriceValid ? 'text-emerald-700' : 'text-rose-600'}`}>
+                      <span className={`text-[10px] ${isPriceValid ? 'text-emerald-400' : 'text-rose-400'}`}>
                         {isPriceValid ? 'Valid' : 'Must be > 0'}
                       </span>
                     )}
@@ -575,20 +574,20 @@ export default function AdminArtworksPage() {
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                       onBlur={() => handleBlur('price')}
-                      className={`w-full px-3.5 py-2.5 pr-9 rounded-xl bg-[#FAF8F3] border outline-none transition-all duration-200 ${
+                      className={`w-full px-3.5 py-2.5 pr-9 rounded-xl bg-black/50 border outline-none transition-all duration-200 text-[#FAF8F5] placeholder-white/30 ${
                         touched.price && !isPriceValid
-                          ? 'border-rose-400 focus:border-rose-600 focus:ring-1 focus:ring-rose-200'
+                          ? 'border-rose-400 focus:border-rose-400 focus:ring-1 focus:ring-rose-400/30'
                           : touched.price && isPriceValid
-                          ? 'border-emerald-500/70 focus:border-emerald-600'
-                          : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                          ? 'border-emerald-400/70 focus:border-emerald-400'
+                          : 'border-white/10 focus:border-[#e4c577]'
                       }`}
                     />
                     {touched.price && (
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         {isPriceValid ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                         ) : (
-                          <AlertCircle className="w-4 h-4 text-rose-500" />
+                          <AlertCircle className="w-4 h-4 text-rose-400" />
                         )}
                       </div>
                     )}
@@ -598,9 +597,9 @@ export default function AdminArtworksPage() {
                 {/* Dimensions with Validation */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-[#1A1A1A] block font-medium">Dimensions *</label>
+                    <label className="text-[#FAF8F5] block font-medium">Dimensions *</label>
                     {touched.dimensions && (
-                      <span className={`text-[10px] ${isDimensionsValid ? 'text-emerald-700' : 'text-rose-600'}`}>
+                      <span className={`text-[10px] ${isDimensionsValid ? 'text-emerald-400' : 'text-rose-400'}`}>
                         {isDimensionsValid ? 'Valid' : 'Required'}
                       </span>
                     )}
@@ -613,20 +612,20 @@ export default function AdminArtworksPage() {
                       value={formData.dimensions}
                       onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
                       onBlur={() => handleBlur('dimensions')}
-                      className={`w-full px-3.5 py-2.5 pr-9 rounded-xl bg-[#FAF8F3] border outline-none transition-all duration-200 ${
+                      className={`w-full px-3.5 py-2.5 pr-9 rounded-xl bg-black/50 border outline-none transition-all duration-200 text-[#FAF8F5] placeholder-white/30 ${
                         touched.dimensions && !isDimensionsValid
-                          ? 'border-rose-400 focus:border-rose-600 focus:ring-1 focus:ring-rose-200'
+                          ? 'border-rose-400 focus:border-rose-400 focus:ring-1 focus:ring-rose-400/30'
                           : touched.dimensions && isDimensionsValid
-                          ? 'border-emerald-500/70 focus:border-emerald-600'
-                          : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                          ? 'border-emerald-400/70 focus:border-emerald-400'
+                          : 'border-white/10 focus:border-[#e4c577]'
                       }`}
                     />
                     {touched.dimensions && (
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         {isDimensionsValid ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                         ) : (
-                          <AlertCircle className="w-4 h-4 text-rose-500" />
+                          <AlertCircle className="w-4 h-4 text-rose-400" />
                         )}
                       </div>
                     )}
@@ -635,15 +634,15 @@ export default function AdminArtworksPage() {
 
                 {/* Current State */}
                 <div className="space-y-1.5">
-                  <label className="text-[#1A1A1A] block font-medium">Current State</label>
+                  <label className="text-[#FAF8F5] block font-medium">Current State</label>
                   <select 
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
                   >
-                    <option value="Available">Available for Sale</option>
-                    <option value="Reserved">Reserved by Patron</option>
-                    <option value="Archived">Archived / Sold</option>
+                    <option value="Available" className="bg-[#171513] text-[#FAF8F5]">Available for Sale</option>
+                    <option value="Reserved" className="bg-[#171513] text-[#FAF8F5]">Reserved by Patron</option>
+                    <option value="Archived" className="bg-[#171513] text-[#FAF8F5]">Archived / Sold</option>
                   </select>
                 </div>
               </div>
@@ -654,9 +653,9 @@ export default function AdminArtworksPage() {
                 {/* Medium with Validation */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-[#1A1A1A] block font-medium">Medium Used *</label>
+                    <label className="text-[#FAF8F5] block font-medium">Medium Used *</label>
                     {touched.medium && (
-                      <span className={`text-[10px] ${isMediumValid ? 'text-emerald-700' : 'text-rose-600'}`}>
+                      <span className={`text-[10px] ${isMediumValid ? 'text-emerald-400' : 'text-rose-400'}`}>
                         {isMediumValid ? 'Valid' : 'Required'}
                       </span>
                     )}
@@ -669,20 +668,20 @@ export default function AdminArtworksPage() {
                       value={formData.medium}
                       onChange={(e) => setFormData({ ...formData, medium: e.target.value })}
                       onBlur={() => handleBlur('medium')}
-                      className={`w-full px-3.5 py-2.5 pr-9 rounded-xl bg-[#FAF8F3] border outline-none transition-all duration-200 ${
+                      className={`w-full px-3.5 py-2.5 pr-9 rounded-xl bg-black/50 border outline-none transition-all duration-200 text-[#FAF8F5] placeholder-white/30 ${
                         touched.medium && !isMediumValid
-                          ? 'border-rose-400 focus:border-rose-600 focus:ring-1 focus:ring-rose-200'
+                          ? 'border-rose-400 focus:border-rose-400 focus:ring-1 focus:ring-rose-400/30'
                           : touched.medium && isMediumValid
-                          ? 'border-emerald-500/70 focus:border-emerald-600'
-                          : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                          ? 'border-emerald-400/70 focus:border-emerald-400'
+                          : 'border-white/10 focus:border-[#e4c577]'
                       }`}
                     />
                     {touched.medium && (
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         {isMediumValid ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                         ) : (
-                          <AlertCircle className="w-4 h-4 text-rose-500" />
+                          <AlertCircle className="w-4 h-4 text-rose-400" />
                         )}
                       </div>
                     )}
@@ -691,14 +690,14 @@ export default function AdminArtworksPage() {
 
                 {/* Paper Substrate */}
                 <div className="space-y-1.5">
-                  <label className="text-[#1A1A1A] block font-medium">Paper Substrate</label>
+                  <label className="text-[#FAF8F5] block font-medium">Paper Substrate</label>
                   <select 
                     value={formData.substrate}
                     onChange={(e) => setFormData({ ...formData, substrate: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
                   >
                     {SUBSTRATES.map(sub => (
-                      <option key={sub} value={sub}>{sub}</option>
+                      <option key={sub} value={sub} className="bg-[#171513] text-[#FAF8F5]">{sub}</option>
                     ))}
                   </select>
                 </div>
@@ -706,24 +705,24 @@ export default function AdminArtworksPage() {
 
               {/* Description */}
               <div className="space-y-1.5">
-                <label className="text-[#1A1A1A] block font-medium">Description & Technique Notes</label>
+                <label className="text-[#FAF8F5] block font-medium">Description & Technique Notes</label>
                 <textarea 
                   rows={2}
                   placeholder="Atmospheric tonal gradations created with raw vine charcoal and dry brush dusting..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38] placeholder:text-stone-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5] placeholder-white/30 resize-none"
                 />
               </div>
 
               {/* Verification Switches */}
-              <div className="pt-2 border-t border-[#E5DFD7] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#686057]">
+              <div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#A8A196]">
                 <label className="flex items-center gap-2 cursor-pointer select-none">
                   <input 
                     type="checkbox" 
                     checked={formData.signed} 
                     onChange={(e) => setFormData({ ...formData, signed: e.target.checked })}
-                    className="rounded accent-[#C29B38] w-4 h-4" 
+                    className="rounded accent-[#e4c577] w-4 h-4" 
                   />
                   <span>Hand-signed + Certificate Included</span>
                 </label>
@@ -733,11 +732,11 @@ export default function AdminArtworksPage() {
               <button 
                 type="submit" 
                 disabled={submitting || !isFormValid}
-                className="w-full py-4 rounded-2xl bg-[#1A1A1A] text-[#FAF8F5] uppercase tracking-[0.2em] hover:bg-[#C29B38] transition-colors cursor-pointer font-bold shadow-md text-xs flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#1A1A1A]"
+                className="w-full py-4 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] uppercase tracking-[0.2em] hover:brightness-110 transition-all cursor-pointer font-bold shadow-lg text-xs flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:brightness-100"
               >
                 {submitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#0A0908]" />
                     <span>Syncing with Database...</span>
                   </>
                 ) : (

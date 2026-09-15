@@ -2,14 +2,12 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Sparkles, ShieldCheck, MapPin, Mail, ArrowUpRight, Loader2 } from 'lucide-react';
+import { Sparkles, MapPin, Mail, Phone, User, Loader2 } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [studioInfo, setStudioInfo] = useState({
-    studioEmail: 'info@sketchstudiox.com',
-    companyName: 'SKETCH X STUDIO LTD',
-    companyNumber: '17429707',
+    studioEmail: 'pencilxstudio@gmail.com',
     acceptingCommissions: true,
     logoUrl: '',
   });
@@ -24,9 +22,7 @@ export default function Footer() {
         const data = await res.json();
         if (data && !data.error) {
           setStudioInfo({
-            studioEmail: data.studioEmail || 'info@sketchstudiox.com',
-            companyName: data.companyName || 'SKETCH X STUDIO LTD',
-            companyNumber: data.companyNumber || '17429707',
+            studioEmail: data.studioEmail || 'pencilxstudio@gmail.com',
             acceptingCommissions: data.acceptingCommissions ?? true,
             logoUrl: data.logoUrl || '',
           });
@@ -58,7 +54,7 @@ export default function Footer() {
                   <div className="w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center animate-pulse">
                     <Loader2 className="w-3.5 h-3.5 animate-spin text-[#e4c577]" />
                   </div>
-                  <span className="font-serif text-xl tracking-[0.22em] uppercase font-normal text-white/40 animate-pulse">
+                  <span className="font-serif text-xl tracking-[0.22em] uppercase font-normal text-white/40 animate-pulse" style={{ fontFamily: 'Georgia, serif' }}>
                     Loading Studio...
                   </span>
                 </div>
@@ -67,7 +63,7 @@ export default function Footer() {
                   <img src={studioInfo.logoUrl} alt="Studio Logo" className="h-full w-auto object-contain" />
                 </div>
               ) : (
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#e4c577] to-[#cfae59] flex items-center justify-center font-serif text-sm text-[#0A0908] font-bold group-hover:scale-105 transition-transform shadow-[0_2px_12px_rgba(228,197,119,0.35)]">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#e4c577] to-[#cfae59] flex items-center justify-center font-serif text-sm text-[#0A0908] font-bold group-hover:scale-105 transition-transform shadow-[0_2px_12px_rgba(228,197,119,0.35)]" style={{ fontFamily: 'Georgia, serif' }}>
                   X
                 </div>
               )}
@@ -79,20 +75,13 @@ export default function Footer() {
 
           {/* Live Studio Status & Official Direct Mail with Loader */}
           <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
-            {loadingFooter ? (
-              <div className="px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-white/40 animate-pulse flex items-center gap-2">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#e4c577]" />
-                <span>Connecting to Studio Desk...</span>
-              </div>
-            ) : (
-              <a 
-                href={`mailto:${studioInfo.studioEmail}`}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#171513] border border-white/10 hover:border-[#e4c577]/50 text-[#FAF8F5] hover:text-[#e4c577] transition-colors shadow-inner backdrop-blur-md"
-              >
-                <Mail className="w-3.5 h-3.5 text-[#e4c577]" />
-                <span>{studioInfo.studioEmail}</span>
-              </a>
-            )}
+            <a 
+              href="mailto:pencilxstudio@gmail.com"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#171513] border border-white/10 hover:border-[#e4c577]/50 text-[#FAF8F5] hover:text-[#e4c577] transition-colors shadow-inner backdrop-blur-md"
+            >
+              <Mail className="w-3.5 h-3.5 text-[#e4c577]" />
+              <span>pencilxstudio@gmail.com</span>
+            </a>
 
             <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#171513] border border-[#e4c577]/30 text-[#FAF8F5] shadow-inner backdrop-blur-md">
               <span className="relative flex h-2 w-2">
@@ -177,27 +166,26 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 4: Statutory Registration Card with Loader */}
+          {/* Column 4: Proprietor & Address Details */}
           <div className="col-span-2 md:col-span-1 space-y-3.5 bg-[#171513] p-5 rounded-2xl border border-[#e4c577]/30 backdrop-blur-md shadow-inner">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#FAF8F5]">
-              <ShieldCheck className="w-4 h-4 text-[#e4c577]" />
-              <span className="font-mono tracking-wider text-[11px] uppercase">UK Incorporation</span>
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#FAF8F5] border-b border-white/10 pb-2">
+              <User className="w-4 h-4 text-[#e4c577]" />
+              <span className="font-mono tracking-wider text-[11px] uppercase">Muhammad Arslan</span>
             </div>
-            <p className="text-[11px] text-[#A8A196] font-light leading-relaxed">
-              {loadingFooter ? 'Loading corporate entity...' : `${studioInfo.companyName} is a registered entity in England & Wales.`}
-            </p>
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-[#A8A196]">
-              <span>Company No.</span>
-              {loadingFooter ? (
-                <span className="animate-pulse text-white/40">Loading...</span>
-              ) : (
-                <span className="font-bold text-[#e4c577]">{studioInfo.companyNumber}</span>
-              )}
-            </div>
-            <div className="flex items-center justify-between text-[11px] font-mono text-[#A8A196]">
-              <span>Currency</span>
-              <span className="font-semibold text-[#FAF8F5]">USD ($) Base</span>
-            </div>
+            <ul className="space-y-2 font-light text-[#A8A196] text-[11px]">
+              <li className="flex items-center gap-2">
+                <Mail className="w-3 h-3 text-[#e4c577] shrink-0" />
+                <a href="mailto:pencilxstudio@gmail.com" className="hover:text-white transition-colors truncate">pencilxstudio@gmail.com</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone className="w-3 h-3 text-[#e4c577] shrink-0" />
+                <span>03433628507</span>
+              </li>
+              <li className="flex items-start gap-2 pt-1">
+                <MapPin className="w-3 h-3 text-[#e4c577] shrink-0 mt-0.5" />
+                <span>Street 6, Haroonabad, 62300, Pakistan</span>
+              </li>
+            </ul>
           </div>
 
         </div>
@@ -206,11 +194,7 @@ export default function Footer() {
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#A8A196] gap-4 font-light">
           
           <div className="flex flex-wrap items-center gap-2">
-            {loadingFooter ? (
-              <span className="animate-pulse">Loading corporate disclosures...</span>
-            ) : (
-              <span>&copy; {currentYear} {studioInfo.companyName} (Company No: {studioInfo.companyNumber}). All rights reserved.</span>
-            )}
+            <span>&copy; {currentYear} Sketch Studio X. All rights reserved.</span>
             <span className="hidden sm:inline text-white/20">&bull;</span>
             <span className="text-[#A8A196] font-mono">sketchstudiox.com</span>
           </div>
