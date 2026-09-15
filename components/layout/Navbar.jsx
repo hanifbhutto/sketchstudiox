@@ -9,7 +9,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [studioLogo, setStudioLogo] = useState('');
-  const [logoLoading, setLogoLoading] = useState(true); // <-- Logo loading state added
+  const [logoLoading, setLogoLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { setIsCartOpen, totalItems } = useCart();
 
@@ -19,17 +19,15 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Real-time Authentication State Checker (Supports cross-tab & same-tab login)
+  // Real-time Authentication State Checker
   useEffect(() => {
     const checkAuth = () => {
       const email = localStorage.getItem('patronEmail');
       setIsLoggedIn(!!email);
     };
 
-    // Initial check on mount
     checkAuth();
 
-    // Listen to custom login/logout events and standard storage events
     window.addEventListener('storage', checkAuth);
     window.addEventListener('auth-changed', checkAuth);
     window.addEventListener('focus', checkAuth);
@@ -41,7 +39,7 @@ export default function Navbar() {
     };
   }, []);
 
-  // Fetch studio settings to check if custom logo is uploaded with loader handling
+  // Fetch studio settings to check if custom logo is uploaded
   useEffect(() => {
     async function fetchLogo() {
       try {
@@ -66,9 +64,7 @@ export default function Navbar() {
     localStorage.removeItem('userId');
     setIsLoggedIn(false);
     
-    // Broadcast auth change event to all listeners
     window.dispatchEvent(new Event('auth-changed'));
-    
     window.location.href = '/';
   };
 
@@ -87,34 +83,24 @@ export default function Navbar() {
         <div
           className={`pointer-events-auto rounded-full border transition-all duration-500 px-6 sm:px-8 py-3.5 flex items-center justify-between ${
             scrolled
-              ? 'bg-[#FAF8F5]/90 backdrop-blur-xl border-[#E5DFD7] shadow-[0_8px_30px_rgb(0,0,0,0.06)]'
-              : 'bg-[#FAF8F5]/60 backdrop-blur-md border-black/5 shadow-xs'
+              ? 'bg-[#0A0908]/90 backdrop-blur-xl border-[#e4c577]/20 shadow-[0_8px_30px_rgb(0,0,0,0.5)]'
+              : 'bg-[#0A0908]/70 backdrop-blur-md border-white/10 shadow-sm'
           }`}
         >
-          {/* Brand Identity with Logo Loader */}
+          {/* Brand Identity with Logo Loader (Text removed) */}
           <Link href="/" className="flex items-center gap-3 group select-none">
             {logoLoading ? (
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-stone-200/70 flex items-center justify-center animate-pulse">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C29B38]" />
-                </div>
-                <span className="font-serif text-base sm:text-lg tracking-[0.22em] uppercase font-normal text-[#1A1A1A]/50 animate-pulse">
-                  Sketch Studio X
-                </span>
+              <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center animate-pulse">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#e4c577]" />
               </div>
             ) : studioLogo ? (
               <div className="h-9 max-w-[150px] overflow-hidden flex items-center group-hover:scale-105 transition-transform">
                 <img src={studioLogo} alt="Sketch Studio X" className="h-full w-auto object-contain" />
               </div>
             ) : (
-              <>
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#C29B38] to-[#E5BF65] flex items-center justify-center font-serif text-sm text-[#0A0908] font-bold group-hover:scale-105 transition-transform shadow-[0_2px_12px_rgba(212,163,72,0.35)]">
-                  X
-                </div>
-                <span className="font-serif text-base sm:text-lg tracking-[0.22em] uppercase font-normal text-[#1A1A1A] group-hover:text-[#C29B38] transition-colors duration-300">
-                  Sketch Studio X
-                </span>
-              </>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#e4c577] to-[#cfae59] flex items-center justify-center font-serif text-sm text-[#0A0908] font-bold group-hover:scale-105 transition-transform shadow-[0_2px_12px_rgba(228,197,119,0.35)]">
+                X
+              </div>
             )}
           </Link>
 
@@ -126,15 +112,15 @@ export default function Navbar() {
                 href={link.href}
                 className={`relative py-1 group transition-colors duration-300 ${
                   link.isHighlight
-                    ? 'text-[#C29B38] font-semibold flex items-center gap-1.5'
-                    : 'text-[#1A1A1A]/75 hover:text-[#1A1A1A]'
+                    ? 'text-[#e4c577] font-semibold flex items-center gap-1.5'
+                    : 'text-[#FAF8F5]/75 hover:text-[#FAF8F5]'
                 }`}
               >
-                {link.isHighlight && <Sparkles className="w-3 h-3 text-[#C29B38]" />}
+                {link.isHighlight && <Sparkles className="w-3 h-3 text-[#e4c577]" />}
                 {link.name}
                 <span
                   className={`absolute bottom-0 left-0 w-0 h-[1.5px] transition-all duration-300 ease-out group-hover:w-full ${
-                    link.isHighlight ? 'bg-[#C29B38]' : 'bg-[#1A1A1A]'
+                    link.isHighlight ? 'bg-[#e4c577]' : 'bg-[#FAF8F5]'
                   }`}
                 />
               </Link>
@@ -142,23 +128,23 @@ export default function Navbar() {
           </nav>
 
           {/* Right Action Controls */}
-          <div className="flex items-center space-x-2.5 sm:space-x-3 text-[#1A1A1A]">
+          <div className="flex items-center space-x-2.5 sm:space-x-3 text-[#FAF8F5]">
             
             {/* Prominent Login / Dashboard & Logout Buttons */}
             {isLoggedIn ? (
               <div className="flex items-center gap-2">
                <Link
                  href="/account"
-                 className="group px-3.5 py-2 rounded-full border border-[#C29B38]/40 bg-[#FAF8F3] text-[10px] font-mono uppercase tracking-wider text-[#1A1A1A] hover:bg-[#C29B38] hover:text-white transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                 className="group px-3.5 py-2 rounded-full border border-[#e4c577]/40 bg-white/5 text-[10px] font-mono uppercase tracking-wider text-[#FAF8F5] hover:bg-[#e4c577] hover:text-[#0A0908] transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
                  title="Customer Dashboard"
                >
-                 <User className="w-3.5 h-3.5 text-[#C29B38] group-hover:text-white transition-colors" />
+                 <User className="w-3.5 h-3.5 text-[#e4c577] group-hover:text-[#0A0908] transition-colors" />
                  <span className="hidden sm:inline font-semibold">Dashboard</span>
                </Link>
 
                 <button
                   onClick={handleLogout}
-                  className="p-2 rounded-full cursor-pointer border border-stone-200 bg-white text-stone-500 hover:text-rose-600 hover:border-rose-200 transition-colors shadow-xs"
+                  className="p-2 rounded-full cursor-pointer border border-white/10 bg-white/5 text-stone-300 hover:text-rose-400 hover:border-rose-400/30 transition-colors shadow-xs"
                   title="Sign Out"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -167,7 +153,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="px-5 py-2 rounded-full bg-[#1A1A1A] cursor-pointer text-[#FAF8F5] text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-xs"
+                className="px-5 py-2 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] cursor-pointer text-[#0A0908] text-[10px] uppercase tracking-[0.2em] font-semibold hover:brightness-110 transition-all duration-300 shadow-xs"
               >
                 Sign In
               </Link>
@@ -176,12 +162,12 @@ export default function Navbar() {
             {/* Bag Button Connected to Drawer State */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 rounded-full cursor-pointer hover:bg-black/5 hover:text-[#C29B38] transition-colors group"
+              className="relative p-2 rounded-full cursor-pointer hover:bg-white/10 hover:text-[#e4c577] transition-colors group text-[#FAF8F5]"
               title="Acquisition Bag"
             >
               <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
               {totalItems > 0 && (
-                <span className="absolute top-1 right-1 bg-[#1A1A1A] text-white text-[9px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-semibold group-hover:bg-[#C29B38] transition-colors animate-in zoom-in-50 font-mono">
+                <span className="absolute top-1 right-1 bg-[#e4c577] text-[#0A0908] text-[9px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold group-hover:scale-110 transition-transform font-mono">
                   {totalItems}
                 </span>
               )}
@@ -190,7 +176,7 @@ export default function Navbar() {
             {/* Mobile Menu Trigger */}
             <button
               onClick={() => setMobileMenu(!mobileMenu)}
-              className="md:hidden p-2 rounded-full hover:bg-black/5 focus:outline-none"
+              className="md:hidden p-2 rounded-full hover:bg-white/10 focus:outline-none text-[#FAF8F5]"
               aria-label="Toggle Navigation"
             >
               {mobileMenu ? (
@@ -206,20 +192,20 @@ export default function Navbar() {
       {/* Mobile Drawer */}
       {mobileMenu && (
         <div className="pointer-events-auto md:hidden px-4 pt-2">
-          <div className="bg-[#FAF8F5]/98 backdrop-blur-2xl border border-[#E5DFD7] rounded-3xl p-6 space-y-4 shadow-xl text-xs uppercase tracking-[0.2em]">
+          <div className="bg-[#0A0908]/98 backdrop-blur-2xl border border-[#e4c577]/20 rounded-3xl p-6 space-y-4 shadow-2xl text-xs uppercase tracking-[0.2em] text-[#FAF8F5]">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
                 onClick={() => setMobileMenu(false)}
-                className={`block py-2 border-b border-[#E5DFD7]/50 ${
+                className={`block py-2 border-b border-white/10 ${
                   link.isHighlight
-                    ? 'text-[#C29B38] font-semibold flex items-center justify-between'
-                    : 'text-[#1A1A1A]'
+                    ? 'text-[#e4c577] font-semibold flex items-center justify-between'
+                    : 'text-[#FAF8F5]'
                 }`}
               >
                 <span>{link.name}</span>
-                {link.isHighlight && <Sparkles className="w-3.5 h-3.5" />}
+                {link.isHighlight && <Sparkles className="w-3.5 h-3.5 text-[#e4c577]" />}
               </Link>
             ))}
 
@@ -228,7 +214,7 @@ export default function Navbar() {
                 <Link
                   href="/login"
                   onClick={() => setMobileMenu(false)}
-                  className="w-full py-3 rounded-xl bg-[#1A1A1A] text-white text-center text-xs uppercase tracking-[0.2em] font-medium"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-center text-xs uppercase tracking-[0.2em] font-semibold"
                 >
                   Sign In to Portal
                 </Link>
@@ -237,7 +223,7 @@ export default function Navbar() {
                   <Link
                     href="/account"
                     onClick={() => setMobileMenu(false)}
-                    className="w-full py-3 rounded-xl border border-[#C29B38]/40 text-[#C29B38] text-center text-xs uppercase tracking-[0.2em] font-medium bg-white flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-xl border border-[#e4c577]/40 text-[#e4c577] text-center text-xs uppercase tracking-[0.2em] font-medium bg-white/5 flex items-center justify-center gap-2"
                   >
                     <User className="w-4 h-4" />
                     <span>Collector Dashboard</span>
@@ -248,7 +234,7 @@ export default function Navbar() {
                       setMobileMenu(false);
                       handleLogout();
                     }}
-                    className="w-full py-3 rounded-xl border border-rose-200 text-rose-600 text-center text-xs uppercase tracking-[0.2em] font-medium bg-rose-50 flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-xl border border-rose-500/30 text-rose-400 text-center text-xs uppercase tracking-[0.2em] font-medium bg-rose-500/10 flex items-center justify-center gap-2"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Sign Out</span>
