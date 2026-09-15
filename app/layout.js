@@ -2,6 +2,7 @@ import { Playfair_Display, Inter } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '../context/CartContext';
 import ConditionalLayout from '../components/layout/ConditionalLayout';
+import StudioPreloader from '../components/StudioPreloader';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -44,6 +45,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen flex flex-col antialiased relative" suppressHydrationWarning={true}>
         <CartProvider>
           <ConditionalLayout>
+            <StudioPreloader />
             {children}
           </ConditionalLayout>
         </CartProvider>

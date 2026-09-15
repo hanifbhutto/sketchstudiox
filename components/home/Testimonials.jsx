@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ShieldCheck, Quote, Sparkles, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const reviews = [
@@ -82,47 +82,55 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="relative py-28 px-6 sm:px-10 bg-gradient-to-b from-[#F5F2EC] via-[#FAF8F5] to-[#FFFFFF] border-t border-amber-900/10 overflow-hidden">
+    <section className="relative py-24 sm:py-28 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-white/10 overflow-hidden">
       
-      {/* Background Studio Light Spill */}
-      <div className="absolute top-1/3 left-10 w-[550px] h-[550px] bg-gradient-to-tr from-amber-400/10 via-rose-300/5 to-transparent blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-gradient-to-bl from-indigo-500/10 via-amber-300/6 to-transparent blur-[130px] pointer-events-none" />
+      {/* Animated Breathing Ambient Glows */}
+      <motion.div 
+        animate={{ scale: [1, 1.06, 1], opacity: [0.1, 0.16, 0.1] }}
+        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-1/3 left-10 w-[300px] sm:w-[550px] h-[300px] sm:h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" 
+      />
+      <motion.div 
+        animate={{ scale: [1, 1.08, 1], opacity: [0.06, 0.1, 0.06] }}
+        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute bottom-10 right-10 w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" 
+      />
 
       <div className="max-w-7xl mx-auto relative z-10">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-8">
           <div className="space-y-3 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 backdrop-blur-md text-[10px] uppercase tracking-[0.25em] text-amber-900 font-mono font-semibold shadow-2xs">
-              <Sparkles className="w-3 h-3 text-amber-600" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#e4c577]/30 bg-[#e4c577]/10 backdrop-blur-md text-[10px] uppercase tracking-[0.25em] text-[#e4c577] font-mono font-semibold shadow-2xs">
+              <Sparkles className="w-3 h-3 text-[#e4c577]" />
               <span>Collector Provenance</span>
             </div>
 
-            <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#1A1A1A] tracking-tight leading-[1.08]">
+            <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#FAF8F5] tracking-tight leading-[1.12] sm:leading-[1.08]" style={{ fontFamily: 'Georgia, serif' }}>
               Cherished in private <br className="hidden sm:inline" />
-              <span className="italic font-light bg-gradient-to-r from-[#D4A348] via-[#B88728] to-[#8C6415] bg-clip-text text-transparent">
+              <span className="italic font-light text-[#e4c577]">
                 family collections.
               </span>
             </h2>
 
-            <p className="text-sm sm:text-base text-[#686057] font-light max-w-lg leading-relaxed">
+            <p className="text-sm sm:text-base text-[#A8A196] font-light max-w-lg leading-relaxed">
               Read uncensored feedback from art collectors, portrait patrons, and pet owners worldwide.
             </p>
           </div>
 
           {/* Rating Pill Badge & Controls */}
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <div className="flex items-center justify-center gap-3.5 bg-white/90 backdrop-blur-md px-6 py-3 rounded-full border border-amber-900/15 shadow-sm">
-              <div className="flex text-amber-500">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-3 bg-[#171513] backdrop-blur-md px-5 py-2.5 sm:px-6 sm:py-3 rounded-full border border-white/10 shadow-sm">
+              <div className="flex text-[#e4c577]">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-current drop-shadow-xs" />
+                  <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current drop-shadow-xs" />
                 ))}
               </div>
-              <span className="text-xs font-mono font-bold text-[#1A1A1A]">4.98 / 5.0</span>
-              <span className="text-xs text-amber-900/20">|</span>
-              <span className="text-xs font-mono text-[#867E74] flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                120+ Easels Completed
+              <span className="text-xs font-mono font-bold text-[#FAF8F5]">4.98 / 5.0</span>
+              <span className="text-xs text-white/20">|</span>
+              <span className="text-[11px] sm:text-xs font-mono text-[#A8A196] flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                120+ Easels
               </span>
             </div>
 
@@ -131,7 +139,7 @@ export default function Testimonials() {
               <button
                 type="button"
                 onClick={handlePrev}
-                className="p-3 rounded-full bg-white border border-amber-900/15 text-[#867E74] hover:text-[#1A1A1A] hover:border-amber-500 hover:bg-[#FAF8F3] transition-all shadow-xs cursor-pointer"
+                className="p-3 rounded-full bg-[#171513] border border-white/10 text-[#A8A196] hover:text-[#FAF8F5] hover:border-[#e4c577] transition-all shadow-xs cursor-pointer"
                 aria-label="Previous review"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -139,7 +147,7 @@ export default function Testimonials() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="p-3 rounded-full bg-white border border-amber-900/15 text-[#867E74] hover:text-[#1A1A1A] hover:border-amber-500 hover:bg-[#FAF8F3] transition-all shadow-xs cursor-pointer"
+                className="p-3 rounded-full bg-[#171513] border border-white/10 text-[#A8A196] hover:text-[#FAF8F5] hover:border-[#e4c577] transition-all shadow-xs cursor-pointer"
                 aria-label="Next review"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -148,68 +156,107 @@ export default function Testimonials() {
           </div>
         </div>
 
-       {/* Seamless Track Sliding Viewport */}
-        <div className="relative overflow-hidden py-4">
-          <motion.div
-            animate={{ x: `-${currentIndex * (100 / 3)}%` }}
-            transition={
-              currentIndex === 0
-                ? { duration: 0 } // Instant jump for seamless infinite loop without blink
-                : { duration: 0.6, ease: [0.32, 0.72, 0, 1] }
-            }
-            className="flex gap-6 w-[200%]"
-          >
-            {reviews.concat(reviews).map((rev, idx) => (
-              <div
-                key={`${rev.id}-${idx}`}
-                className="w-[calc(16.666%-1.25rem)] shrink-0 p-7 sm:p-8 rounded-[28px] bg-gradient-to-br from-[#FFFFFF] via-[#FAF8F3] to-[#F8F5EE] border border-amber-900/15 shadow-[0_12px_35px_-10px_rgba(212,163,72,0.1)] hover:shadow-[0_22px_50px_-12px_rgba(212,163,72,0.22)] hover:border-amber-400/50 transition-all duration-400 flex flex-col justify-between group"
-              >
-                <div className="space-y-5">
-                  
-                  {/* Rating & Quote Icon */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex text-amber-500">
-                      {[...Array(rev.rating)].map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 fill-current" />
-                      ))}
-                    </div>
-                    <div className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-700 group-hover:scale-110 transition-transform">
-                      <Quote className="w-3.5 h-3.5" />
-                    </div>
-                  </div>
+       {/* Responsive Testimonial Display (Single card on mobile, Multi-card slider on desktop) */}
+       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+         {/* Mobile view: Show only current active review */}
+         <div className="md:hidden">
+           <AnimatePresence mode="wait">
+             <motion.div
+               key={reviews[currentIndex].id}
+               initial={{ opacity: 0, x: 20 }}
+               animate={{ opacity: 1, x: 0 }}
+               exit={{ opacity: 0, x: -20 }}
+               transition={{ duration: 0.3 }}
+               className="p-6 rounded-[24px] bg-[#171513] border border-white/10 shadow-xl flex flex-col justify-between group"
+             >
+               <div className="space-y-4">
+                 <div className="flex items-center justify-between">
+                   <div className="flex text-[#e4c577]">
+                     {[...Array(reviews[currentIndex].rating)].map((_, i) => (
+                       <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                     ))}
+                   </div>
+                   <div className="w-8 h-8 rounded-full bg-[#e4c577]/10 border border-[#e4c577]/20 flex items-center justify-center text-[#e4c577]">
+                     <Quote className="w-3.5 h-3.5" />
+                   </div>
+                 </div>
 
-                  {/* Comment */}
-                  <p className="text-[#3F3A34] text-sm font-light leading-relaxed">
-                    &ldquo;{rev.comment}&rdquo;
-                  </p>
-                </div>
+                 <p className="text-[#FAF8F5]/90 text-sm font-light leading-relaxed">
+                   &ldquo;{reviews[currentIndex].comment}&rdquo;
+                 </p>
+               </div>
 
-                {/* Profile & Medium Details */}
-                <div className="pt-6 mt-6 border-t border-amber-900/10 flex items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <h4 className="font-serif text-base text-[#1A1A1A] font-medium group-hover:text-amber-800 transition-colors">
-                      {rev.name}
-                    </h4>
-                    <p className="text-[11px] text-[#867E74] font-light">{rev.location}</p>
-                    
-                    {/* Verified Type Badge */}
-                    <div className="pt-1 flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-mono text-amber-900 font-medium">
-                      <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                      <span>{rev.type}</span>
-                    </div>
-                  </div>
+               <div className="pt-5 mt-5 border-t border-white/10 flex items-center justify-between gap-3">
+                 <div className="space-y-0.5">
+                   <h4 className="font-serif text-sm text-[#FAF8F5] font-medium" style={{ fontFamily: 'Georgia, serif' }}>
+                     {reviews[currentIndex].name}
+                   </h4>
+                   <p className="text-[10px] text-[#A8A196] font-light">{reviews[currentIndex].location}</p>
+                   
+                   <div className="pt-1 flex items-center gap-1 text-[9px] uppercase tracking-wider font-mono text-[#e4c577] font-medium">
+                     <ShieldCheck className="w-3 h-3 text-[#e4c577]" />
+                     <span>{reviews[currentIndex].type}</span>
+                   </div>
+                 </div>
 
-                  {/* Medium Stamp Badge */}
-                  <div className="px-3 py-2 rounded-xl bg-amber-500/5 border border-amber-500/20 text-right shrink-0">
-                    <span className="text-[8px] uppercase tracking-widest text-amber-800 font-mono block font-semibold">Medium</span>
-                    <span className="text-[10px] text-[#3F3A34] font-serif italic">{rev.mediumUsed}</span>
-                  </div>
-                </div>
+                 <div className="px-2.5 py-1.5 rounded-lg bg-[#0A0908] border border-white/10 text-right shrink-0">
+                   <span className="text-[7px] uppercase tracking-widest text-[#e4c577] font-mono block font-semibold">Medium</span>
+                   <span className="text-[9px] text-[#FAF8F5]/80 font-serif italic">{reviews[currentIndex].mediumUsed}</span>
+                 </div>
+               </div>
+             </motion.div>
+           </AnimatePresence>
+         </div>
 
-              </div>
-            ))}
-          </motion.div>
-        </div>
+         {/* Desktop/Tablet view: Show 3 cards side by side */}
+         <div className="hidden md:contents">
+           {[0, 1, 2].map((offset) => {
+             const rev = reviews[(currentIndex + offset) % reviews.length];
+             return (
+               <div
+                 key={rev.id}
+                 className="p-7 sm:p-8 rounded-[24px] bg-[#171513] border border-white/10 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-400 flex flex-col justify-between group"
+               >
+                 <div className="space-y-5">
+                   <div className="flex items-center justify-between">
+                     <div className="flex text-[#e4c577]">
+                       {[...Array(rev.rating)].map((_, i) => (
+                         <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                       ))}
+                     </div>
+                     <div className="w-8 h-8 rounded-full bg-[#e4c577]/10 border border-[#e4c577]/20 flex items-center justify-center text-[#e4c577] group-hover:scale-110 transition-transform">
+                       <Quote className="w-3.5 h-3.5" />
+                     </div>
+                   </div>
+
+                   <p className="text-[#FAF8F5]/90 text-sm font-light leading-relaxed">
+                     &ldquo;{rev.comment}&rdquo;
+                   </p>
+                 </div>
+
+                 <div className="pt-6 mt-6 border-t border-white/10 flex items-center justify-between gap-4">
+                   <div className="space-y-1">
+                     <h4 className="font-serif text-base text-[#FAF8F5] font-medium group-hover:text-[#e4c577] transition-colors" style={{ fontFamily: 'Georgia, serif' }}>
+                       {rev.name}
+                     </h4>
+                     <p className="text-[11px] text-[#A8A196] font-light">{rev.location}</p>
+                     
+                     <div className="pt-1 flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-mono text-[#e4c577] font-medium">
+                       <ShieldCheck className="w-3.5 h-3.5 text-[#e4c577]" />
+                       <span>{rev.type}</span>
+                     </div>
+                   </div>
+
+                   <div className="px-3 py-2 rounded-xl bg-[#0A0908] border border-white/10 text-right shrink-0">
+                     <span className="text-[8px] uppercase tracking-widest text-[#e4c577] font-mono block font-semibold">Medium</span>
+                     <span className="text-[10px] text-[#FAF8F5]/80 font-serif italic">{rev.mediumUsed}</span>
+                   </div>
+                 </div>
+               </div>
+             );
+           })}
+         </div>
+       </div>
 
         {/* Carousel Indicators */}
         <div className="flex items-center justify-center gap-2 mt-10">
@@ -218,7 +265,7 @@ export default function Testimonials() {
               key={idx}
               onClick={() => setCurrentIndex(idx)}
               className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                currentIndex === idx ? 'w-8 bg-amber-600' : 'w-2 bg-amber-900/20 hover:bg-amber-900/40'
+                currentIndex === idx ? 'w-8 bg-[#e4c577]' : 'w-2 bg-white/20 hover:bg-white/40'
               }`}
               aria-label={`Go to slide ${idx + 1}`}
             />
