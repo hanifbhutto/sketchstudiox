@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles, ShieldCheck, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -12,7 +13,7 @@ const curatedExhibits = [
     medium: 'Fine Colored Pencil on Cotton',
     year: '2026',
     edition: 'Master Pet Commission',
-    image: 'images/home-frames/japanese-akita-colored-pencil-sketch.jpeg',
+    image: '/images/home-frames/japanese-akita-colored-pencil-sketch.jpeg',
   },
   {
     id: '02',
@@ -20,7 +21,7 @@ const curatedExhibits = [
     medium: 'Raw Charcoal & Graphite Study',
     year: '2026',
     edition: 'Custom Pet Commission',
-    image: 'images/home-frames/rottweiler-and-shepherd-mix-pair-drawing.jpg',
+    image: '/images/home-frames/rottweiler-and-shepherd-mix-pair-drawing.jpg',
   },
   {
     id: '03',
@@ -28,7 +29,7 @@ const curatedExhibits = [
     medium: 'Fine Vine Charcoal on Arches',
     year: '2026',
     edition: 'Master Pet Study',
-    image: 'images/home-frames/three-dachshund-dogs-framed-portrait.jpeg',
+    image: '/images/home-frames/three-dachshund-dogs-framed-portrait.jpeg',
   },
   {
     id: '04',
@@ -36,7 +37,7 @@ const curatedExhibits = [
     medium: 'Vibrant Colored Pencil & Ink',
     year: '2026',
     edition: 'Canvas Masterpiece',
-    image: 'images/home-frames/three-french-bulldogs-with-bowties-canvas.jpeg',
+    image: '/images/home-frames/three-french-bulldogs-with-bowties-canvas.jpeg',
   },
   {
     id: '05',
@@ -44,7 +45,7 @@ const curatedExhibits = [
     medium: 'Fine Graphite on Fabriano Paper',
     year: '2026',
     edition: 'Family Heritage Study',
-    image: 'images/home-frames/parents-and-daughters-family-portrait.jpeg',
+    image: '/images/home-frames/parents-and-daughters-family-portrait.jpeg',
   },
   {
     id: '06',
@@ -52,7 +53,7 @@ const curatedExhibits = [
     medium: 'Raw Charcoal & 8B Graphite',
     year: '2026',
     edition: 'Master Portrait Study',
-    image: 'images/home-frames/father-mother-daughter-canvas-portrait.jpeg',
+    image: '/images/home-frames/father-mother-daughter-canvas-portrait.jpeg',
   },
   {
     id: '07',
@@ -60,7 +61,7 @@ const curatedExhibits = [
     medium: 'Graphite & Charcoal Hybrid',
     year: '2026',
     edition: 'Large Canvas Commission',
-    image: 'images/home-frames/multigenerational-large-family-canvas-gathering.jpeg',
+    image: '/images/home-frames/multigenerational-large-family-canvas-gathering.jpeg',
   },
   {
     id: '08',
@@ -68,7 +69,7 @@ const curatedExhibits = [
     medium: 'Oil Painting on Canvas',
     year: '2026',
     edition: 'Full Color Masterpiece',
-    image: 'images/home-frames/romantic-couple-venice-gondola-oil-painting.jpeg',
+    image: '/images/home-frames/romantic-couple-venice-gondola-oil-painting.jpeg',
   },
   {
     id: '09',
@@ -76,7 +77,23 @@ const curatedExhibits = [
     medium: 'Multi-Media Atelier Showcase',
     year: '2026',
     edition: 'Exhibition Archive',
-    image: 'images/home-frames/custom-portrait-commissions-variety-grid.jpeg',
+    image: '/images/home-frames/custom-portrait-commissions-variety-grid.jpeg',
+  },
+  {
+    id: '10',
+    title: 'Composite Extended Family Heritage',
+    medium: 'Detailed Pencil & Charcoal Study',
+    year: '2026',
+    edition: 'Heritage Masterpiece',
+    image: '/images/home-frames/composite-extended-family-heritage-portrait.jpeg',
+  },
+  {
+    id: '11',
+    title: 'Multigenerational Family with Black Cat',
+    medium: 'Graphite & Charcoal Hybrid',
+    year: '2026',
+    edition: 'Master Family Commission',
+    image: '/images/home-frames/multigenerational-family-portrait-with-black-cat.jpeg',
   },
 ];
 
@@ -143,22 +160,29 @@ export default function Hero() {
                   </span>
                 </div>
 
-                {/* Artwork Viewport with Smooth Image Crossfade */}
+                {/* Artwork Viewport with Next.js Optimized Image */}
                 <div className="aspect-[4/5] relative overflow-hidden rounded-lg sm:rounded-xl bg-stone-200 shadow-inner border border-stone-300">
                   <AnimatePresence mode="wait">
-                    <motion.img
+                    <motion.div
                       key={activeExhibit.id}
-                      src={activeExhibit.image}
-                      alt={activeExhibit.title}
                       initial={{ opacity: 0, scale: 1.05 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.98 }}
                       transition={{ duration: 0.6, ease: 'easeOut' }}
-                      className="w-full h-full object-cover contrast-110"
-                    />
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src={activeExhibit.image}
+                        alt={activeExhibit.title}
+                        fill
+                        sizes="(max-width: 768px) 340px, 430px"
+                        priority={activeIndex === 0}
+                        className="object-cover contrast-110"
+                      />
+                    </motion.div>
                   </AnimatePresence>
 
-                  <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 text-[9px] uppercase tracking-[0.22em] text-[#e4c577] bg-black/75 border border-[#e4c577]/30 px-2 sm:px-2.5 py-1 rounded-md backdrop-blur-xs font-mono">
+                  <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 text-[9px] uppercase tracking-[0.22em] text-[#e4c577] bg-black/75 border border-[#e4c577]/30 px-2 sm:px-2.5 py-1 rounded-md backdrop-blur-xs font-mono z-10">
                     {activeExhibit.id} &mdash; {String(curatedExhibits.length).padStart(2, '0')}
                   </div>
                 </div>
@@ -209,10 +233,12 @@ export default function Hero() {
                   }`}
                   title={item.title}
                 >
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="40px"
+                    className="object-cover"
                   />
                 </button>
               ))}
