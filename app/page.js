@@ -5,14 +5,18 @@ import Hero from '../components/home/Hero';
 import Testimonials from '../components/home/Testimonials';
 import Newsletter from '../components/home/Newsletter';
 import PortfolioSection from '../components/home/PortfolioSection';
+import MarqueeTicker from '../components/MarqueeTicker';
+import StudioPromise from '../components/StudioPromise';
 
 export default function Home() {
   return (
     <>
       <Hero />
+      <MarqueeTicker />
       <FeaturedExhibition />
       <PortfolioSection/>
       <CustomSketchCTA/>
+      <StudioPromise/>
       <HowItWorks/>
       <Testimonials/>
       <Newsletter/>
