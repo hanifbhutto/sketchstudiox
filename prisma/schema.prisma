@@ -8,37 +8,92 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// 1. ORDERS REGISTRY (Commissions + Gallery Originals)
-model Order {
-  id            String   @id // e.g. "SSX-9821"
-  type          String   @default("Commission") // "Commission" | "Original"
-  customer      String
-  email         String
-  phone         String?
-  size          String   // e.g. "18×24 in", "A3 (12×16 in)"
-  medium        String   // "Raw Willow Charcoal", "8B Fine Graphite", "Vibrant Colored Pencil"
-  persons       Int      @default(0)
-  pets          Int      @default(0)
-  totalSubjects Int      @default(1)
-  price         Float
-  framed        Boolean  @default(false)
-  frameType     String?  // "Ebony Hardwood", "Tuscan Natural Oak", etc.
-  status        String   @default("Phase 01: Photo Ingested")
-  photo         String   @db.Text // High-res image URL / Supabase storage path
-  notes         String?  @db.Text
-  tracking      String?  // Courier waybill (DHL / Royal Mail)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@index([email])
-  @@index([status])
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String?    @unique // Foreign key linked to User model (Optional for guest carts)
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
-// 2. EXHIBITION ARTWORKS (Gallery Vault Inventory)
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  
+  artworkId String
+  artwork   Artwork  @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+  
+  frame     String?  @default("Ebony Hardwood & Museum Mat")
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String?
+  email     String   @unique
+  password  String   // Hashed password via bcrypt
+  phone     String?  // Customer phone number
+  address   String?  @db.Text // Archival shipping address
+  city      String?
+  country   String? 
+  cart      Cart?    @relation
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  orderNumber String
+  type        String      @default("Gallery") // "Gallery" or "Commission"
+  userId      String?     // Optional for guest checkouts
+  email       String      // Patron contact email
+  name        String
+  address     String
+  city        String
+  postalCode  String
+  country     String
+  totalAmount Float
+  status      String      @default("Pending") // Pending, Confirmed, Shipped, Photo Ingested
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  // Gallery items require artworkId; Custom Commissions leave artworkId null and use direct fields below
+  artworkId String?  
+  artwork   Artwork? @relation(fields: [artworkId], references: [id], onDelete: SetNull)
+  
+  // Direct fields for Custom Commissions (bypassing fake artwork records)
+  title       String?  // e.g. "Bespoke Portrait (2 Subjects)"
+  medium      String?  // e.g. "Raw Willow Charcoal"
+  substrate   String?  // e.g. "300 GSM French Cotton Substrate"
+  dimensions  String?  // e.g. "A3 (12×16 in)"
+  description String?  @db.Text // Composition directives & notes
+
+  // Media relation for Commission reference photo
+  mediaId     String?  @db.Uuid
+  media       Media?   @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+
+  frame     String?
+  price     Float
+  quantity  Int      @default(1)
+}
+
+// 2. EXHIBITION ARTWORKS (Gallery Vault Inventory - Strictly 100% Gallery Only)
 model Artwork {
   id          String   @id // e.g. "ssx-01"
   title       String
-  category    String   // "Human Portraits", "Pet & Animal Portraits", "Colored Pencil"
+  category    String   // "Human Portraits", "Pet & Animal Portraits", etc.
   medium      String
   substrate   String   // "300 GSM Arches Pure French Cotton"
   price       Float
@@ -48,10 +103,10 @@ model Artwork {
   edition     String   @default("1-of-1 Master Original")
   description String   @db.Text
   isColor     Boolean  @default(false)
-
+  orderItems  OrderItem[]
   mediaId     String?  @db.Uuid
   media       Media?   @relation(fields: [mediaId], references: [id], onDelete: SetNull)
-
+  cartItems   CartItem[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -59,7 +114,7 @@ model Artwork {
 // 3. PRICING RATE MATRIX (Flyer Grid: Size x Subject Count)
 model PricingRate {
   id           Int      @id @default(autoincrement())
-  canvasSize   String   // "A4 (8×12 in)", "A3 (12×16 in)", "18×24 in", etc.
+  canvasSize   String   // "A4 (8×12 in)", "A3 (12×16 in)", etc.
   subjectCount Int      // 1 to 10
   price        Float    // Base USD rate
   createdAt    DateTime @default(now())
@@ -85,14 +140,14 @@ model StudioSettings {
   updatedAt                 DateTime @updatedAt
 }
 
-
 model Media {
-  id        String   @id @default(uuid()) @db.Uuid
-  publicId  String   @unique @map("public_id")
-  secureUrl String   @map("secure_url")
-  filename  String?
-  createdAt DateTime @default(now()) @map("created_at")
-    artworks  Artwork[]
-    studioSettings StudioSettings[] @relation
+  id             String           @id @default(uuid()) @db.Uuid
+  publicId       String           @unique @map("public_id")
+  secureUrl      String           @map("secure_url")
+  filename       String?
+  createdAt      DateTime         @default(now()) @map("created_at")
+  artworks       Artwork[]
+  orderItems     OrderItem[]      // Added relation for commission media tracking
+  studioSettings StudioSettings[] @relation
   @@map("media")
 }

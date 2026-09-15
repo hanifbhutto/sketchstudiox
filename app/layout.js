@@ -21,7 +21,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
-      <body className="min-h-screen flex flex-col antialiased relative">
+      <body className="min-h-screen flex flex-col antialiased relative" suppressHydrationWarning={true}>
         <CartProvider>
           <ConditionalLayout>
             {children}

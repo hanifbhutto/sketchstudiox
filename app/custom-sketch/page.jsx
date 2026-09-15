@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   UploadCloud, 
   Trash2, 
@@ -10,9 +11,9 @@ import {
   ArrowRight,
   Info,
   Building2,
-  Loader2
+  Loader2,
+  MapPin
 } from 'lucide-react';
-import { useCart } from '../../context/CartContext';
 import PricingTableSection from './PricingTableModal';
 
 const MEDIUMS = [
@@ -21,7 +22,6 @@ const MEDIUMS = [
   { id: 'hybrid', label: 'Graphite + Charcoal Blend', desc: 'Precision eye work with charcoal atmospheric depth' },
 ];
 
-// Fallback matrix in case database is empty
 const DEFAULT_FALLBACK_RATES = {
   'A4 (8×12)': { 1: 200 },
   'A3 (12×16)': { 1: 250, 2: 400 },
@@ -43,20 +43,52 @@ const AVAILABLE_SIZES = [
 ];
 
 export default function CustomSketchPage() {
-  const { addToCart, setIsCartOpen } = useCart();
+  const router = useRouter();
 
   const [liveRates, setLiveRates] = useState(DEFAULT_FALLBACK_RATES);
   const [loadingRates, setLoadingRates] = useState(true);
 
-  const [selectedSize, setSelectedSize] = useState(AVAILABLE_SIZES[1]); // Default A3
+  const [selectedSize, setSelectedSize] = useState(AVAILABLE_SIZES[1]); 
   const [subjectCount, setSubjectCount] = useState(1);
   const [selectedMedium, setSelectedMedium] = useState(MEDIUMS[0]);
   const [includeFrame, setIncludeFrame] = useState(false);
   const [notes, setNotes] = useState('');
-  const [isAdded, setIsAdded] = useState(false);
 
+  // Shipping & Recipient Details Form State
+  const [shippingName, setShippingName] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [country, setCountry] = useState('United Kingdom');
+  const [phone, setPhone] = useState('');
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedOrder, setSubmittedOrder] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [countdown, setCountdown] = useState(5);
+
+  const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [fileName, setFileName] = useState('');
+
+  // Pre-fill patron name if logged in
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('patronEmail');
+    if (savedEmail) {
+      async function fetchProfile() {
+        try {
+          const res = await fetch(`/api/auth/profile?email=${encodeURIComponent(savedEmail)}`);
+          const data = await res.json();
+          if (data.user && data.user.name) {
+            setShippingName(data.user.name);
+          }
+        } catch (err) {
+          console.error('Error fetching profile name:', err);
+        }
+      }
+      fetchProfile();
+    }
+  }, []);
 
   // Fetch live database pricing matrix on load
   useEffect(() => {
@@ -76,7 +108,18 @@ export default function CustomSketchPage() {
     fetchRates();
   }, []);
 
-  // Match database key with size name (e.g., 'A3' matches 'A3 (12×16)')
+  // Countdown timer for automatic redirect after successful submission
+  useEffect(() => {
+    if (!submittedOrder) return;
+
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      window.location.href = `/account/commissions/${submittedOrder.orderId}`;
+    }
+  }, [submittedOrder, countdown]);
+
   const findMatchingRateKey = (sizeName) => {
     const keys = Object.keys(liveRates);
     return keys.find(k => k.toLowerCase().includes(sizeName.toLowerCase())) || keys[1];
@@ -85,7 +128,6 @@ export default function CustomSketchPage() {
   const matchedKey = findMatchingRateKey(selectedSize.name);
   const currentSizeRates = liveRates[matchedKey] || { 1: 250 };
 
-  // Auto-adjust subject count if switched to smaller size
   const handleSizeSelect = (size) => {
     setSelectedSize(size);
     const newKey = findMatchingRateKey(size.name);
@@ -96,45 +138,111 @@ export default function CustomSketchPage() {
     }
   };
 
+  // Local Preview Handler (Does NOT upload to Cloudinary yet)
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setFileName(file.name);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-    }
+    if (!file) return;
+
+    setSelectedFile(file);
+    setFileName(file.name);
+    const localUrl = URL.createObjectURL(file);
+    setPreviewUrl(localUrl);
+    setErrorMessage('');
   };
 
   const removeImage = () => {
+    setSelectedFile(null);
     setPreviewUrl(null);
     setFileName('');
   };
 
-  // Calculate official price dynamically from database liveRates
   const basePrice = currentSizeRates[subjectCount] || currentSizeRates[1] || 250;
   const frameCost = includeFrame ? 75 : 0;
   const totalPrice = basePrice + frameCost;
 
-  const handleAddCustomToCart = () => {
-    if (!previewUrl) return;
+  // Commission Submission Handler: Uploads image & creates order on successful submit
+  const handleSubmitCommission = async () => {
+    if (!selectedFile) {
+      setErrorMessage('Please upload a reference photo to proceed with your commission.');
+      return;
+    }
 
-    const customCommissionItem = {
-      id: `custom-${Date.now()}`,
-      title: `Bespoke Portrait (${subjectCount} ${subjectCount === 1 ? 'Subject' : 'Subjects'})`,
-      category: 'Custom Commission',
-      medium: selectedMedium.label,
-      dimensions: `${selectedSize.name} (${selectedSize.dimensions} in)`,
-      frame: includeFrame ? 'Museum Solid Hardwood & Matting' : 'Archival Unframed Sheet',
-      price: totalPrice,
-      image: previewUrl,
-      notes: notes || 'Standard atelier lighting & facial balance',
-      isCustom: true,
-    };
+    const patronEmail = localStorage.getItem('patronEmail');
+    const userId = localStorage.getItem('userId');
 
-    addToCart(customCommissionItem);
-    setIsAdded(true);
-    setIsCartOpen(true);
-    setTimeout(() => setIsAdded(false), 2200);
+    if (!patronEmail) {
+      localStorage.setItem('pending_commission_redirect', '/custom-sketch');
+      router.push('/login?redirect=/custom-sketch');
+      return;
+    }
+
+    if (!shippingName.trim() || !address.trim() || !city.trim() || !postalCode.trim()) {
+      setErrorMessage('Please fill in all required delivery and recipient details (Name, Street Address, City, Postal Code).');
+      return;
+    }
+
+    setErrorMessage('');
+    setIsSubmitting(true);
+
+    try {
+      // Step 1: Upload image to Cloudinary ONLY upon successful submission attempt
+      const imageFormData = new FormData();
+      imageFormData.append('file', selectedFile);
+
+      const uploadRes = await fetch('/api/upload', {
+        method: 'POST',
+        body: imageFormData,
+      });
+
+      const uploadData = await uploadRes.json();
+      if (!uploadRes.ok || (!uploadData.secureUrl && !uploadData.url)) {
+        throw new Error(uploadData.error || 'Failed to secure reference photo in Cloudinary vault.');
+      }
+
+      const permanentImageUrl = uploadData.secureUrl || uploadData.url;
+
+      // Step 2: Create Commission Order with permanent Cloudinary URL
+      const res = await fetch('/api/commissions/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userId || null,
+          email: patronEmail,
+          name: shippingName,
+          address: address,
+          city: city,
+          postalCode: postalCode,
+          country: country,
+          phone: phone,
+          details: {
+            subjectCount,
+            size: `${selectedSize.name} (${selectedSize.dimensions} in)`,
+            medium: selectedMedium.label,
+            frame: includeFrame ? 'Museum Solid Hardwood & Matting' : 'Archival Unframed Sheet',
+            notes: notes || 'Standard atelier lighting & facial balance'
+          },
+          pricing: {
+            totalPrice
+          },
+          imageUrl: permanentImageUrl
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to submit commission request.');
+      }
+
+      setSubmittedOrder({
+        orderId: data.orderId,
+        orderNumber: data.orderNumber
+      });
+    } catch (err) {
+      console.error('Commission submission error:', err);
+      setErrorMessage(err.message || 'Error submitting commission request.');
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -192,7 +300,7 @@ export default function CustomSketchPage() {
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs font-semibold text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-[#1A1A1A] text-[#FAF8F5] flex items-center justify-center text-[10px]">1</span>
-                  Reference Photo (Person or Pet)
+                  Reference Photo (Person or Pet) <span className="text-rose-600">*</span>
                 </span>
                 <span className="text-[11px] text-[#867E74] font-mono">JPG, PNG up to 25MB</span>
               </div>
@@ -226,7 +334,7 @@ export default function CustomSketchPage() {
                         {fileName}
                       </p>
                       <span className="text-[10px] text-emerald-700 uppercase tracking-wider font-mono flex items-center gap-1 mt-0.5">
-                        <Check className="w-3 h-3" /> Photo Ingested &bull; Ready for Atelier
+                        <Check className="w-3 h-3" /> Ready for Cloudinary Submission
                       </span>
                     </div>
                   </div>
@@ -400,6 +508,80 @@ export default function CustomSketchPage() {
 
             </div>
 
+            {/* Step 5: Delivery & Recipient Details (Mandatory) */}
+            <div className="rounded-[28px] bg-white p-6 sm:p-8 border border-[#E5DFD7] shadow-[0_12px_35px_-10px_rgba(212,163,72,0.08)] space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-semibold text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-[#1A1A1A] text-[#FAF8F5] flex items-center justify-center text-[10px]">5</span>
+                  Delivery & Recipient Details <span className="text-rose-600">*</span>
+                </span>
+                <span className="text-[11px] text-[#867E74] font-mono flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-[#C29B38]" /> Secure Courier
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] uppercase font-mono tracking-wider text-[#867E74]">Full Name <span className="text-rose-600">*</span></label>
+                  <input
+                    type="text"
+                    required
+                    value={shippingName}
+                    onChange={(e) => setShippingName(e.target.value)}
+                    placeholder="e.g. Iftikhar Hassan"
+                    className="w-full p-3.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38]"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] uppercase font-mono tracking-wider text-[#867E74]">Phone Number</label>
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+44 7000 000000"
+                    className="w-full p-3.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38]"
+                  />
+                </div>
+
+                <div className="sm:col-span-2 space-y-1.5">
+                  <label className="text-[11px] uppercase font-mono tracking-wider text-[#867E74]">Street Address <span className="text-rose-600">*</span></label>
+                  <input
+                    type="text"
+                    required
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="e.g. 123 Gallery Way, Suite 4B"
+                    className="w-full p-3.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38]"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] uppercase font-mono tracking-wider text-[#867E74]">City <span className="text-rose-600">*</span></label>
+                  <input
+                    type="text"
+                    required
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="e.g. London"
+                    className="w-full p-3.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38]"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] uppercase font-mono tracking-wider text-[#867E74]">Postal Code <span className="text-rose-600">*</span></label>
+                  <input
+                    type="text"
+                    required
+                    value={postalCode}
+                    onChange={(e) => setPostalCode(e.target.value)}
+                    placeholder="e.g. SW1A 1AA"
+                    className="w-full p-3.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] text-xs text-[#1A1A1A] outline-none focus:border-[#C29B38]"
+                  />
+                </div>
+              </div>
+            </div>
+
           </div>
 
           {/* Right Column: Sticky Live Commission Price Card */}
@@ -458,27 +640,33 @@ export default function CustomSketchPage() {
                 </span>
               </div>
 
+              {/* Inline Error Banner */}
+              {errorMessage && (
+                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-mono flex items-center gap-3">
+                  <Info className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
               {/* Action Button */}
               <button
                 type="button"
-                onClick={handleAddCustomToCart}
-                disabled={!previewUrl}
+                onClick={handleSubmitCommission}
+                disabled={isSubmitting}
                 className={`w-full py-4 rounded-2xl text-xs uppercase tracking-[0.2em] font-medium flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer ${
-                  previewUrl
-                    ? isAdded
-                      ? 'bg-emerald-700 text-white shadow-md'
-                      : 'bg-[#1A1A1A] text-[#FAF8F5] hover:bg-[#C29B38] shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)]'
+                  !isSubmitting
+                    ? 'bg-[#1A1A1A] text-[#FAF8F5] hover:bg-[#C29B38] shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)]'
                     : 'bg-stone-200 text-stone-400 cursor-not-allowed border border-stone-300 shadow-none'
                 }`}
               >
-                {isAdded ? (
+                {isSubmitting ? (
                   <>
-                    <Check className="w-4 h-4 stroke-[2.5]" />
-                    <span>Added to Acquisition Bag</span>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Uploading & Registering...</span>
                   </>
                 ) : (
                   <>
-                    <span>{previewUrl ? 'Add Commission to Bag' : 'Upload Photo to Continue'}</span>
+                    <span>Submit Commission Request</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
@@ -504,6 +692,41 @@ export default function CustomSketchPage() {
         <PricingTableSection />
 
       </div>
+
+      {/* SUCCESS MODAL POPUP */}
+      {submittedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/65 backdrop-blur-xs px-4">
+          <div className="max-w-md w-full p-8 rounded-[32px] bg-white border border-[#E5DFD7] shadow-2xl text-center space-y-6 animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+              <Check className="w-8 h-8 stroke-[2.5]" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] font-bold">
+                Atelier Intake Registered
+              </span>
+              <h2 className="font-serif text-2xl text-[#1A1A1A]">
+                Commission Confirmed
+              </h2>
+              <p className="text-xs text-[#686057] font-light leading-relaxed">
+                Reference Number <strong className="font-mono text-[#1A1A1A]">{submittedOrder.orderNumber}</strong> has been securely logged with verified delivery details and permanent Cloudinary photo reference.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7] font-mono text-xs text-[#867E74]">
+              <p>Redirecting to your commission tracker in <span className="text-[#C29B38] font-bold text-sm">{countdown}s</span>...</p>
+            </div>
+
+            <a
+              href={`/account/commissions/${submittedOrder.orderId}`}
+              className="w-full py-3.5 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors block font-bold text-center"
+            >
+              View Commission Tracker Now
+            </a>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -10,19 +10,29 @@ import {
   CreditCard, 
   ArrowLeft, 
   CheckCircle2, 
-  Sparkles, 
-  Building2,
-  PackageCheck,
+  Loader2,
   AlertCircle
 } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { cartItems, subtotal } = useCart();
 
-  const [cartItems, setCartItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Authentication & Access Guard
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    const patronEmail = localStorage.getItem('patronEmail');
+
+    if (!userId && !patronEmail) {
+      router.replace('/login');
+    }
+  }, [router]);
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [countdown, setCountdown] = useState(5); // 5 seconds timer for modal redirect
 
   // Form State
   const [formData, setFormData] = useState({
@@ -34,172 +44,134 @@ export default function CheckoutPage() {
     city: '',
     postalCode: '',
     country: 'United Kingdom',
-    deliveryDirectives: '',
-    paymentMethod: 'paypal' // 'paypal' | 'card'
+    paymentMethod: 'paypal'
   });
 
-  // Load items from Cart / Commission Draft
-  useEffect(() => {
-    try {
-      const storedCart = JSON.parse(localStorage.getItem('ssx_cart_items') || '[]');
-      if (storedCart.length > 0) {
-        setCartItems(storedCart);
-      } else {
-        // Fallback default sample commission if cart opened directly
-        setCartItems([
-          {
-            cartItemId: 'item-preview-01',
-            type: 'Commission',
-            id: 'SSX-CUSTOM',
-            title: 'Bespoke Custom Portrait Study',
-            medium: 'Raw Willow Charcoal & 8B Graphite',
-            dimensions: '18 × 24 in',
-            persons: 1,
-            pets: 1,
-            totalSubjects: 2,
-            price: 500,
-            frame: 'Ebony Hardwood Box Frame',
-            frameExtra: 75,
-            image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80',
-            notes: 'Combine golden retriever beside subject. Retain paper white highlights.'
-          }
-        ]);
-      }
-    } catch (err) {
-      console.error('Failed to load cart items', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Touched state for live tracking
+  const [touched, setTouched] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    address: false,
+    city: false,
+    postalCode: false,
+  });
 
-  const subtotal = cartItems.reduce((acc, item) => acc + (Number(item.price) || 0), 0);
-  const insuredShipping = 0; // Worldwide Complimentary Curatorial Freight
-  const orderTotal = subtotal + insuredShipping;
+  const handleBlur = (field) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleProcessOrder = (e) => {
+  // Live Validation Checks
+  const isFirstNameValid = formData.firstName.trim().length >= 2;
+  const isLastNameValid = formData.lastName.trim().length >= 2;
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
+  const isAddressValid = formData.address.trim().length >= 5;
+  const isCityValid = formData.city.trim().length >= 2;
+  const isPostalValid = formData.postalCode.trim().length >= 3;
+
+  const isFormValid = isFirstNameValid && isLastNameValid && isEmailValid && isAddressValid && isCityValid && isPostalValid;
+
+  const insuredShipping = 0; // Complimentary
+  const orderTotal = subtotal + insuredShipping;
+
+  // 5-Second Countdown & Auto Redirect Effect upon Order Completion
+  useEffect(() => {
+    if (!orderCompleted) return;
+
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      router.push(`/account/orders/${orderCompleted.orderId}`);
+    }
+  }, [orderCompleted, countdown, router]);
+
+  const handleProcessOrder = async (e) => {
     e.preventDefault();
+    if (!isFormValid || cartItems.length === 0) return;
+
     setIsProcessing(true);
+    setErrorMessage('');
 
-    setTimeout(() => {
-      const generatedOrderId = `SSX-${Math.floor(1000 + Math.random() * 9000)}`;
-      const firstItem = cartItems[0] || {};
+    try {
+      const userId = localStorage.getItem('userId');
+      const cartId = localStorage.getItem('active_cart_id');
 
-      // Structure new order for Admin Orders Table Ingestion
-      const newAdminOrder = {
-        id: generatedOrderId,
-        type: firstItem.type === 'Commission' ? 'Commission' : 'Original',
-        customer: `${formData.firstName} ${formData.lastName}`.trim() || 'Valued Patron',
-        email: formData.email,
-        phone: formData.phone,
-        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        itemTitle: firstItem.title || 'Studio Original Acquisition',
-        size: firstItem.dimensions || '18 × 24 in',
-        persons: firstItem.persons || 0,
-        pets: firstItem.pets || 0,
-        totalSubjects: firstItem.totalSubjects || 1,
-        medium: firstItem.medium || 'Raw Willow Charcoal',
-        price: orderTotal,
-        framed: Boolean(firstItem.frame && firstItem.frame !== 'none'),
-        status: firstItem.type === 'Commission' ? 'Phase 01: Photo Ingested' : 'Packaging & Provenance Wax Seal',
-        photo: firstItem.image || 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80',
-        notes: firstItem.notes || formData.deliveryDirectives || 'Standard studio delivery directives.',
-        tracking: ''
-      };
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userId || null,
+          cartId: cartId || null,
+          items: cartItems,
+          shippingDetails: formData,
+          totalAmount: orderTotal
+        })
+      });
 
-      // Ingest order into live database / localStorage
-      try {
-        const currentOrders = JSON.parse(localStorage.getItem('ssx_all_orders') || '[]');
-        localStorage.setItem('ssx_all_orders', JSON.stringify([newAdminOrder, ...currentOrders]));
-        localStorage.removeItem('ssx_cart_items'); // clear cart
-      } catch (err) {
-        console.error('Storage ingestion failed', err);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Checkout settlement failed.');
       }
 
-      setIsProcessing(false);
+      localStorage.removeItem('active_cart_id');
+
       setOrderCompleted({
-        orderId: generatedOrderId,
+        orderId: data.orderId,
+        orderNumber: data.orderNumber, // Exact database field
         customer: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         total: orderTotal
       });
-    }, 1800);
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setErrorMessage(err.message || 'An error occurred during settlement.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen pt-36 pb-20 flex items-center justify-center bg-[#FAF8F5]">
-        <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-[#8C6415]">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#C29B38] animate-ping" />
-          <span>Securing Atelier Checkout...</span>
-        </div>
-      </div>
-    );
-  }
-
-  // SUCCESS CONFIRMATION SCREEN
-  if (orderCompleted) {
-    return (
-      <div className="min-h-screen pt-36 pb-24 px-6 sm:px-10 bg-[#FAF8F5] relative overflow-hidden flex items-center justify-center">
-        <div className="max-w-xl w-full p-8 sm:p-12 rounded-[36px] bg-white border border-[#E5DFD7] shadow-2xl text-center space-y-6">
-          <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
-            <CheckCircle2 className="w-8 h-8" />
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] font-bold">
-              Provenance Ledger Registered
-            </span>
-            <h1 className="font-serif text-3xl sm:text-4xl text-[#1A1A1A]">
-              Acquisition Confirmed
-            </h1>
-            <p className="text-xs text-[#686057] font-light max-w-md mx-auto leading-relaxed">
-              Order Reference <strong className="font-mono text-[#1A1A1A]">{orderCompleted.orderId}</strong> has been logged. An official transmission was sent to <span className="font-mono text-[#1A1A1A]">{orderCompleted.email}</span>.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7] text-left font-mono text-xs space-y-2">
-            <div className="flex justify-between text-[#867E74]">
-              <span>Settlement Total:</span>
-              <span className="text-[#1A1A1A] font-bold">${orderCompleted.total} USD</span>
-            </div>
-            <div className="flex justify-between text-[#867E74]">
-              <span>Corporate Entity:</span>
-              <span className="text-[#1A1A1A]">SKETCH X STUDIO LTD</span>
-            </div>
-            <div className="flex justify-between text-[#867E74]">
-              <span>Status:</span>
-              <span className="text-emerald-700 font-bold">Phase 01 Registered</span>
-            </div>
-          </div>
-
-          <div className="pt-2 flex flex-col sm:flex-row gap-3">
-            <Link
-              href="/admin/orders"
-              className="flex-1 py-3.5 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors text-center font-bold"
-            >
-              Inspect In Admin Desk
-            </Link>
-            <Link
-              href="/"
-              className="flex-1 py-3.5 rounded-xl border border-[#E5DFD7] text-xs font-mono uppercase tracking-wider hover:bg-stone-50 transition-colors text-center"
-            >
-              Return to Gallery
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen pt-32 pb-24 px-6 sm:px-10 bg-[#FAF8F5] relative overflow-hidden">
       
-      {/* Ambient Lighting */}
-      <div className="absolute top-20 left-1/3 -translate-x-1/2 w-[850px] h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(212,163,72,0.08)_0%,transparent_70%)] pointer-events-none" />
+      {/* SUCCESS MODAL POPUP (Shows for 5 seconds upon completion) */}
+      {orderCompleted && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-xs px-4">
+          <div className="max-w-md w-full p-8 rounded-[32px] bg-white border border-[#E5DFD7] shadow-2xl text-center space-y-6 animate-in fade-in zoom-in duration-300">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] font-bold">
+                Provenance Ledger Registered
+              </span>
+              <h2 className="font-serif text-2xl text-[#1A1A1A]">
+                Acquisition Confirmed
+              </h2>
+              <p className="text-xs text-[#686057] font-light leading-relaxed">
+  Order Number <strong className="font-mono text-[#1A1A1A]">{orderCompleted.orderNumber}</strong> has been logged successfully.
+</p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7] font-mono text-xs text-[#867E74] space-y-1">
+              <p>Redirecting to order details in <span className="text-[#C29B38] font-bold text-sm">{countdown}s</span>...</p>
+            </div>
+
+            <Link
+              href={`/account/orders/${orderCompleted.orderId}`}
+              className="w-full py-3.5 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors block font-bold text-center"
+            >
+              View Order Detail Now
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto space-y-10 relative z-10">
         
@@ -219,57 +191,87 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* Two-Column Checkout Layout */}
+        {errorMessage && (
+          <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-mono">
+            {errorMessage}
+          </div>
+        )}
+
         <form onSubmit={handleProcessOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* LEFT: SHIPPING & BILLING DOSSIER (7 COLS) */}
+          {/* LEFT: FORM (7 COLS) */}
           <div className="lg:col-span-7 space-y-6">
             
-            {/* Collector Contact Info */}
+            {/* Identity */}
             <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E5DFD7] shadow-xs space-y-4">
-              <h2 className="font-serif text-xl text-[#1A1A1A] flex items-center gap-2 border-b border-stone-100 pb-3">
-                <span>1. Collector Identity</span>
+              <h2 className="font-serif text-xl text-[#1A1A1A] border-b border-stone-100 pb-3">
+                1. Collector Identity
               </h2>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+                
+                {/* First Name */}
                 <div className="space-y-1.5">
                   <label className="text-[#1A1A1A] block font-semibold">First Name *</label>
                   <input
                     type="text"
-                    required
-                    placeholder="e.g. Eleanor"
+                    placeholder="Eleanor"
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    onBlur={() => handleBlur('firstName')}
+                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
+                      touched.firstName && !isFirstNameValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    }`}
                   />
+                  {touched.firstName && !isFirstNameValid && (
+                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> Min 2 characters required.
+                    </p>
+                  )}
                 </div>
 
+                {/* Last Name */}
                 <div className="space-y-1.5">
                   <label className="text-[#1A1A1A] block font-semibold">Last Name *</label>
                   <input
                     type="text"
-                    required
-                    placeholder="e.g. Vance"
+                    placeholder="Vance"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    onBlur={() => handleBlur('lastName')}
+                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
+                      touched.lastName && !isLastNameValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    }`}
                   />
+                  {touched.lastName && !isLastNameValid && (
+                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> Min 2 characters required.
+                    </p>
+                  )}
                 </div>
 
+                {/* Email */}
                 <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-[#1A1A1A] block font-semibold">Transmission Email (For Digital Proofs) *</label>
+                  <label className="text-[#1A1A1A] block font-semibold">Transmission Email *</label>
                   <input
                     type="email"
-                    required
-                    placeholder="eleanor.vance@example.co.uk"
+                    placeholder="collector@domain.com"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    onBlur={() => handleBlur('email')}
+                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
+                      touched.email && !isEmailValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    }`}
                   />
+                  {touched.email && !isEmailValid && (
+                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> Please enter a valid email address.
+                    </p>
+                  )}
                 </div>
 
+                {/* Phone */}
                 <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-[#1A1A1A] block font-semibold">Courier Contact Number (SMS / WhatsApp Waybill)</label>
+                  <label className="text-[#1A1A1A] block font-semibold">Phone Number (Optional)</label>
                   <input
                     type="tel"
                     placeholder="+44 7911 123456"
@@ -281,118 +283,87 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Courier Delivery Destination */}
+            {/* Address */}
             <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E5DFD7] shadow-xs space-y-4">
               <h2 className="font-serif text-xl text-[#1A1A1A] flex items-center gap-2 border-b border-stone-100 pb-3">
                 <Truck className="w-4 h-4 text-[#C29B38]" />
                 <span>2. Insured Courier Dispatch Address</span>
               </h2>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+                
+                {/* Street Address */}
                 <div className="space-y-1.5 sm:col-span-2">
                   <label className="text-[#1A1A1A] block font-semibold">Street Address *</label>
                   <input
                     type="text"
-                    required
-                    placeholder="e.g. 14 Kensington Gardens Square"
+                    placeholder="14 Kensington Gardens"
                     value={formData.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    onBlur={() => handleBlur('address')}
+                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
+                      touched.address && !isAddressValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    }`}
                   />
+                  {touched.address && !isAddressValid && (
+                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> Please provide a valid street address.
+                    </p>
+                  )}
                 </div>
 
+                {/* City */}
                 <div className="space-y-1.5">
                   <label className="text-[#1A1A1A] block font-semibold">Town / City *</label>
                   <input
                     type="text"
-                    required
                     placeholder="London"
                     value={formData.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    onBlur={() => handleBlur('city')}
+                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
+                      touched.city && !isCityValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    }`}
                   />
+                  {touched.city && !isCityValid && (
+                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> City is required.
+                    </p>
+                  )}
                 </div>
 
+                {/* Postal Code */}
                 <div className="space-y-1.5">
-                  <label className="text-[#1A1A1A] block font-semibold">Postal / ZIP Code *</label>
+                  <label className="text-[#1A1A1A] block font-semibold">Postal Code *</label>
                   <input
                     type="text"
-                    required
                     placeholder="W2 4BH"
                     value={formData.postalCode}
                     onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    onBlur={() => handleBlur('postalCode')}
+                    className={`w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border outline-none transition-colors ${
+                      touched.postalCode && !isPostalValid ? 'border-rose-400' : 'border-[#E5DFD7] focus:border-[#C29B38]'
+                    }`}
                   />
-                </div>
-
-                <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-[#1A1A1A] block font-semibold">Destination Country</label>
-                  <select
-                    value={formData.country}
-                    onChange={(e) => handleInputChange('country', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
-                  >
-                    <option value="United Kingdom">United Kingdom (Domestic Tracked)</option>
-                    <option value="United States">United States (DHL Express Insured)</option>
-                    <option value="European Union">European Union (Air Express)</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Worldwide">Other International Destination</option>
-                  </select>
+                  {touched.postalCode && !isPostalValid && (
+                    <p className="text-[10px] text-rose-600 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> Valid postal code required.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Payment Method Selector */}
+            {/* Payment Choice */}
             <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E5DFD7] shadow-xs space-y-4">
               <h2 className="font-serif text-xl text-[#1A1A1A] flex items-center gap-2 border-b border-stone-100 pb-3">
                 <CreditCard className="w-4 h-4 text-[#C29B38]" />
                 <span>3. Payment Gateway Choice</span>
               </h2>
-
               <div className="space-y-3 font-mono text-xs">
-                {/* PayPal Smart Button Option */}
-                <label className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
-                  formData.paymentMethod === 'paypal'
-                    ? 'border-[#C29B38] bg-[#FAF8F3] ring-1 ring-[#C29B38]/30 shadow-xs'
-                    : 'border-[#E5DFD7] bg-white'
-                }`}>
+                <label className="p-4 rounded-2xl border border-[#C29B38] bg-[#FAF8F3] flex items-center justify-between cursor-pointer">
                   <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="paypal"
-                      checked={formData.paymentMethod === 'paypal'}
-                      onChange={() => handleInputChange('paymentMethod', 'paypal')}
-                      className="accent-[#C29B38] w-4 h-4 cursor-pointer"
-                    />
-                    <div>
-                      <span className="text-[#1A1A1A] font-bold block">PayPal & Digital Wallets</span>
-                      <span className="text-[10px] text-[#867E74]">PayPal Balance, Pay in 3, or Credit Card</span>
-                    </div>
-                  </div>
-                  <span className="font-bold text-[#003087] italic tracking-tight text-sm">PayPal</span>
-                </label>
-
-                {/* Direct Card Option */}
-                <label className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
-                  formData.paymentMethod === 'card'
-                    ? 'border-[#C29B38] bg-[#FAF8F3] ring-1 ring-[#C29B38]/30 shadow-xs'
-                    : 'border-[#E5DFD7] bg-white'
-                }`}>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="card"
-                      checked={formData.paymentMethod === 'card'}
-                      onChange={() => handleInputChange('paymentMethod', 'card')}
-                      className="accent-[#C29B38] w-4 h-4 cursor-pointer"
-                    />
-                    <div>
-                      <span className="text-[#1A1A1A] font-bold block">Credit / Debit Card (Direct TLS)</span>
-                      <span className="text-[10px] text-[#867E74]">Visa, Mastercard, American Express</span>
-                    </div>
+                    <input type="radio" defaultChecked className="accent-[#C29B38]" />
+                    <span className="text-[#1A1A1A] font-bold">Secure Online Settlement (Card / PayPal)</span>
                   </div>
                   <CreditCard className="w-5 h-5 text-stone-600" />
                 </label>
@@ -401,106 +372,99 @@ export default function CheckoutPage() {
 
           </div>
 
-          {/* RIGHT: ACQUISITION SUMMARY (5 COLS) */}
+          {/* RIGHT: SUMMARY (5 COLS) */}
           <div className="lg:col-span-5 space-y-6">
-            
             <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E5DFD7] shadow-xs space-y-5 sticky top-28">
               <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] font-bold block border-b border-stone-100 pb-2">
                 Order Ledger Manifest
               </span>
 
-              {/* Items List */}
-              <div className="space-y-4">
-                {cartItems.map((item, idx) => (
-                  <div key={idx} className="flex gap-4 items-start pb-4 border-b border-stone-100">
-                    <div className="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shrink-0">
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover grayscale" />
-                    </div>
-                    <div className="space-y-0.5 flex-1 text-xs font-mono">
-                      <span className="text-[9px] uppercase font-bold text-[#8C6415] bg-[#FAF8F3] px-2 py-0.5 rounded border border-[#E5DFD7] inline-block mb-1">
-                        {item.type === 'Commission' ? 'Custom Commission' : 'Master Original'}
-                      </span>
-                      <h4 className="font-serif text-sm text-[#1A1A1A] font-medium leading-snug">{item.title}</h4>
-                      <p className="text-[11px] text-[#867E74]">{item.dimensions} &bull; {item.medium}</p>
-                      
-                      {item.totalSubjects && (
-                        <p className="text-[10px] text-[#C29B38] font-bold">
-                          👤 {item.persons || 0} Person + 🐾 {item.pets || 0} Pet ({item.totalSubjects} Subjects)
-                        </p>
-                      )}
+              <div className="space-y-4 max-h-72 overflow-y-auto pr-1">
+                {cartItems.length === 0 ? (
+                  <p className="text-xs text-[#867E74] font-mono">No items in acquisition bag.</p>
+                ) : (
+                  cartItems.map((item, idx) => {
+                    const art = item.artwork || {};
+                    const imageUrl = art.media?.secureUrl || art.image || '';
+                    const title = art.title || item.title || 'Master Original';
+                    const price = art.price || item.price || 0;
 
-                      {item.frame && item.frame !== 'none' && (
-                        <p className="text-[10px] text-stone-600 font-medium">
-                          Mount: {item.frame} (+${item.frameExtra || 0})
-                        </p>
-                      )}
+                    return (
+                      <div key={idx} className="flex gap-4 items-start pb-4 border-b border-stone-100">
+                        
+                        {/* Product Thumbnail with "No Image" Fallback */}
+                        <div className="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shrink-0 relative flex items-center justify-center">
+                          {imageUrl ? (
+                            <img 
+                              src={imageUrl} 
+                              alt={title} 
+                              className="w-full h-full object-cover" 
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.nextElementSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <div className={`absolute inset-0 items-center justify-center text-[9px] font-mono text-stone-400 bg-stone-100 text-center px-1 ${imageUrl ? 'hidden' : 'flex'}`}>
+                            No Image
+                          </div>
+                        </div>
 
-                      <div className="pt-1 font-bold text-[#1A1A1A]">
-                        ${item.price} USD
+                        <div className="space-y-0.5 flex-1 text-xs font-mono">
+                          <h4 className="font-serif text-sm text-[#1A1A1A] font-medium leading-snug">{title}</h4>
+                          <p className="text-[11px] text-[#867E74]">{item.frame || 'Standard Presentation'}</p>
+                          <div className="pt-1 font-bold text-[#1A1A1A]">${price.toFixed(2)} USD</div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    );
+                  })
+                )}
               </div>
 
-              {/* Price Calculation Breakdown */}
               <div className="space-y-2 pt-1 text-xs font-mono">
                 <div className="flex justify-between text-[#867E74]">
-                  <span>Artwork Settlement Subtotal</span>
-                  <span className="text-[#1A1A1A] font-bold">${subtotal} USD</span>
+                  <span>Subtotal</span>
+                  <span className="text-[#1A1A1A] font-bold">${subtotal.toFixed(2)} USD</span>
                 </div>
                 <div className="flex justify-between text-[#867E74]">
-                  <span>Insured Global Freight</span>
-                  <span className="text-emerald-700 font-bold uppercase tracking-wider">Complimentary</span>
+                  <span>Global Freight</span>
+                  <span className="text-emerald-700 font-bold uppercase">Complimentary</span>
                 </div>
-                <div className="flex justify-between text-[#867E74]">
-                  <span>Certificate of Authenticity</span>
-                  <span className="text-emerald-700 font-bold uppercase tracking-wider">Included</span>
-                </div>
-
                 <div className="pt-3 border-t border-stone-200 flex justify-between items-baseline">
                   <span className="font-serif text-base text-[#1A1A1A]">Total Payable</span>
-                  <div className="text-right">
-                    <span className="font-serif text-3xl text-[#1A1A1A] font-bold block">
-                      ${orderTotal}
-                    </span>
-                    <span className="text-[10px] text-[#867E74] block">Currency: USD ($)</span>
-                  </div>
+                  <span className="font-serif text-2xl text-[#1A1A1A] font-bold">${orderTotal.toFixed(2)}</span>
                 </div>
               </div>
 
-              {/* Action Button */}
+              {!isFormValid && (
+                <p className="text-[10px] text-amber-700 font-mono text-center">
+                  * Please complete all required billing fields correctly to unlock settlement.
+                </p>
+              )}
+
               <button
                 type="submit"
-                disabled={isProcessing}
-                className="w-full py-4 rounded-2xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-[0.2em] font-bold hover:bg-[#C29B38] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+                disabled={isProcessing || !isFormValid || cartItems.length === 0}
+                className={`w-full py-4 rounded-2xl text-xs font-mono uppercase tracking-[0.2em] font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
+                  !isFormValid || cartItems.length === 0
+                    ? 'bg-stone-300 text-stone-500 cursor-not-allowed'
+                    : 'bg-[#1A1A1A] text-white hover:bg-[#C29B38]'
+                }`}
               >
                 {isProcessing ? (
                   <>
-                    <span className="w-3.5 h-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-                    <span>Engaging Settlement...</span>
+                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    <span>Processing Settlement...</span>
                   </>
                 ) : (
                   <>
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <span>Complete Acquisition &bull; ${orderTotal}</span>
+                    <span>Complete Acquisition &bull; ${orderTotal.toFixed(2)}</span>
                   </>
                 )}
               </button>
 
-              {/* Statutory Footnote */}
-              <div className="pt-3 border-t border-stone-100 space-y-1.5 text-[10px] font-mono text-[#867E74]">
-                <div className="flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-[#C29B38]" />
-                  <span>SKETCH X STUDIO LTD (UK Reg: 17429707)</span>
-                </div>
-                <p className="leading-relaxed text-stone-400">
-                  Protected under UK consumer law. Digital proof approval required prior to irreversible packaging and dispatch.
-                </p>
-              </div>
-
             </div>
-
           </div>
 
         </form>
