@@ -2,13 +2,15 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, Sparkles, User, ArrowUpRight } from 'lucide-react';
+import { ShoppingBag, Menu, X, Sparkles, User, LogOut, Loader2 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [studioLogo, setStudioLogo] = useState('');
+  const [logoLoading, setLogoLoading] = useState(true); // <-- Logo loading state added
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { setIsCartOpen, totalItems } = useCart();
 
   useEffect(() => {
@@ -17,10 +19,33 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Fetch studio settings to check if custom logo is uploaded
+  // Real-time Authentication State Checker (Supports cross-tab & same-tab login)
+  useEffect(() => {
+    const checkAuth = () => {
+      const email = localStorage.getItem('patronEmail');
+      setIsLoggedIn(!!email);
+    };
+
+    // Initial check on mount
+    checkAuth();
+
+    // Listen to custom login/logout events and standard storage events
+    window.addEventListener('storage', checkAuth);
+    window.addEventListener('auth-changed', checkAuth);
+    window.addEventListener('focus', checkAuth);
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('auth-changed', checkAuth);
+      window.removeEventListener('focus', checkAuth);
+    };
+  }, []);
+
+  // Fetch studio settings to check if custom logo is uploaded with loader handling
   useEffect(() => {
     async function fetchLogo() {
       try {
+        setLogoLoading(true);
         const res = await fetch('/api/admin/settings');
         const data = await res.json();
         if (data && data.logoUrl) {
@@ -28,10 +53,24 @@ export default function Navbar() {
         }
       } catch (err) {
         console.error('Failed to load studio logo config', err);
+      } finally {
+        setLogoLoading(false);
       }
     }
     fetchLogo();
   }, []);
+
+  // Logout Handler
+  const handleLogout = () => {
+    localStorage.removeItem('patronEmail');
+    localStorage.removeItem('userId');
+    setIsLoggedIn(false);
+    
+    // Broadcast auth change event to all listeners
+    window.dispatchEvent(new Event('auth-changed'));
+    
+    window.location.href = '/';
+  };
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -52,9 +91,18 @@ export default function Navbar() {
               : 'bg-[#FAF8F5]/60 backdrop-blur-md border-black/5 shadow-xs'
           }`}
         >
-          {/* Brand Identity: If logo exists, show ONLY logo image. If not, show X monogram + text. */}
+          {/* Brand Identity with Logo Loader */}
           <Link href="/" className="flex items-center gap-3 group select-none">
-            {studioLogo ? (
+            {logoLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-stone-200/70 flex items-center justify-center animate-pulse">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C29B38]" />
+                </div>
+                <span className="font-serif text-base sm:text-lg tracking-[0.22em] uppercase font-normal text-[#1A1A1A]/50 animate-pulse">
+                  Sketch Studio X
+                </span>
+              </div>
+            ) : studioLogo ? (
               <div className="h-9 max-w-[150px] overflow-hidden flex items-center group-hover:scale-105 transition-transform">
                 <img src={studioLogo} alt="Sketch Studio X" className="h-full w-auto object-contain" />
               </div>
@@ -84,7 +132,6 @@ export default function Navbar() {
               >
                 {link.isHighlight && <Sparkles className="w-3 h-3 text-[#C29B38]" />}
                 {link.name}
-                {/* Micro Hover Line */}
                 <span
                   className={`absolute bottom-0 left-0 w-0 h-[1.5px] transition-all duration-300 ease-out group-hover:w-full ${
                     link.isHighlight ? 'bg-[#C29B38]' : 'bg-[#1A1A1A]'
@@ -95,29 +142,41 @@ export default function Navbar() {
           </nav>
 
           {/* Right Action Controls */}
-          <div className="flex items-center space-x-3 sm:space-x-4 text-[#1A1A1A]">
-            {/* Direct Commission Button */}
-            <Link
-              href="/custom-sketch"
-              className="hidden lg:inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#1A1A1A] text-[#FAF8F5] text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 group shadow-xs"
-            >
-              <span>Commission</span>
-              <ArrowUpRight className="w-3 h-3 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </Link>
+          <div className="flex items-center space-x-2.5 sm:space-x-3 text-[#1A1A1A]">
+            
+            {/* Prominent Login / Dashboard & Logout Buttons */}
+            {isLoggedIn ? (
+              <div className="flex items-center gap-2">
+               <Link
+                 href="/account"
+                 className="group px-3.5 py-2 rounded-full border border-[#C29B38]/40 bg-[#FAF8F3] text-[10px] font-mono uppercase tracking-wider text-[#1A1A1A] hover:bg-[#C29B38] hover:text-white transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                 title="Customer Dashboard"
+               >
+                 <User className="w-3.5 h-3.5 text-[#C29B38] group-hover:text-white transition-colors" />
+                 <span className="hidden sm:inline font-semibold">Dashboard</span>
+               </Link>
 
-            {/* Account Icon */}
-            <Link
-              href="/account"
-              className="p-2 rounded-full hover:bg-black/5 hover:text-[#C29B38] transition-colors"
-              title="Account"
-            >
-              <User className="w-4 h-4 stroke-[1.75]" />
-            </Link>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 rounded-full cursor-pointer border border-stone-200 bg-white text-stone-500 hover:text-rose-600 hover:border-rose-200 transition-colors shadow-xs"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="px-5 py-2 rounded-full bg-[#1A1A1A] cursor-pointer text-[#FAF8F5] text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-xs"
+              >
+                Sign In
+              </Link>
+            )}
 
             {/* Bag Button Connected to Drawer State */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 rounded-full hover:bg-black/5 hover:text-[#C29B38] transition-colors group"
+              className="relative p-2 rounded-full cursor-pointer hover:bg-black/5 hover:text-[#C29B38] transition-colors group"
               title="Acquisition Bag"
             >
               <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
@@ -165,13 +224,37 @@ export default function Navbar() {
             ))}
 
             <div className="pt-2 flex flex-col gap-2">
-              <Link
-                href="/custom-sketch"
-                onClick={() => setMobileMenu(false)}
-                className="w-full py-3 rounded-xl bg-[#1A1A1A] text-white text-center text-xs uppercase tracking-[0.2em] font-medium"
-              >
-                Commission a Sketch
-              </Link>
+              {!isLoggedIn ? (
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenu(false)}
+                  className="w-full py-3 rounded-xl bg-[#1A1A1A] text-white text-center text-xs uppercase tracking-[0.2em] font-medium"
+                >
+                  Sign In to Portal
+                </Link>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href="/account"
+                    onClick={() => setMobileMenu(false)}
+                    className="w-full py-3 rounded-xl border border-[#C29B38]/40 text-[#C29B38] text-center text-xs uppercase tracking-[0.2em] font-medium bg-white flex items-center justify-center gap-2"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>Collector Dashboard</span>
+                  </Link>
+
+                  <button
+                    onClick={() => {
+                      setMobileMenu(false);
+                      handleLogout();
+                    }}
+                    className="w-full py-3 rounded-xl border border-rose-200 text-rose-600 text-center text-xs uppercase tracking-[0.2em] font-medium bg-rose-50 flex items-center justify-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

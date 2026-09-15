@@ -15,7 +15,11 @@ export default function FeaturedExhibition() {
   const [activeCategory, setActiveCategory] = useState('All Works');
   const [artworks, setArtworks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [addedItem, setAddedItem] = useState(null);
+  
+  // Loading & Toast States for Quick Add
+  const [addingId, setAddingId] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   // Horizontal scroll function for category tabs
   const handleScrollTabs = (direction) => {
@@ -49,7 +53,12 @@ export default function FeaturedExhibition() {
     ? artworks
     : artworks.filter((item) => item.category?.toLowerCase() === activeCategory.toLowerCase());
 
-  const handleQuickAdd = (artwork) => {
+  const handleQuickAdd = async (artwork) => {
+    setAddingId(artwork.id);
+    
+    // Simulating a brief professional network response / cart integration
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
     addToCart({
       id: artwork.id,
       title: artwork.title,
@@ -57,12 +66,14 @@ export default function FeaturedExhibition() {
       medium: artwork.medium,
       dimensions: artwork.dimensions,
       price: Number(artwork.price) || 0,
-      image: artwork.image,
+      image: artwork.media?.secureUrl || artwork.image,
       frame: 'Museum Hardwood (+Mat Board)',
     });
 
-    setAddedItem(artwork.id);
-    setTimeout(() => setAddedItem(null), 1800);
+    setAddingId(null);
+    setToastMessage(`"${artwork.title}" successfully added to acquisition bag.`);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3500);
   };
 
   return (
@@ -71,6 +82,23 @@ export default function FeaturedExhibition() {
       {/* Background Soft Lighting Sprays */}
       <div className="absolute top-1/3 left-10 w-[550px] h-[550px] bg-gradient-to-tr from-amber-400/10 via-rose-300/5 to-transparent blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-gradient-to-bl from-indigo-500/10 via-amber-300/5 to-transparent blur-[130px] pointer-events-none" />
+
+      {/* Floating Success Toast Notification */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-8 right-8 z-50 bg-[#1A1A1A] text-white px-6 py-4 rounded-2xl shadow-2xl border border-amber-500/30 flex items-center gap-3 font-mono text-xs"
+          >
+            <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center shrink-0">
+              <Check className="w-4 h-4 stroke-[2.5]" />
+            </div>
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="max-w-7xl mx-auto relative z-10">
         
@@ -164,6 +192,7 @@ export default function FeaturedExhibition() {
             <AnimatePresence>
               {filteredItems.slice(0, 4).map((artwork) => {
                 const isAvailable = artwork.status === 'Available' || artwork.status === 'Available Original';
+                const isAdding = addingId === artwork.id;
 
                 return (
                   <motion.div
@@ -180,62 +209,63 @@ export default function FeaturedExhibition() {
                       
                       {/* Inner Artwork Viewport */}
                       <div className="relative w-full h-full overflow-hidden rounded-xl bg-stone-200 border border-stone-300/80 flex items-center justify-center">
-  {artwork.media?.secureUrl || artwork.image ? (
-    <img
-      src={artwork.media?.secureUrl || artwork.image}
-      alt={artwork.title}
-      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-    />
-  ) : (
-    <div className="flex flex-col items-center justify-center text-stone-400 gap-1.5 p-4 text-center">
-      <Sparkles className="w-5 h-5 text-amber-600/60" />
-      <span className="text-[9px] font-mono tracking-widest uppercase text-stone-500">No Image Recorded</span>
-    </div>
-  )}
+                        {artwork.media?.secureUrl || artwork.image ? (
+                          <img
+                            src={artwork.media?.secureUrl || artwork.image}
+                            alt={artwork.title}
+                            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center justify-center text-stone-400 gap-1.5 p-4 text-center">
+                            <Sparkles className="w-5 h-5 text-amber-600/60" />
+                            <span className="text-[9px] font-mono tracking-widest uppercase text-stone-500">No Image Recorded</span>
+                          </div>
+                        )}
 
-  {/* Top Serial Stamp */}
-  <div className="absolute top-3 left-3 bg-black/75 border border-amber-500/30 backdrop-blur-md text-amber-200 text-[9px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-md font-mono shadow-xs z-10">
-    {artwork.id.toUpperCase()}
-  </div>
+                        {/* Top Serial Stamp */}
+                        <div className="absolute top-3 left-3 bg-black/75 border border-amber-500/30 backdrop-blur-md text-amber-200 text-[9px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-md font-mono shadow-xs z-10">
+                          {artwork.id.toUpperCase()}
+                        </div>
 
-  {/* Top Right Availability Pill */}
-  <div className="absolute top-3 right-3 z-10">
-    <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-mono font-medium backdrop-blur-md border ${
-      isAvailable
-        ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-xs'
-        : 'bg-black/60 text-zinc-300 border-white/10'
-    }`}>
-      {artwork.status}
-    </span>
-  </div>
+                        {/* Top Right Availability Pill */}
+                        <div className="absolute top-3 right-3 z-10">
+                          <span className={`text-[8px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full font-mono font-medium backdrop-blur-md border ${
+                            isAvailable
+                              ? 'bg-emerald-500/90 text-white border-emerald-400/50 shadow-xs'
+                              : 'bg-black/60 text-zinc-300 border-white/10'
+                          }`}>
+                            {artwork.status}
+                          </span>
+                        </div>
 
-  {/* Interactive Floating Action Dock on Hover */}
-  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-2.5 backdrop-blur-[2px] z-20">
-    <Link
-      href={`/shop/${artwork.id}`}
-      className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#1A1A1A] hover:bg-amber-400 hover:text-black transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
-      title="Inspect Artwork"
-    >
-      <Eye className="w-3.5 h-3.5 stroke-[2]" />
-      <span>Inspect</span>
-    </Link>
+                        {/* Interactive Floating Action Dock on Hover */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-2.5 backdrop-blur-[2px] z-20">
+                          <Link
+                            href={`/shop/${artwork.id}`}
+                            className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#1A1A1A] hover:bg-amber-400 hover:text-black transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
+                            title="Inspect Artwork"
+                          >
+                            <Eye className="w-3.5 h-3.5 stroke-[2]" />
+                            <span>Inspect</span>
+                          </Link>
 
-    {isAvailable && (
-      <button
-        type="button"
-        onClick={() => handleQuickAdd(artwork)}
-        className="p-2.5 rounded-xl bg-zinc-950 text-amber-300 hover:bg-amber-500 hover:text-black transition-all shadow-lg cursor-pointer"
-        title="Acquire Artwork"
-      >
-        {addedItem === artwork.id ? (
-          <Check className="w-4 h-4 stroke-[2.5]" />
-        ) : (
-          <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
-        )}
-      </button>
-    )}
-  </div>
-</div>
+                          {isAvailable && (
+                            <button
+                              type="button"
+                              disabled={isAdding}
+                              onClick={() => handleQuickAdd(artwork)}
+                              className="p-2.5 rounded-xl bg-zinc-950 text-amber-300 hover:bg-amber-500 hover:text-black transition-all shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[40px]"
+                              title="Acquire Artwork"
+                            >
+                              {isAdding ? (
+                                <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                              ) : (
+                                <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     {/* Museum Label / Plaque Under Card */}

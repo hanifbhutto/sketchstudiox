@@ -14,14 +14,34 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: 'Sketch Studio X | Luxury Charcoal & Graphite Art',
-  description: 'Handcrafted custom portrait commissions and original artwork exhibitions.',
+  title: 'Sketch Studio X | Hand-Drawn Charcoal Portraits & Fine Art Gallery',
+  description: 'Commission bespoke, hand-drawn portraits of loved ones and cherished pets in pure charcoal, fine graphite, and colored pencil on 300 GSM French cotton paper.',
+  keywords: [
+    'handmade charcoal portraits',
+    'custom pet sketch from photo',
+    'buy original charcoal art',
+    'bespoke family portrait drawing',
+    'fine art atelier UK'
+  ],
+  openGraph: {
+    title: 'Sketch Studio X | Hand-Drawn Charcoal Portraits & Fine Art Gallery',
+    description: 'Commission bespoke, hand-drawn portraits of loved ones and cherished pets on archival cotton paper.',
+    url: 'https://sketchstudiox.com',
+    siteName: 'Sketch Studio X',
+    locale: 'en_GB',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sketch Studio X | Fine Art Atelier',
+    description: 'Commission bespoke hand-drawn charcoal portraits from your reference photos.',
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
-      <body className="min-h-screen flex flex-col antialiased relative">
+      <body className="min-h-screen flex flex-col antialiased relative" suppressHydrationWarning={true}>
         <CartProvider>
           <ConditionalLayout>
             {children}

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Sparkles, ShieldCheck, MapPin, Mail, ArrowUpRight } from 'lucide-react';
+import { Sparkles, ShieldCheck, MapPin, Mail, ArrowUpRight, Loader2 } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -13,11 +13,13 @@ export default function Footer() {
     acceptingCommissions: true,
     logoUrl: '',
   });
+  const [loadingFooter, setLoadingFooter] = useState(true);
 
-  // Fetch live studio settings and logo from database API
+  // Fetch live studio settings and logo from database API with loader
   useEffect(() => {
     async function fetchStudioSettings() {
       try {
+        setLoadingFooter(true);
         const res = await fetch('/api/admin/settings');
         const data = await res.json();
         if (data && !data.error) {
@@ -31,6 +33,8 @@ export default function Footer() {
         }
       } catch (err) {
         console.error('Failed to load footer studio settings', err);
+      } finally {
+        setLoadingFooter(false);
       }
     }
     fetchStudioSettings();
@@ -49,7 +53,16 @@ export default function Footer() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-12 border-b border-white/10 gap-8">
           <div className="space-y-3.5 max-w-lg">
             <Link href="/" className="flex items-center gap-3 group select-none">
-              {studioInfo.logoUrl ? (
+              {loadingFooter ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-stone-800 flex items-center justify-center animate-pulse">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D4A348]" />
+                  </div>
+                  <span className="font-serif text-xl tracking-[0.22em] uppercase font-normal text-white/40 animate-pulse">
+                    Loading Studio...
+                  </span>
+                </div>
+              ) : studioInfo.logoUrl ? (
                 <div className="h-9 max-w-[150px] overflow-hidden flex items-center group-hover:scale-105 transition-transform">
                   <img src={studioInfo.logoUrl} alt={studioInfo.companyName} className="h-full w-auto object-contain" />
                 </div>
@@ -69,15 +82,22 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Live Studio Status & Official Direct Mail */}
+          {/* Live Studio Status & Official Direct Mail with Loader */}
           <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
-            <a 
-              href={`mailto:${studioInfo.studioEmail}`}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 hover:border-[#D4A348]/50 text-[#E7E2D9] hover:text-[#D4A348] transition-colors shadow-inner backdrop-blur-md"
-            >
-              <Mail className="w-3.5 h-3.5 text-[#C29B38]" />
-              <span>{studioInfo.studioEmail}</span>
-            </a>
+            {loadingFooter ? (
+              <div className="px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 text-white/40 animate-pulse flex items-center gap-2">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D4A348]" />
+                <span>Connecting to Studio Desk...</span>
+              </div>
+            ) : (
+              <a 
+                href={`mailto:${studioInfo.studioEmail}`}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 hover:border-[#D4A348]/50 text-[#E7E2D9] hover:text-[#D4A348] transition-colors shadow-inner backdrop-blur-md"
+              >
+                <Mail className="w-3.5 h-3.5 text-[#C29B38]" />
+                <span>{studioInfo.studioEmail}</span>
+              </a>
+            )}
 
             <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-[#D4A348]/25 text-[#E7E2D9] shadow-inner backdrop-blur-md">
               <span className="relative flex h-2 w-2">
@@ -217,18 +237,22 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 5: Statutory Registration Card */}
+          {/* Column 5: Statutory Registration Card with Loader */}
           <div className="col-span-2 md:col-span-1 space-y-3.5 bg-white/[0.03] p-5 rounded-2xl border border-[#D4A348]/25 backdrop-blur-md shadow-inner">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-[#FAF8F5]">
               <ShieldCheck className="w-4 h-4 text-[#C29B38]" />
               <span className="font-mono tracking-wider text-[11px] uppercase">UK Incorporation</span>
             </div>
             <p className="text-[11px] text-[#A8A196] font-light leading-relaxed">
-              {studioInfo.companyName} is a registered entity in England & Wales.
+              {loadingFooter ? 'Loading corporate entity...' : `${studioInfo.companyName} is a registered entity in England & Wales.`}
             </p>
             <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-[#867E74]">
               <span>Company No.</span>
-              <span className="font-bold text-[#D4A348]">{studioInfo.companyNumber}</span>
+              {loadingFooter ? (
+                <span className="animate-pulse text-white/40">Loading...</span>
+              ) : (
+                <span className="font-bold text-[#D4A348]">{studioInfo.companyNumber}</span>
+              )}
             </div>
             <div className="flex items-center justify-between text-[11px] font-mono text-[#867E74]">
               <span>Currency</span>
@@ -242,7 +266,11 @@ export default function Footer() {
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#867E74] gap-4 font-light">
           
           <div className="flex flex-wrap items-center gap-2">
-            <span>&copy; {currentYear} {studioInfo.companyName} (Company No: {studioInfo.companyNumber}). All rights reserved.</span>
+            {loadingFooter ? (
+              <span className="animate-pulse">Loading corporate disclosures...</span>
+            ) : (
+              <span>&copy; {currentYear} {studioInfo.companyName} (Company No: {studioInfo.companyNumber}). All rights reserved.</span>
+            )}
             <span className="hidden sm:inline text-white/20">&bull;</span>
             <span className="text-[#A8A196] font-mono">sketchstudiox.com</span>
           </div>
