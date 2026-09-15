@@ -15,7 +15,9 @@ import {
   CircleDot,
   UploadCloud,
   Trash2,
-  Loader2
+  Loader2,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import MediaPickerModal from '../../../../components/admin/MediaPickerModal';
 
@@ -26,7 +28,9 @@ const DEFAULT_SETTINGS = {
   incorporationJurisdiction: 'England and Wales (UK)',
   currency: 'USD',
   paypalClientId: 'sb-client-id-sample-token-ssx',
+  paypalClientSecret: '',
   paypalEnv: 'sandbox',
+  paypalEnabled: true, // Gateway Active/Inactive State
   turnaroundDays: '7 - 14 Business Days',
   acceptingCommissions: true,
   autoConfirmOrders: true,
@@ -40,6 +44,9 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  // Show/Hide Password State for PayPal Secret
+  const [showSecret, setShowSecret] = useState(false);
+
   // Media Picker Modal State for Logo
   const [showMediaPicker, setShowMediaPicker] = useState(false);
 
@@ -51,20 +58,24 @@ export default function AdminSettingsPage() {
         const res = await fetch('/api/admin/settings');
         const data = await res.json();
         if (data && !data.error) {
-          setSettings({
-            studioEmail: data.studioEmail || DEFAULT_SETTINGS.studioEmail,
-            companyName: data.companyName || DEFAULT_SETTINGS.companyName,
-            companyNumber: data.companyNumber || DEFAULT_SETTINGS.companyNumber,
-            incorporationJurisdiction: data.incorporationJurisdiction || DEFAULT_SETTINGS.incorporationJurisdiction,
-            currency: data.currency || DEFAULT_SETTINGS.currency,
-            paypalClientId: data.paypalClientId || DEFAULT_SETTINGS.paypalClientId,
-            paypalEnv: data.paypalEnv || DEFAULT_SETTINGS.paypalEnv,
-            turnaroundDays: data.turnaroundDays || DEFAULT_SETTINGS.turnaroundDays,
-            acceptingCommissions: data.acceptingCommissions ?? DEFAULT_SETTINGS.acceptingCommissions,
-            autoConfirmOrders: data.autoConfirmOrders ?? DEFAULT_SETTINGS.autoConfirmOrders,
+          setSettings((prev) => ({
+            ...prev,
+            studioEmail: data.studioEmail || prev.studioEmail,
+            companyName: data.companyName || prev.companyName,
+            companyNumber: data.companyNumber || prev.companyNumber,
+            incorporationJurisdiction: data.incorporationJurisdiction || prev.incorporationJurisdiction,
+            currency: data.currency || prev.currency,
+            paypalClientId: data.paypalClientId || prev.paypalClientId,
+            // Agar database se secret blank aaye toh existing state retain rahegi
+            paypalClientSecret: data.paypalClientSecret || prev.paypalClientSecret,
+            paypalEnv: data.paypalEnv || prev.paypalEnv,
+            paypalEnabled: data.paypalEnabled ?? prev.paypalEnabled,
+            turnaroundDays: data.turnaroundDays || prev.turnaroundDays,
+            acceptingCommissions: data.acceptingCommissions ?? prev.acceptingCommissions,
+            autoConfirmOrders: data.autoConfirmOrders ?? prev.autoConfirmOrders,
             logoUrl: data.logoMedia?.secureUrl || data.logoUrl || '',
             logoMediaId: data.logoMediaId || null,
-          });
+          }));
         }
       } catch (err) {
         console.error('Failed to load settings from database', err);
@@ -285,9 +296,19 @@ export default function AdminSettingsPage() {
                 <CreditCard className="w-4 h-4 text-[#C29B38]" />
                 <span>PayPal Smart Buttons Payment Gateway</span>
               </h3>
-              <span className="flex items-center gap-1 text-[10px] font-mono text-[#8C6415] bg-[#FAF8F3] px-2.5 py-0.5 rounded-full border border-[#E5DFD7]">
-                <Lock className="w-3 h-3 text-[#C29B38]" /> TLS 256-bit
-              </span>
+
+              {/* Active / Inactive Toggle Switch */}
+              <label className="flex items-center gap-2 cursor-pointer bg-[#FAF8F3] px-3 py-1.5 rounded-full border border-[#E5DFD7]">
+                <input 
+                  type="checkbox"
+                  checked={settings.paypalEnabled ?? true}
+                  onChange={(e) => handleChange('paypalEnabled', e.target.checked)}
+                  className="rounded accent-[#C29B38] w-3.5 h-3.5 cursor-pointer"
+                />
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#1A1A1A]">
+                  {settings.paypalEnabled ? 'Gateway Active' : 'Gateway Inactive'}
+                </span>
+              </label>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
@@ -323,7 +344,29 @@ export default function AdminSettingsPage() {
                   value={settings.paypalClientId}
                   onChange={(e) => handleChange('paypalClientId', e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                  placeholder="Enter PayPal Client ID"
                 />
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="text-[#1A1A1A] block font-semibold">PayPal REST Client Secret</label>
+                <div className="relative flex items-center">
+                  <input 
+                    type={showSecret ? "text" : "password"} 
+                    value={settings.paypalClientSecret || ''}
+                    onChange={(e) => handleChange('paypalClientSecret', e.target.value)}
+                    className="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-[#FAF8F3] border border-[#E5DFD7] outline-none focus:border-[#C29B38]"
+                    placeholder="Enter PayPal Client Secret"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSecret(!showSecret)}
+                    className="absolute right-3 text-stone-400 hover:text-[#1A1A1A] transition-colors cursor-pointer"
+                    title={showSecret ? "Hide Secret" : "Show Secret"}
+                  >
+                    {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -404,7 +447,9 @@ export default function AdminSettingsPage() {
             <div className="pt-4 border-t border-stone-100 space-y-2.5 text-[11px] font-mono">
               <div className="flex items-center justify-between text-[#867E74]">
                 <span>Gateway Status:</span>
-                <span className="text-[#1A1A1A] font-bold uppercase">{settings.paypalEnv}</span>
+                <span className={`font-bold uppercase ${settings.paypalEnabled ? 'text-emerald-700' : 'text-rose-600'}`}>
+                  {settings.paypalEnabled ? settings.paypalEnv : 'Inactive'}
+                </span>
               </div>
               <div className="flex items-center justify-between text-[#867E74]">
                 <span>Base Currency:</span>

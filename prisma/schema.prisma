@@ -60,6 +60,7 @@ model Order {
   totalAmount Float
   status      String      @default("Pending") // Pending, Confirmed, Shipped, Photo Ingested
   items       OrderItem[]
+  trackingNumber String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -131,7 +132,9 @@ model StudioSettings {
   incorporationJurisdiction String   @default("England and Wales (UK)")
   currency                  String   @default("USD")
   paypalClientId            String   @default("sb-client-id-sample-token-ssx")
+  paypalClientSecret        String?  // <-- Yeh add karein (Client Secret ke liye)
   paypalEnv                 String   @default("sandbox")
+  paypalEnabled             Boolean  @default(true) // <-- Yeh add karein (Active/Inactive toggle ke liye)
   turnaroundDays            String   @default("7 - 14 Business Days")
   acceptingCommissions      Boolean  @default(true)
   autoConfirmOrders         Boolean  @default(true)

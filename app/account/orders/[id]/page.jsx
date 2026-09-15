@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { ArrowLeft, Package, ShieldCheck, Truck, CheckCircle2, Building2, Clock, Sparkles, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
 
 export default function OrderDetailPage({ params }) {
   const resolvedParams = use(params);
@@ -63,6 +64,7 @@ export default function OrderDetailPage({ params }) {
           color: 'text-blue-700 bg-blue-50 border-blue-200'
         };
       case 'shipped':
+      case 'courier dispatched':
         return {
           title: 'Insured Global Transit Dispatched',
           description: 'Your masterpiece is securely traveling via insured curatorial freight. Tracking credentials have been transmitted.',
@@ -145,6 +147,28 @@ export default function OrderDetailPage({ params }) {
           </div>
         </div>
 
+        {/* 🌟 TRACKING WAYBILL HIGHLIGHT CARD (If present) */}
+        {order.trackingNumber && (
+          <div className="p-6 rounded-[24px] bg-[#1A1A1A] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[#C29B38]/20 border border-[#C29B38]/40 flex items-center justify-center shrink-0 text-[#C29B38]">
+                <Truck className="w-6 h-6" />
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#C29B38] font-bold block">
+                  Insured Courier Waybill Registered
+                </span>
+                <span className="font-mono text-lg font-bold tracking-wider text-[#FAF8F5]">
+                  {order.trackingNumber}
+                </span>
+              </div>
+            </div>
+            <div className="text-[11px] font-mono text-[#9E9486] bg-white/[0.06] px-4 py-2 rounded-xl border border-white/10">
+              Use this reference on the courier transit portal.
+            </div>
+          </div>
+        )}
+
         {/* Order Meta Header */}
         <div className="p-8 rounded-[32px] bg-white border border-[#E5DFD7] shadow-xs space-y-6">
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-stone-100 pb-5">
@@ -192,7 +216,7 @@ export default function OrderDetailPage({ params }) {
             {order.items?.map((item, idx) => {
               const art = item.artwork || {};
               const imageUrl = art.media?.secureUrl || art.image || '';
-              const title = art.title || 'Master Original';
+              const title = item.title || art.title || 'Master Original';
 
               return (
                 <div key={idx} className="flex gap-4 items-center pb-4 border-b border-stone-100 last:border-none">
@@ -215,7 +239,7 @@ export default function OrderDetailPage({ params }) {
 
                   <div className="flex-1 space-y-1 font-mono text-xs">
                     <h4 className="font-serif text-sm text-[#1A1A1A] font-medium leading-snug">{title}</h4>
-                    <p className="text-[11px] text-[#867E74]">{art.medium} &bull; {art.dimensions}</p>
+                    <p className="text-[11px] text-[#867E74]">{item.medium || art.medium} &bull; {item.dimensions || art.dimensions}</p>
                     <p className="text-[10px] text-stone-500">Mount & Framing: {item.frame}</p>
                   </div>
 

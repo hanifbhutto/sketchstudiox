@@ -36,7 +36,11 @@ export default function ArtworkDetailPage() {
   const [error, setError] = useState(null);
 
   const [viewMode, setViewMode] = useState('artwork'); // 'artwork' | 'room'
-  const [added, setAdded] = useState(false);
+  
+  // Loading & Toast States for Acquisition
+  const [isAdding, setIsAdding] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   // Precision Loupe Zoom State
   const imageContainerRef = useRef(null);
@@ -86,17 +90,22 @@ export default function ArtworkDetailPage() {
   const handleAddToCart = async () => {
     if (!artwork) return;
 
+    setIsAdding(true);
+
     try {
       // Get existing guest cartId or logged-in userId from localStorage
       const currentCartId = localStorage.getItem('active_cart_id');
-      const userId = localStorage.getItem('userId'); // Sirf tab hoga jab user login ho
+      const userId = localStorage.getItem('userId');
+
+      // Simulate smooth professional network response
+      await new Promise((resolve) => setTimeout(resolve, 600));
 
       const res = await fetch('/api/cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cartId: currentCartId,
-          userId: userId || null, // Guest ke liye null rahega
+          userId: userId || null,
           artworkId: artwork.id,
           frame: DEFAULT_FRAME.label,
         }),
@@ -105,12 +114,10 @@ export default function ArtworkDetailPage() {
       const data = await res.json();
 
       if (res.ok) {
-        // Save the active cartId in localStorage for guest session tracking
         if (data.cartId) {
           localStorage.setItem('active_cart_id', data.cartId);
         }
 
-        // Trigger context update / drawer open
         addToCart({
           id: artwork.id,
           title: artwork.title,
@@ -122,13 +129,16 @@ export default function ArtworkDetailPage() {
           frame: DEFAULT_FRAME.label,
         });
 
-        setAdded(true);
-        setTimeout(() => setAdded(false), 2200);
+        setToastMessage(`"${artwork.title}" successfully added to acquisition bag.`);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3500);
       } else {
         console.error('Failed to add to cart:', data.error);
       }
     } catch (err) {
       console.error('Network error while adding to cart:', err);
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -162,6 +172,23 @@ export default function ArtworkDetailPage() {
   return (
     <div className="min-h-screen pt-32 pb-24 px-6 sm:px-10 bg-[#FAF8F5] relative overflow-hidden">
       
+      {/* Floating Success Toast Notification */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-8 right-8 z-50 bg-[#1A1A1A] text-white px-6 py-4 rounded-2xl shadow-2xl border border-amber-500/30 flex items-center gap-3 font-mono text-xs"
+          >
+            <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center shrink-0">
+              <Check className="w-4 h-4 stroke-[2.5]" />
+            </div>
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Studio Ambient Glows */}
       <div className="absolute top-24 left-1/3 w-[800px] h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(212,163,72,0.08)_0%,transparent_70%)] pointer-events-none" />
       <div className="absolute top-2/3 right-10 w-[600px] h-[500px] bg-gradient-to-bl from-indigo-500/5 via-amber-300/5 to-transparent blur-[140px] pointer-events-none" />
@@ -368,13 +395,13 @@ export default function ArtworkDetailPage() {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                disabled={artwork.status !== 'Available' && artwork.status !== 'Available Original'}
+                disabled={isAdding || (artwork.status !== 'Available' && artwork.status !== 'Available Original')}
                 className="w-full py-4 rounded-2xl bg-[#1A1A1A] text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(212,163,72,0.35)] flex items-center justify-center gap-2.5 group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                {added ? (
+                {isAdding ? (
                   <>
-                    <Check className="w-4 h-4 text-emerald-400" />
-                    <span>Added to Acquisition Bag</span>
+                    <Loader2 className="w-4 h-4 animate-spin text-[#C29B38]" />
+                    <span>Synchronizing Bag...</span>
                   </>
                 ) : (
                   <>

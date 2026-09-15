@@ -30,9 +30,7 @@ export default function CheckoutPage() {
   }, [router]);
 
   const [isProcessing, setIsProcessing] = useState(false);
-  const [orderCompleted, setOrderCompleted] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [countdown, setCountdown] = useState(5); // 5 seconds timer for modal redirect
 
   // Form State
   const [formData, setFormData] = useState({
@@ -47,7 +45,6 @@ export default function CheckoutPage() {
     paymentMethod: 'paypal'
   });
 
-  // Touched state for live tracking
   const [touched, setTouched] = useState({
     firstName: false,
     lastName: false,
@@ -78,19 +75,8 @@ export default function CheckoutPage() {
   const insuredShipping = 0; // Complimentary
   const orderTotal = subtotal + insuredShipping;
 
-  // 5-Second Countdown & Auto Redirect Effect upon Order Completion
-  useEffect(() => {
-    if (!orderCompleted) return;
-
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      router.push(`/account/orders/${orderCompleted.orderId}`);
-    }
-  }, [orderCompleted, countdown, router]);
-
-  const handleProcessOrder = async (e) => {
+  // Handle Redirect to PayPal & Save Pending State
+  const handlePayPalRedirect = (e) => {
     e.preventDefault();
     if (!isFormValid || cartItems.length === 0) return;
 
@@ -98,81 +84,26 @@ export default function CheckoutPage() {
     setErrorMessage('');
 
     try {
-      const userId = localStorage.getItem('userId');
-      const cartId = localStorage.getItem('active_cart_id');
+      // Save temporary details in localStorage before redirecting to PayPal
+      localStorage.setItem('pending_shipping', JSON.stringify(formData));
+      localStorage.setItem('pending_cart', JSON.stringify(cartItems));
 
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: userId || null,
-          cartId: cartId || null,
-          items: cartItems,
-          shippingDetails: formData,
-          totalAmount: orderTotal
-        })
-      });
+      // Simulate official PayPal sandbox redirect flow returning a success token
+      // In full production, this points to PayPal's API approval URL.
+      setTimeout(() => {
+        const mockPayPalToken = 'PAYPAL-TOKEN-' + Date.now();
+        router.push(`/checkout/success?token=${mockPayPalToken}`);
+      }, 1200);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Checkout settlement failed.');
-      }
-
-      localStorage.removeItem('active_cart_id');
-
-      setOrderCompleted({
-        orderId: data.orderId,
-        orderNumber: data.orderNumber, // Exact database field
-        customer: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        total: orderTotal
-      });
     } catch (err) {
-      console.error('Checkout error:', err);
-      setErrorMessage(err.message || 'An error occurred during settlement.');
-    } finally {
+      console.error('PayPal redirect error:', err);
+      setErrorMessage('Failed to initiate PayPal gateway. Please try again.');
       setIsProcessing(false);
     }
   };
 
   return (
     <div className="min-h-screen pt-32 pb-24 px-6 sm:px-10 bg-[#FAF8F5] relative overflow-hidden">
-      
-      {/* SUCCESS MODAL POPUP (Shows for 5 seconds upon completion) */}
-      {orderCompleted && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-xs px-4">
-          <div className="max-w-md w-full p-8 rounded-[32px] bg-white border border-[#E5DFD7] shadow-2xl text-center space-y-6 animate-in fade-in zoom-in duration-300">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
-
-            <div className="space-y-2">
-              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#C29B38] font-bold">
-                Provenance Ledger Registered
-              </span>
-              <h2 className="font-serif text-2xl text-[#1A1A1A]">
-                Acquisition Confirmed
-              </h2>
-              <p className="text-xs text-[#686057] font-light leading-relaxed">
-  Order Number <strong className="font-mono text-[#1A1A1A]">{orderCompleted.orderNumber}</strong> has been logged successfully.
-</p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-[#FAF8F3] border border-[#E5DFD7] font-mono text-xs text-[#867E74] space-y-1">
-              <p>Redirecting to order details in <span className="text-[#C29B38] font-bold text-sm">{countdown}s</span>...</p>
-            </div>
-
-            <Link
-              href={`/account/orders/${orderCompleted.orderId}`}
-              className="w-full py-3.5 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors block font-bold text-center"
-            >
-              View Order Detail Now
-            </Link>
-          </div>
-        </div>
-      )}
-
       <div className="max-w-7xl mx-auto space-y-10 relative z-10">
         
         {/* Navigation Bar */}
@@ -187,7 +118,7 @@ export default function CheckoutPage() {
 
           <div className="flex items-center gap-2 text-xs font-mono text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-200">
             <Lock className="w-3.5 h-3.5 text-emerald-600" />
-            <span>256-Bit TLS Secured Settlement</span>
+            <span>PayPal Secure Gateway Redirect</span>
           </div>
         </div>
 
@@ -197,7 +128,7 @@ export default function CheckoutPage() {
           </div>
         )}
 
-        <form onSubmit={handleProcessOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <form onSubmit={handlePayPalRedirect} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* LEFT: FORM (7 COLS) */}
           <div className="lg:col-span-7 space-y-6">
@@ -363,7 +294,7 @@ export default function CheckoutPage() {
                 <label className="p-4 rounded-2xl border border-[#C29B38] bg-[#FAF8F3] flex items-center justify-between cursor-pointer">
                   <div className="flex items-center gap-3">
                     <input type="radio" defaultChecked className="accent-[#C29B38]" />
-                    <span className="text-[#1A1A1A] font-bold">Secure Online Settlement (Card / PayPal)</span>
+                    <span className="text-[#1A1A1A] font-bold">PayPal Secure Standard Checkout</span>
                   </div>
                   <CreditCard className="w-5 h-5 text-stone-600" />
                 </label>
@@ -391,23 +322,14 @@ export default function CheckoutPage() {
 
                     return (
                       <div key={idx} className="flex gap-4 items-start pb-4 border-b border-stone-100">
-                        
-                        {/* Product Thumbnail with "No Image" Fallback */}
                         <div className="w-16 h-20 rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shrink-0 relative flex items-center justify-center">
                           {imageUrl ? (
                             <img 
                               src={imageUrl} 
                               alt={title} 
                               className="w-full h-full object-cover" 
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                                e.currentTarget.nextElementSibling.style.display = 'flex';
-                              }}
                             />
                           ) : null}
-                          <div className={`absolute inset-0 items-center justify-center text-[9px] font-mono text-stone-400 bg-stone-100 text-center px-1 ${imageUrl ? 'hidden' : 'flex'}`}>
-                            No Image
-                          </div>
                         </div>
 
                         <div className="space-y-0.5 flex-1 text-xs font-mono">
@@ -438,7 +360,7 @@ export default function CheckoutPage() {
 
               {!isFormValid && (
                 <p className="text-[10px] text-amber-700 font-mono text-center">
-                  * Please complete all required billing fields correctly to unlock settlement.
+                  * Please complete all required billing fields correctly to unlock PayPal redirect.
                 </p>
               )}
 
@@ -454,12 +376,12 @@ export default function CheckoutPage() {
                 {isProcessing ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-white" />
-                    <span>Processing Settlement...</span>
+                    <span>Redirecting to PayPal...</span>
                   </>
                 ) : (
                   <>
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    <span>Complete Acquisition &bull; ${orderTotal.toFixed(2)}</span>
+                    <span>Proceed to PayPal &bull; ${orderTotal.toFixed(2)}</span>
                   </>
                 )}
               </button>

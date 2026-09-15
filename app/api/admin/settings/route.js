@@ -52,7 +52,9 @@ export async function POST(request) {
       incorporationJurisdiction,
       currency,
       paypalClientId,
+      paypalClientSecret, // <-- Yeh add karein
       paypalEnv,
+      paypalEnabled,      // <-- Yeh bhi add karein
       turnaroundDays,
       acceptingCommissions,
       autoConfirmOrders,
@@ -69,11 +71,18 @@ export async function POST(request) {
       currency,
       paypalClientId,
       paypalEnv,
+      paypalEnabled,      // <-- Yahan bhi include karein
       turnaroundDays,
       acceptingCommissions,
       autoConfirmOrders,
       logoMediaId: logoMediaId || null,
     };
+
+    // Agar user ne naya secret enter kiya hai tabhi update ho, 
+    // taake agar blank chhor diya jaye toh purana secret overwrite na ho.
+    if (paypalClientSecret !== undefined && paypalClientSecret !== '') {
+      dataPayload.paypalClientSecret = paypalClientSecret;
+    }
 
     if (settings) {
       settings = await prisma.studioSettings.update({
@@ -83,7 +92,10 @@ export async function POST(request) {
       });
     } else {
       settings = await prisma.studioSettings.create({
-        data: dataPayload,
+        data: {
+          ...dataPayload,
+          paypalClientSecret: paypalClientSecret || '',
+        },
         include: { logoMedia: true },
       });
     }

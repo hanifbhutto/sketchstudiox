@@ -12,15 +12,16 @@ import {
   MapPin, 
   Package, 
   Palette,
-  FileText
+  FileText,
+  Truck
 } from 'lucide-react';
 import Link from 'next/link';
 
 const PRODUCTION_STEPS = [
-  'Photo Ingested',
-  'Draft in Progress',
-  'Wax Seal & Quality Check',
-  'Shipped'
+  'Phase 01: Photo Ingested',
+  'Phase 02: Hand-Rendering',
+  'Phase 03: Digital Proof Transmitted',
+  'Phase 04: Wax-Sealed & Dispatched'
 ];
 
 export default function CommissionDetailPage() {
@@ -80,11 +81,19 @@ export default function CommissionDetailPage() {
   // Cloudinary Secure Permanent URL retrieval (Direct from OrderItem media relation)
   const imageUrl = firstItem.media?.secureUrl || firstItem.artwork?.media?.secureUrl || '';
 
-  // Determine active step index
-  const currentStatus = commission.status || 'Photo Ingested';
-  const currentStepIndex = PRODUCTION_STEPS.indexOf(currentStatus) !== -1 
-    ? PRODUCTION_STEPS.indexOf(currentStatus) 
-    : 0;
+  // Smart status matcher function for exact admin phases
+  const getStepIndex = (status) => {
+    if (!status) return 0;
+    const lower = status.toLowerCase();
+    if (lower.includes('phase 01') || lower.includes('ingested')) return 0;
+    if (lower.includes('phase 02') || lower.includes('hand-rendering') || lower.includes('rendering')) return 1;
+    if (lower.includes('phase 03') || lower.includes('digital proof') || lower.includes('transmitted')) return 2;
+    if (lower.includes('phase 04') || lower.includes('wax-sealed') || lower.includes('dispatched')) return 3;
+    return 0;
+  };
+
+  const currentStatus = commission.status || 'Phase 01: Photo Ingested';
+  const currentStepIndex = getStepIndex(currentStatus);
 
   return (
     <div className="min-h-screen pb-24 px-6 sm:px-10 bg-[#FAF8F5]">
@@ -156,16 +165,38 @@ export default function CommissionDetailPage() {
                   </div>
                   <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#1A1A1A]">{step}</h4>
                   <p className="text-[10px] text-[#867E74] font-light mt-1">
-                    {idx === 0 && 'Reference ingested & verified'}
-                    {idx === 1 && 'Charcoal & graphite rendering'}
-                    {idx === 2 && 'Sealed, matted & inspected'}
-                    {idx === 3 && 'Dispatched via secure courier'}
+                    {idx === 0 && 'Photo ingested & verified'}
+                    {idx === 1 && 'Hand-rendering progression'}
+                    {idx === 2 && 'Digital proof transmitted'}
+                    {idx === 3 && 'Wax-sealed & dispatched'}
                   </p>
                 </div>
               );
             })}
           </div>
         </div>
+
+        {/* 🌟 TRACKING WAYBILL CARD (If present) */}
+        {commission.trackingNumber && (
+          <div className="p-6 rounded-[24px] bg-[#1A1A1A] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[#C29B38]/20 border border-[#C29B38]/40 flex items-center justify-center shrink-0 text-[#C29B38]">
+                <Truck className="w-6 h-6" />
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#C29B38] font-bold block">
+                  Insured Courier Waybill Registered
+                </span>
+                <span className="font-mono text-lg font-bold tracking-wider text-[#FAF8F5]">
+                  {commission.trackingNumber}
+                </span>
+              </div>
+            </div>
+            <div className="text-[11px] font-mono text-[#9E9486] bg-white/[0.06] px-4 py-2 rounded-xl border border-white/10">
+              Use this reference on the courier transit portal.
+            </div>
+          </div>
+        )}
 
         {/* Artwork Specification & Cloudinary Reference Photo Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Package, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Package, ArrowRight, Truck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function OrdersPage() {
@@ -86,9 +86,19 @@ export default function OrdersPage() {
                   </h3>
                   <p className="text-xs text-[#867E74]">{medium} &bull; Size: {size}</p>
 
-                  <div className="pt-2 flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span className="text-xs font-mono font-medium text-[#1A1A1A]">{order.status}</span>
+                  <div className="pt-2 flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                      <span className="text-xs font-mono font-medium text-[#1A1A1A]">{order.status}</span>
+                    </div>
+
+                    {/* Show Tracking Number if exists */}
+                    {order.trackingNumber && (
+                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF8F3] border border-[#E5DFD7] text-xs font-mono text-[#C29B38]">
+                        <Truck className="w-3.5 h-3.5" />
+                        <span>Waybill: <strong className="text-[#1A1A1A]">{order.trackingNumber}</strong></span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -100,7 +110,7 @@ export default function OrdersPage() {
 
                   <Link
                     href={`/account/orders/${order.id}`}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors font-bold"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-xs font-mono uppercase tracking-wider hover:bg-[#C29B38] transition-colors font-bold cursor-pointer"
                   >
                     <span>Inspect Ledger</span>
                     <ArrowRight className="w-3.5 h-3.5" />

@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, Sparkles, User, LogOut } from 'lucide-react';
+import { ShoppingBag, Menu, X, Sparkles, User, LogOut, Loader2 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [studioLogo, setStudioLogo] = useState('');
+  const [logoLoading, setLogoLoading] = useState(true); // <-- Logo loading state added
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { setIsCartOpen, totalItems } = useCart();
 
@@ -40,10 +41,11 @@ export default function Navbar() {
     };
   }, []);
 
-  // Fetch studio settings to check if custom logo is uploaded
+  // Fetch studio settings to check if custom logo is uploaded with loader handling
   useEffect(() => {
     async function fetchLogo() {
       try {
+        setLogoLoading(true);
         const res = await fetch('/api/admin/settings');
         const data = await res.json();
         if (data && data.logoUrl) {
@@ -51,6 +53,8 @@ export default function Navbar() {
         }
       } catch (err) {
         console.error('Failed to load studio logo config', err);
+      } finally {
+        setLogoLoading(false);
       }
     }
     fetchLogo();
@@ -87,9 +91,18 @@ export default function Navbar() {
               : 'bg-[#FAF8F5]/60 backdrop-blur-md border-black/5 shadow-xs'
           }`}
         >
-          {/* Brand Identity */}
+          {/* Brand Identity with Logo Loader */}
           <Link href="/" className="flex items-center gap-3 group select-none">
-            {studioLogo ? (
+            {logoLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-stone-200/70 flex items-center justify-center animate-pulse">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C29B38]" />
+                </div>
+                <span className="font-serif text-base sm:text-lg tracking-[0.22em] uppercase font-normal text-[#1A1A1A]/50 animate-pulse">
+                  Sketch Studio X
+                </span>
+              </div>
+            ) : studioLogo ? (
               <div className="h-9 max-w-[150px] overflow-hidden flex items-center group-hover:scale-105 transition-transform">
                 <img src={studioLogo} alt="Sketch Studio X" className="h-full w-auto object-contain" />
               </div>
@@ -134,18 +147,18 @@ export default function Navbar() {
             {/* Prominent Login / Dashboard & Logout Buttons */}
             {isLoggedIn ? (
               <div className="flex items-center gap-2">
-                <Link
-                  href="/account"
-                  className="px-3.5 py-2 rounded-full border border-[#C29B38]/40 bg-[#FAF8F3] text-[10px] font-mono uppercase tracking-wider text-[#1A1A1A] hover:bg-[#C29B38] hover:text-white transition-all flex items-center gap-1.5 shadow-xs"
-                  title="Customer Dashboard"
-                >
-                  <User className="w-3.5 h-3.5 text-[#C29B38]" />
-                  <span className="hidden sm:inline font-semibold">Dashboard</span>
-                </Link>
+               <Link
+                 href="/account"
+                 className="group px-3.5 py-2 rounded-full border border-[#C29B38]/40 bg-[#FAF8F3] text-[10px] font-mono uppercase tracking-wider text-[#1A1A1A] hover:bg-[#C29B38] hover:text-white transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                 title="Customer Dashboard"
+               >
+                 <User className="w-3.5 h-3.5 text-[#C29B38] group-hover:text-white transition-colors" />
+                 <span className="hidden sm:inline font-semibold">Dashboard</span>
+               </Link>
 
                 <button
                   onClick={handleLogout}
-                  className="p-2 rounded-full border border-stone-200 bg-white text-stone-500 hover:text-rose-600 hover:border-rose-200 transition-colors shadow-xs"
+                  className="p-2 rounded-full cursor-pointer border border-stone-200 bg-white text-stone-500 hover:text-rose-600 hover:border-rose-200 transition-colors shadow-xs"
                   title="Sign Out"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -154,7 +167,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="px-5 py-2 rounded-full bg-[#1A1A1A] text-[#FAF8F5] text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-xs"
+                className="px-5 py-2 rounded-full bg-[#1A1A1A] cursor-pointer text-[#FAF8F5] text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-[#C29B38] transition-all duration-300 shadow-xs"
               >
                 Sign In
               </Link>
@@ -163,7 +176,7 @@ export default function Navbar() {
             {/* Bag Button Connected to Drawer State */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 rounded-full hover:bg-black/5 hover:text-[#C29B38] transition-colors group"
+              className="relative p-2 rounded-full cursor-pointer hover:bg-black/5 hover:text-[#C29B38] transition-colors group"
               title="Acquisition Bag"
             >
               <ShoppingBag className="w-4 h-4 stroke-[1.75]" />
