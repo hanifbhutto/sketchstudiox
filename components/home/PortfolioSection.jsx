@@ -1,78 +1,285 @@
 'use client';
 
-import { useState } from 'react';
-import { Sparkles, Eye, ArrowRight } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Sparkles, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 const PORTFOLIO_ITEMS = [
+  // 1. Dog Portraits (Priority First)
   {
-    id: 'p1',
-    title: 'The Silent Reverie',
-    category: 'Human Portraits',
-    medium: 'Raw Willow Charcoal & 8B Graphite',
-    image: 'images/home-frames/fr-1.jpeg',
-    dimensions: '16×20 in',
-    rotation: 'lg:-rotate-2 lg:translate-y-4',
-  },
-  {
-    id: 'p2',
-    title: 'Loyal Companion Study',
-    medium: 'Vine Charcoal on Arches 300 GSM',
-    category: 'Pet Portraits',
-    image: 'images/home-frames/fr-2.jpg',
+    id: 'd1',
+    title: 'English Springer Spaniel Study',
+    category: 'Dog',
+    medium: 'Fine Graphite on Cotton Sheet',
+    image: '/images/custom-gallery/dog/english-springer-spaniel-drawing.jpeg',
     dimensions: '12×16 in',
-    rotation: 'lg:rotate-1 lg:-translate-y-6',
   },
   {
-    id: 'p3',
-    title: 'Heritage Bridal Radiance',
-    medium: 'Vibrant Colored Pencil & Prismacolor',
-    category: 'Couples & Family',
-    image: 'images/home-frames/fr-3.jpeg',
-    dimensions: '20×30 in',
-    rotation: 'lg:-rotate-1 lg:translate-y-8',
-  },
-  {
-    id: 'p4',
-    title: 'Ethereal Gaze Study',
-    medium: 'Fine Graphite on Fabriano Paper',
-    category: 'Human Portraits',
-    image: 'images/home-frames/fr-4.jpeg',
-    dimensions: 'A3 Format',
-    rotation: 'lg:rotate-2 lg:-translate-y-2',
-  },
-  {
-    id: 'p5',
-    title: 'Majestic Canine Portrait',
-    medium: 'Raw Charcoal & White Chalk Accent',
-    category: 'Pet Portraits',
-    image: 'images/home-frames/fr-5.jpeg',
+    id: 'd2',
+    title: 'Black Lab & Shepherd Mix',
+    category: 'Dog',
+    medium: 'Raw Charcoal & Graphite',
+    image: '/images/custom-gallery/dog/black-lab-shepherd-mix-portrait.jpeg',
     dimensions: '16×20 in',
-    rotation: 'lg:-rotate-3 lg:translate-y-6',
   },
   {
-    id: 'p6',
+    id: 'd3',
+    title: 'Australian Cattle Dog Study',
+    category: 'Dog',
+    medium: 'Detailed Pencil & Charcoal',
+    image: '/images/custom-gallery/dog/australian-cattle-dog-painting.jpeg',
+    dimensions: '16×20 in',
+  },
+  {
+    id: 'd4',
+    title: 'Brindle Cane Corso Mastiff',
+    category: 'Dog',
+    medium: 'Vine Charcoal on Arches 300 GSM',
+    image: '/images/custom-gallery/dog/brindle-cane-corso-mastiff-sketch.jpeg',
+    dimensions: '20×24 in',
+  },
+  {
+    id: 'd5',
+    title: 'Dachshund & Spaniel Puppies',
+    category: 'Dog',
+    medium: 'Fine Graphite on Fabriano Paper',
+    image: '/images/custom-gallery/dog/dachshund-spaniel-puppies-drawing.jpeg',
+    dimensions: '16×20 in',
+  },
+  {
+    id: 'd6',
+    title: 'German Shepherd Master Portrait',
+    category: 'Dog',
+    medium: 'Charcoal & White Chalk Accent',
+    image: '/images/custom-gallery/dog/german-shepherd-oil-portrait.jpeg',
+    dimensions: '20×30 in',
+  },
+  {
+    id: 'd7',
+    title: 'Siberian Husky Blue Eyes Study',
+    category: 'Dog',
+    medium: 'Fine Graphite & Pastel Pencil',
+    image: '/images/custom-gallery/animals/siberian-husky-blue-eyes-drawing.jpeg',
+    dimensions: '16×20 in',
+  },
+
+  // 2. Animal / Wildlife & Horse Portraits
+  {
+    id: 'a1',
+    title: 'Texas Longhorn Cattle Study',
+    category: 'Animal',
+    medium: 'Fine Graphite & Charcoal',
+    image: '/images/custom-gallery/animals/texas-longhorn-cattle-drawing.jpeg',
+    dimensions: '20×30 in',
+  },
+  {
+    id: 'a2',
+    title: 'Chestnut Horse Portrait Study',
+    category: 'Animal',
+    medium: 'Oil & Fine Brushwork on Canvas',
+    image: '/images/custom-gallery/animals/chestnut-horse-portrait-painting.jpeg',
+    dimensions: '24×36 in',
+  },
+  {
+    id: 'a3',
+    title: 'Leopard Resting on Tree Branch',
+    category: 'Animal',
+    medium: 'Detailed Acrylic & Charcoal Painting',
+    image: '/images/custom-gallery/animals/leopard-resting-tree-branch-painting.jpeg',
+    dimensions: '20×30 in',
+  },
+  {
+    id: 'a4',
+    title: 'Bay Horse Head Study',
+    category: 'Animal',
+    medium: 'Fine Art Painting',
+    image: '/images/custom-gallery/animals/bay-horse-head-study-painting.jpeg',
+    dimensions: '18×24 in',
+  },
+  {
+    id: 'a5',
+    title: 'Cheetah Face Canvas Portrait',
+    category: 'Animal',
+    medium: 'Acrylic & Detailed Inkwork',
+    image: '/images/custom-gallery/animals/cheetah-face-canvas-portrait.jpeg',
+    dimensions: '16×20 in',
+  },
+  {
+    id: 'a6',
+    title: 'Bengal Tiger Master Painting',
+    category: 'Animal',
+    medium: 'Acrylic on Canvas',
+    image: '/images/custom-gallery/animals/bengal-tiger-acrylic-painting.jpeg',
+    dimensions: '24×36 in',
+  },
+  {
+    id: 'a7',
+    title: 'African Wild Painted Dog',
+    category: 'Animal',
+    medium: 'Detailed Colored Pencil Study',
+    image: '/images/custom-gallery/animals/african-wild-painted-dog-portrait.jpeg',
+    dimensions: '16×20 in',
+  },
+
+  // 3. Birds Portraits
+  {
+    id: 'b1',
+    title: 'Hoopoe Bird on Branch Study',
+    category: 'Birds',
+    medium: 'Fine Graphite & Pencil on Cotton',
+    image: '/images/custom-gallery/birds/hoopoe-bird-branch-drawing.jpeg',
+    dimensions: '12×16 in',
+  },
+  {
+    id: 'b2',
+    title: 'Secretary Bird Pastel Portrait',
+    category: 'Birds',
+    medium: 'Fine Pastel & Colored Pencil',
+    image: '/images/custom-gallery/birds/secretary-bird-pastel-portrait.jpeg',
+    dimensions: '16×20 in',
+  },
+
+  // 4. Cat Portraits
+  {
+    id: 'cat1',
+    title: 'Green-Eyed Tabby Study',
+    category: 'Cat',
+    medium: 'Fine Colored Pencil & Graphite',
+    image: '/images/custom-gallery/cat/green-eyed-tabby-cat-portrait.jpeg',
+    dimensions: '12×16 in',
+  },
+
+  // 5. Man Portraits
+  {
+    id: 'm1',
+    title: 'Atmospheric Smoke Study',
+    category: 'Man',
+    medium: 'Fine Charcoal & Graphite on Paper',
+    image: '/images/custom-gallery/man/man-smoking-cigarette-portrait.jpeg',
+    dimensions: '16×20 in',
+  },
+  {
+    id: 'm2',
     title: 'Generational Bond',
+    category: 'Man',
     medium: 'Graphite & Charcoal Hybrid',
-    category: 'Couples & Family',
     image: 'images/home-frames/fr-6.jpeg',
     dimensions: '24×36 in',
-    rotation: 'lg:rotate-1 lg:-translate-y-4',
+  },
+
+  // 6. Woman Portraits
+  {
+    id: 'w1',
+    title: 'Afra Saracoglu Portrait Study',
+    category: 'Woman',
+    medium: 'Fine Graphite & Charcoal on Cotton',
+    image: '/images/custom-gallery/woman/afra-saracoglu.jpeg',
+    dimensions: '16×20 in',
+  },
+  {
+    id: 'w2',
+    title: 'Smiling Radiance Study',
+    category: 'Woman',
+    medium: 'Vine Charcoal on Arches 300 GSM',
+    image: '/images/custom-gallery/woman/girl-smiling-tshirt-sketch.jpeg',
+    dimensions: '12×16 in',
+  },
+  {
+    id: 'w3',
+    title: 'Playful Gaze in Jacket',
+    category: 'Woman',
+    medium: 'Raw Willow Charcoal & Graphite',
+    image: '/images/custom-gallery/woman/playful-girl-jacket-portrait.jpeg',
+    dimensions: '16×20 in',
+  },
+  {
+    id: 'w4',
+    title: 'Ethereal High Bun Study',
+    category: 'Woman',
+    medium: 'Fine Graphite on Fabriano Paper',
+    image: '/images/custom-gallery/woman/girl-high-bun-halter-top.jpeg',
+    dimensions: 'A3 Format',
+  },
+  {
+    id: 'w5',
+    title: 'Nour Ghandour Contour Study',
+    category: 'Woman',
+    medium: 'Charcoal & White Chalk Accent',
+    image: '/images/custom-gallery/woman/nour-ghandour.jpeg',
+    dimensions: '20×30 in',
+  },
+  {
+    id: 'w6',
+    title: 'Cat-Eye Glamour Portrait',
+    category: 'Woman',
+    medium: 'Detailed Graphite Shading',
+    image: '/images/custom-gallery/woman/cat-eye-glam-portrait.jpeg',
+    dimensions: '16×20 in',
+  },
+  {
+    id: 'w7',
+    title: 'Braided Hair & Headscarf Study',
+    category: 'Woman',
+    medium: 'Vine Charcoal on Cotton Sheet',
+    image: '/images/custom-gallery/woman/girl-headscarf-braided-hair.jpeg',
+    dimensions: '18×24 in',
+  },
+  {
+    id: 'w8',
+    title: 'Daisy Blossom Elegance',
+    category: 'Woman',
+    medium: 'Graphite & Colored Pencil Hybrid',
+    image: '/images/custom-gallery/woman/girl-daisy-flower-portrait.jpeg',
+    dimensions: '16×20 in',
+  },
+
+  // 7. Couple Portraits
+  {
+    id: 'c1',
+    title: 'Titanic Cinematic Romance Study',
+    category: 'Couple',
+    medium: 'Fine Graphite & Charcoal on Arches Paper',
+    image: '/images/custom-gallery/couple/titanic-jack-and-rose-sketch.jpeg',
+    dimensions: '20×30 in',
+  },
+  {
+    id: 'c2',
+    title: 'Heritage Bridal Radiance',
+    category: 'Couple',
+    medium: 'Vibrant Colored Pencil & Prismacolor',
+    image: 'images/home-frames/fr-3.jpeg',
+    dimensions: '20×30 in',
   },
 ];
 
-const CATEGORIES = ['All', 'Human Portraits', 'Pet Portraits', 'Couples & Family'];
+const CATEGORIES = ['All', 'Dog', 'Animal', 'Birds', 'Cat', 'Man', 'Woman', 'Couple'];
 
 export default function PortfolioSection() {
   const [activeTab, setActiveTab] = useState('All');
+  const categoriesScrollRef = useRef(null);
+  const galleryScrollRef = useRef(null);
 
   const filteredItems = activeTab === 'All'
     ? PORTFOLIO_ITEMS
-    : PORTFOLIO_ITEMS.filter(item => item.category === activeTab);
+    : PORTFOLIO_ITEMS.filter(item => item.category.toLowerCase() === activeTab.toLowerCase());
 
   const handleTabClick = (e, cat) => {
     e.preventDefault();
     setActiveTab(cat);
+  };
+
+  const scrollCategories = (direction) => {
+    if (categoriesScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -150 : 150;
+      categoriesScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const scrollSlider = (direction) => {
+    if (galleryScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -350 : 350;
+      galleryScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -82,94 +289,127 @@ export default function PortfolioSection() {
       <div className="absolute top-1/4 right-1/4 w-[500px] h-[300px] sm:w-[700px] sm:h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(228,197,119,0.1)_0%,transparent_70%)] pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-[350px] h-[250px] sm:w-[500px] sm:h-[350px] bg-[radial-gradient(ellipse_at_bottom,rgba(228,197,119,0.06)_0%,transparent_70%)] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto space-y-12 sm:space-y-16 relative z-10">
+      <div className="max-w-7xl mx-auto space-y-10 sm:space-y-12 relative z-10">
         
-        {/* Top Header & Short Description */}
-        <div className="text-center max-w-2xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#e4c577]/30 bg-[#e4c577]/10 text-[#e4c577] text-[10px] uppercase tracking-[0.25em] font-mono font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-[#e4c577]" />
-            <span>Atelier Gallery Wall</span>
+        {/* Top Header & Category Filter Tabs */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-white/10 pb-8">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#e4c577]/30 bg-[#e4c577]/10 text-[#e4c577] text-[10px] uppercase tracking-[0.25em] font-mono font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-[#e4c577]" />
+              <span>Explore Gallery</span>
+            </div>
+
+            <h2 className="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>
+              Explore Custom Portraits <span className="italic font-light text-[#e4c577]">Gallery</span>
+            </h2>
           </div>
 
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>
-            Selected works from <br />
-            <span className="italic font-light text-[#e4c577]">
-              recent master commissions.
-            </span>
-          </h2>
+          {/* Category Filter Container with Left/Right Scroll Arrows */}
+          <div className="flex items-center gap-2 w-full lg:w-auto">
+            <button
+              type="button"
+              onClick={() => scrollCategories('left')}
+              className="p-2 rounded-full bg-[#171513] border border-white/10 text-[#A8A196] hover:text-white hover:border-[#e4c577] transition-all cursor-pointer shrink-0"
+              aria-label="Scroll categories left"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
 
-          <p className="text-xs sm:text-sm text-[#A8A196] font-light leading-relaxed">
-            Explore our curated exhibition of hand-drawn human expressions, beloved companion pets, and multi-figure family heirlooms on archival cotton sheets.
-          </p>
+            <div 
+              ref={categoriesScrollRef}
+              className="flex items-center gap-2 bg-[#171513] p-1.5 rounded-full border border-white/10 overflow-x-auto scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden max-w-full"
+            >
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={(e) => handleTabClick(e, cat)}
+                  className={`px-4 py-2 rounded-full text-[10px] uppercase tracking-[0.18em] font-mono font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                    activeTab === cat
+                      ? 'bg-[#e4c577] text-[#0A0908] shadow-md'
+                      : 'text-[#A8A196] hover:text-white'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
 
-          {/* Category Filter Tabs */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={(e) => handleTabClick(e, cat)}
-                className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-mono font-medium transition-all cursor-pointer border ${
-                  activeTab === cat
-                    ? 'bg-[#e4c577] text-[#0A0908] border-[#e4c577] font-bold shadow-md'
-                    : 'bg-white/[0.04] text-[#A8A196] border-white/10 hover:border-[#e4c577]/40 hover:text-white'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+            <button
+              type="button"
+              onClick={() => scrollCategories('right')}
+              className="p-2 rounded-full bg-[#171513] border border-white/10 text-[#A8A196] hover:text-white hover:border-[#e4c577] transition-all cursor-pointer shrink-0"
+              aria-label="Scroll categories right"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* Scattered Organic Gallery Wall Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 lg:gap-16 pt-2 sm:pt-4">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className={`group flex flex-col space-y-3 sm:space-y-4 cursor-pointer transition-transform duration-500 hover:rotate-0 hover:translate-y-0 ${item.rotation || ''}`}
-            >
-              {/* DARK LUXURY FRAME WITH FULL FRAME object-cover */}
-              <div className="relative p-4 sm:p-6 rounded-[24px] bg-[#171513] border border-[#e4c577]/30 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.8)] group-hover:shadow-[0_25px_55px_-10px_rgba(228,197,119,0.25)] group-hover:border-[#e4c577]/60 transition-all duration-500">
-                
-                {/* Category Stamp inside Frame */}
-                <div className="absolute top-7 left-7 sm:top-8 sm:left-8 z-20 px-2.5 py-1 rounded-md bg-black/80 border border-[#e4c577]/40 text-[9px] uppercase tracking-widest text-[#FAF8F5] font-mono backdrop-blur-md">
-                  {item.category}
-                </div>
-
-                {/* Artwork Image Viewport with object-cover */}
-                <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-[#141210] border border-white/10 shadow-inner flex items-center justify-center">
+        {/* Horizontal Scrollable Gallery Row with Navigation Controls */}
+        <div className="relative">
+          <div 
+            ref={galleryScrollRef}
+            className="flex items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {filteredItems.map((item) => (
+              <div
+                key={item.id}
+                className="group relative min-w-[280px] sm:min-w-[320px] lg:min-w-[360px] aspect-[4/5] rounded-[24px] bg-[#171513] border border-[#e4c577]/30 overflow-hidden shadow-[0_20px_40px_-12px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_55px_-10px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/60 transition-all duration-500 cursor-pointer flex flex-col justify-end p-6"
+              >
+                {/* Artwork Image Background with object-cover */}
+                <div className="absolute inset-0 bg-[#141210]">
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out contrast-110"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out contrast-110 opacity-90 group-hover:opacity-100"
                   />
+                  {/* Dark Gradient Overlay for text readability at bottom */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0908] via-black/40 to-transparent" />
+                </div>
 
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-4 backdrop-blur-[2px]">
-                    <span className="text-[#e4c577] text-xs font-mono tracking-wider flex items-center gap-1.5">
-                      <Eye className="w-4 h-4 text-[#e4c577]" />
-                      <span>Archival Specimen &bull; {item.dimensions}</span>
-                    </span>
+                {/* Top Category Badge */}
+                <div className="absolute top-5 left-5 z-20 px-3 py-1 rounded-md bg-black/80 border border-[#e4c577]/40 text-[9px] uppercase tracking-widest text-[#FAF8F5] font-mono backdrop-blur-md">
+                  {item.category} Portraits
+                </div>
+
+                {/* Bottom Label & Info */}
+                <div className="relative z-20 space-y-1">
+                  <h3 className="font-serif text-lg text-[#FAF8F5] group-hover:text-[#e4c577] transition-colors" style={{ fontFamily: 'Georgia, serif' }}>
+                    {item.title}
+                  </h3>
+                  <p className="text-[11px] text-[#A8A196] font-light">{item.medium}</p>
+                  <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-[#e4c577]">
+                    <span>{item.dimensions}</span>
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
 
-              {/* Clean Minimalist Plaque Under Frame */}
-              <div className="px-2 flex items-baseline justify-between">
-                <div>
-                  <h3 className="font-serif text-sm sm:text-base text-[#FAF8F5] group-hover:text-[#e4c577] transition-colors" style={{ fontFamily: 'Georgia, serif' }}>
-                    {item.title}
-                  </h3>
-                  <p className="text-[10px] sm:text-[11px] text-[#A8A196] font-light">{item.medium}</p>
-                </div>
-                <span className="font-mono text-xs text-[#e4c577] font-medium">{item.dimensions}</span>
-              </div>
-            </div>
-          ))}
+          {/* Gallery Row Quick Scroll Buttons */}
+          <div className="hidden sm:flex items-center justify-end gap-2 mt-4">
+            <button
+              type="button"
+              onClick={() => scrollSlider('left')}
+              className="p-3 rounded-full bg-[#171513] border border-white/10 text-[#A8A196] hover:text-white hover:border-[#e4c577] transition-all cursor-pointer shadow-md"
+              aria-label="Scroll gallery left"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollSlider('right')}
+              className="p-3 rounded-full bg-[#171513] border border-white/10 text-[#A8A196] hover:text-white hover:border-[#e4c577] transition-all cursor-pointer shadow-md"
+              aria-label="Scroll gallery right"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-        {/* Bottom CTA (Shorter button on mobile) */}
-        <div className="text-center pt-6 sm:pt-8">
+        {/* Bottom CTA */}
+        <div className="text-center pt-6">
           <Link
             href="/custom-sketch"
             className="inline-flex items-center gap-2.5 px-6 py-3 sm:px-8 sm:py-4 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-[11px] sm:text-xs uppercase tracking-[0.2em] font-semibold hover:brightness-110 transition-all shadow-lg group"

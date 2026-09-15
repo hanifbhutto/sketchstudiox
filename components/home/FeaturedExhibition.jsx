@@ -109,7 +109,7 @@ export default function FeaturedExhibition() {
 
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         
-        {/* Editorial Section Header (Clean Stack Layout) */}
+        {/* Editorial Section Header */}
         <motion.div 
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -216,7 +216,7 @@ export default function FeaturedExhibition() {
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="group flex flex-col justify-between"
                   >
-                    {/* Dark Luxury Frame Card with Hover Lift Effect */}
+                    {/* Dark Luxury Frame Card */}
                     <div className="relative aspect-[3/4] bg-[#171513] p-4 rounded-2xl border border-white/10 overflow-hidden shadow-[0_15px_35px_-5px_rgba(0,0,0,0.8)] sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] sm:group-hover:border-[#e4c577]/60 transition-all duration-500">
                       
                       {/* Inner Viewport with full object-cover */}
@@ -250,14 +250,14 @@ export default function FeaturedExhibition() {
                           </span>
                         </div>
 
-                        {/* Interactive Floating Action Dock on Hover */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-2.5 backdrop-blur-[2px] z-20">
+                        {/* Interactive Floating Action Dock (Clear on mobile, blur-reveal on desktop) */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-2.5 backdrop-blur-none sm:backdrop-blur-[2px] z-20">
                           <Link
                             href={`/shop/${artwork.id}`}
-                            className="flex-1 py-3 sm:py-2.5 rounded-xl bg-white/95 text-[#0A0908] hover:bg-[#e4c577] hover:text-black transition-all text-[11px] sm:text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
+                            className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#0A0908] hover:bg-[#e4c577] hover:text-black transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"
                             title="Inspect Artwork"
                           >
-                            <Eye className="w-4 h-4 sm:w-3.5 sm:h-3.5 stroke-[2]" />
+                            <Eye className="w-3.5 h-3.5 stroke-[2]" />
                             <span>Inspect</span>
                           </Link>
 
@@ -266,7 +266,7 @@ export default function FeaturedExhibition() {
                               type="button"
                               disabled={isAdding}
                               onClick={() => handleQuickAdd(artwork)}
-                              className="p-3 sm:p-2.5 rounded-xl bg-[#0A0908] text-[#e4c577] hover:bg-[#e4c577] hover:text-[#0A0908] transition-all shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[44px] sm:min-w-[40px]"
+                              className="p-2.5 rounded-xl bg-[#0A0908] text-[#e4c577] hover:bg-[#e4c577] hover:text-[#0A0908] transition-all shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center min-w-[40px]"
                               title="Acquire Artwork"
                             >
                               {isAdding ? (
@@ -283,19 +283,19 @@ export default function FeaturedExhibition() {
                     {/* Museum Label / Plaque Under Card */}
                     <div className="pt-4 px-1 space-y-1.5">
                       <div className="flex items-baseline justify-between gap-2">
-                        <h3 className="font-serif text-base sm:text-base text-[#FAF8F5] group-hover:text-[#e4c577] transition-colors truncate" style={{ fontFamily: 'Georgia, serif' }}>
+                        <h3 className="font-serif text-base text-[#FAF8F5] group-hover:text-[#e4c577] transition-colors truncate" style={{ fontFamily: 'Georgia, serif' }}>
                           {artwork.title}
                         </h3>
-                        <span className="font-mono text-sm sm:text-sm text-[#e4c577] font-bold shrink-0">
+                        <span className="font-mono text-sm text-[#e4c577] font-bold shrink-0">
                           ${Number(artwork.price) || 0}
                         </span>
                       </div>
 
-                      <p className="text-[11px] sm:text-[10px] uppercase tracking-[0.18em] sm:tracking-[0.2em] text-[#A8A196] font-mono truncate">
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-[#A8A196] font-mono truncate">
                         {artwork.medium}
                       </p>
                       
-                      <div className="flex items-center justify-between text-[11px] sm:text-[10px] text-[#867E74] pt-2 border-t border-white/10 font-mono">
+                      <div className="flex items-center justify-between text-[10px] text-[#867E74] pt-2 border-t border-white/10 font-mono">
                         <span>{artwork.dimensions}</span>
                         <span className="italic font-serif text-[#e4c577]/80">{artwork.year || '2026'}</span>
                       </div>
@@ -308,22 +308,22 @@ export default function FeaturedExhibition() {
           </motion.div>
         )}
 
-       {/* Bottom Exhibition Catalog CTA */}
-<motion.div 
-  initial={{ opacity: 0, y: 20 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.6, delay: 0.2 }}
-  className="mt-14 sm:mt-16 text-center"
->
-  <Link
-    href="/shop"
-    className="inline-flex items-center gap-3 px-8 py-4 sm:py-3.5 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-xs sm:text-[11px] uppercase tracking-[0.2em] font-semibold hover:brightness-110 hover:scale-[1.02] transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(228,197,119,0.35)] group"
-  >
-    <span>View Full Studio Catalog</span>
-    <ArrowRight className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[#0A0908] group-hover:translate-x-1 transition-transform" />
-  </Link>
-</motion.div>
+        {/* Bottom Exhibition Catalog CTA */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-14 sm:mt-16 text-center"
+        >
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-3 px-8 py-4 sm:py-3.5 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-xs sm:text-[11px] uppercase tracking-[0.2em] font-semibold hover:brightness-110 hover:scale-[1.02] transition-all duration-300 shadow-[0_12px_28px_-8px_rgba(228,197,119,0.35)] group"
+          >
+            <span>View Full Studio Catalog</span>
+            <ArrowRight className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[#0A0908] group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </motion.div>
 
       </div>
     </section>
