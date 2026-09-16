@@ -8,7 +8,6 @@ export async function GET() {
       include: { logoMedia: true },
     });
 
-    // Agar settings table empty hai toh default record create karein
     if (!settings) {
       settings = await prisma.studioSettings.create({
         data: {
@@ -19,16 +18,19 @@ export async function GET() {
           currency: 'USD',
           paypalClientId: 'sb-client-id-sample-token-ssx',
           paypalEnv: 'sandbox',
+          paypalEnabled: true,
           turnaroundDays: '7 - 14 Business Days',
           acceptingCommissions: true,
           autoConfirmOrders: true,
           logoMediaId: null,
+          proprietorName: null,
+          proprietorPhone: null,
+          proprietorAddress: null,
         },
         include: { logoMedia: true },
       });
     }
 
-    // Frontend compatibility ke liye logoUrl field attach kar rahe hain
     const formatted = {
       ...settings,
       logoUrl: settings.logoMedia?.secureUrl || '',
@@ -52,13 +54,16 @@ export async function POST(request) {
       incorporationJurisdiction,
       currency,
       paypalClientId,
-      paypalClientSecret, // <-- Yeh add karein
+      paypalClientSecret,
       paypalEnv,
-      paypalEnabled,      // <-- Yeh bhi add karein
+      paypalEnabled,
       turnaroundDays,
       acceptingCommissions,
       autoConfirmOrders,
       logoMediaId,
+      proprietorName,
+      proprietorPhone,
+      proprietorAddress, // <-- Yeh updated field name hai
     } = body;
 
     let settings = await prisma.studioSettings.findFirst();
@@ -71,15 +76,18 @@ export async function POST(request) {
       currency,
       paypalClientId,
       paypalEnv,
-      paypalEnabled,      // <-- Yahan bhi include karein
+      paypalEnabled,
       turnaroundDays,
       acceptingCommissions,
       autoConfirmOrders,
-      logoMediaId: logoMediaId || null,
+      proprietorName: proprietorName || null,
+      proprietorPhone: proprietorPhone || null,
+      proprietorAddress: proprietorAddress || null, // <-- Yahan bhi update kiya
+      logoMedia: logoMediaId 
+        ? { connect: { id: logoMediaId } } 
+        : { disconnect: true },
     };
 
-    // Agar user ne naya secret enter kiya hai tabhi update ho, 
-    // taake agar blank chhor diya jaye toh purana secret overwrite na ho.
     if (paypalClientSecret !== undefined && paypalClientSecret !== '') {
       dataPayload.paypalClientSecret = paypalClientSecret;
     }
