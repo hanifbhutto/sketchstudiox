@@ -19,12 +19,12 @@ export async function GET(req) {
 
     let orders = [];
 
-    // 1. Try fetching by email and type
-    if (email && email !== 'null' && email !== 'undefined') {
+    // 1. PRIMARY: Fetch strictly by userId if provided and valid
+    if (userId && userId !== 'null' && userId !== 'undefined' && userId !== 'undefined') {
       orders = await prisma.order.findMany({
         where: {
           ...whereClause,
-          email: { equals: email.trim(), mode: 'insensitive' }
+          userId: userId.trim(),
         },
         include: {
           items: {
@@ -32,7 +32,7 @@ export async function GET(req) {
               artwork: {
                 include: { media: true },
               },
-              media: true, // <-- Added for clean architecture custom commission images
+              media: true,
             },
           },
         },
@@ -40,12 +40,12 @@ export async function GET(req) {
       });
     }
 
-    // 2. If no orders found by email, try fetching by userId and type
-    if (orders.length === 0 && userId && userId !== 'null' && userId !== 'undefined') {
+    // 2. FALLBACK: If no orders found by userId (or userId wasn't sent), try fetching by email
+    if (orders.length === 0 && email && email !== 'null' && email !== 'undefined') {
       orders = await prisma.order.findMany({
         where: {
           ...whereClause,
-          userId: userId
+          email: { equals: email.trim(), mode: 'insensitive' },
         },
         include: {
           items: {
@@ -53,25 +53,7 @@ export async function GET(req) {
               artwork: {
                 include: { media: true },
               },
-              media: true, // <-- Added here too
-            },
-          },
-        },
-        orderBy: { createdAt: 'desc' },
-      });
-    }
-
-    // 3. Development Fallback: If still 0 orders, fetch all orders matching the requested type
-    if (orders.length === 0) {
-      orders = await prisma.order.findMany({
-        where: whereClause,
-        include: {
-          items: {
-            include: {
-              artwork: {
-                include: { media: true },
-              },
-              media: true, // <-- Added here too
+              media: true,
             },
           },
         },

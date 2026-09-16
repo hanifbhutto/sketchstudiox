@@ -108,6 +108,28 @@ export function CartProvider({ children }) {
     }
   };
 
+  // Clear Cart on Order Completion or Logout
+  const clearCart = async () => {
+    try {
+      const currentCartId = localStorage.getItem('active_cart_id');
+      const userId = localStorage.getItem('userId');
+
+      // Optional: call your backend API to clear the database cart items if needed
+      if (currentCartId || userId) {
+        await fetch(`/api/cart?${userId ? `userId=${userId}` : `cartId=${currentCartId}`}`, {
+          method: 'DELETE',
+        });
+      }
+    } catch (err) {
+      console.error('Failed to clear cart on server:', err);
+    } finally {
+      setCartItems([]);
+      localStorage.removeItem('active_cart_id');
+      localStorage.removeItem('pending_cart');
+      localStorage.removeItem('pending_shipping');
+    }
+  };
+
  // 3. Remove Item from Cart (Database + State)
   const removeFromCart = async (itemId) => {
     try {
@@ -193,6 +215,7 @@ export function CartProvider({ children }) {
         removeFromCart,
         syncUserCartAfterLogin,
         logoutCart,
+        clearCart,
         subtotal,
         totalItems,
       }}

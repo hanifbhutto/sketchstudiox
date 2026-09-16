@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { Sparkles, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 const PORTFOLIO_ITEMS = [
   // 1. Dog Portraits (Priority First)
@@ -276,8 +277,14 @@ export default function PortfolioSection() {
 
       <div className="max-w-7xl mx-auto space-y-10 sm:space-y-12 relative z-10">
         
-        {/* Top Header & Category Filter Tabs */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-white/10 pb-8">
+        {/* Top Header & Category Filter Tabs with Smooth Entry Effect */}
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-white/10 pb-8"
+        >
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#e4c577]/30 bg-[#e4c577]/10 text-[#e4c577] text-[10px] uppercase tracking-[0.25em] font-mono font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-[#e4c577]" />
@@ -329,10 +336,16 @@ export default function PortfolioSection() {
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Horizontal Scrollable Gallery Row with Navigation Controls */}
-        <div className="relative">
+        {/* Horizontal Scrollable Gallery Row with Animation */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="relative"
+        >
           <div 
             ref={galleryScrollRef}
             className="flex items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
@@ -393,7 +406,7 @@ export default function PortfolioSection() {
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Bottom CTA */}
         <div className="text-center pt-6">

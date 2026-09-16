@@ -1,6 +1,7 @@
 'use client';
 
 import { Sparkles, CheckCircle2, CreditCard, Award, ShieldCheck, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const PROMISES = [
   {
@@ -34,13 +35,19 @@ export default function StudioPromise() {
   return (
     <section className="relative py-24 sm:py-28 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-white/10 overflow-hidden">
       
-      {/* Static Ambient Glow (No animation lag during scroll) */}
+      {/* Static Ambient Glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[350px] sm:w-[700px] h-[350px] sm:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.12)_0%,transparent_70%)] blur-[120px] sm:blur-[150px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10 space-y-16">
         
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="text-center max-w-2xl mx-auto space-y-4"
+        >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#e4c577]/30 bg-[#e4c577]/10 backdrop-blur-md text-[#e4c577] text-[10px] uppercase tracking-[0.25em] font-mono font-semibold shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-[#e4c577]" />
             <span>Atelier Guarantee</span>
@@ -53,15 +60,19 @@ export default function StudioPromise() {
           <p className="text-[#A8A196] font-light text-sm sm:text-base leading-relaxed max-w-lg mx-auto">
             Since inception, we have hand-delivered hundreds of custom portraits — and we stand by every commitment below.
           </p>
-        </div>
+        </motion.div>
 
-        {/* 5 Promises Grid (Instant Render without lag) */}
+        {/* 5 Promises Grid with Staggered One-by-One Animation */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {PROMISES.map((item, index) => {
             const Icon = item.icon;
             return (
-              <div
+              <motion.div
                 key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.6, delay: index * 0.12, ease: 'easeOut' }}
                 className="p-8 rounded-[24px] bg-[#171513] border border-white/10 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-300 flex flex-col items-center text-center group"
               >
                 {/* Icon Container with Soft Gold Ring */}
@@ -78,7 +89,7 @@ export default function StudioPromise() {
                 <p className="text-xs text-[#A8A196] font-light leading-relaxed">
                   {item.desc}
                 </p>
-              </div>
+              </motion.div>
             );
           })}
         </div>

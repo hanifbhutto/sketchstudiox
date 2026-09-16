@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { 
   ShieldCheck, 
   Lock, 
   Truck, 
   CreditCard, 
   ArrowLeft, 
-  CheckCircle2, 
   Loader2,
   AlertCircle
 } from 'lucide-react';
@@ -18,20 +18,14 @@ import { useCart } from '../../context/CartContext';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cartItems, subtotal } = useCart();
+  const { cartItems, subtotal, clearCart } = useCart();
 
-  // Authentication & Access Guard
-  useEffect(() => {
-    const userId = localStorage.getItem('userId');
-    const patronEmail = localStorage.getItem('patronEmail');
-
-    if (!userId && !patronEmail) {
-      router.replace('/login');
-    }
-  }, [router]);
-
+  // ALL HOOKS CALLED AT THE TOP LEVEL (Never conditional)
+  const [settings, setSettings] = useState(null);
+  const [loadingSettings, setLoadingSettings] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPayPalButtons, setShowPayPalButtons] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -55,6 +49,53 @@ export default function CheckoutPage() {
     postalCode: false,
   });
 
+  // Authentication & Access Guard Effect
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    const patronEmail = localStorage.getItem('patronEmail');
+
+    if (!userId && !patronEmail) {
+      router.replace('/login');
+    }
+  }, [router]);
+
+  // Fetch live studio/gateway settings Effect
+  useEffect(() => {
+    async function fetchSettings() {
+      try {
+        const res = await fetch('/api/admin/settings');
+        const data = await res.json();
+        console.log("Fetched Settings:", data);
+        if (data && !data.error) {
+          setSettings({
+            currency: data.currency || 'USD',
+            paypalClientId: data.paypalClientId || 'sb-client-id-sample-token-ssx',
+            paypalEnv: data.paypalEnv || 'sandbox',
+            paypalEnabled: data.paypalEnabled ?? true,
+          });
+        } else {
+          setSettings({
+            currency: 'USD',
+            paypalClientId: 'sb-client-id-sample-token-ssx',
+            paypalEnv: 'sandbox',
+            paypalEnabled: true,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load gateway settings, using defaults', err);
+        setSettings({
+          currency: 'USD',
+          paypalClientId: 'sb-client-id-sample-token-ssx',
+          paypalEnv: 'sandbox',
+          paypalEnabled: true,
+        });
+      } finally {
+        setLoadingSettings(false);
+      }
+    }
+    fetchSettings();
+  }, []);
+
   const handleBlur = (field) => {
     setTouched(prev => ({ ...prev, [field]: true }));
   };
@@ -76,29 +117,30 @@ export default function CheckoutPage() {
   const insuredShipping = 0; // Complimentary
   const orderTotal = subtotal + insuredShipping;
 
-  // Handle Redirect to PayPal & Save Pending State
-  const handlePayPalRedirect = (e) => {
+  const currency = settings?.currency || 'USD';
+  const clientId = settings?.paypalClientId;
+  const isGatewayEnabled = settings?.paypalEnabled ?? true;
+
+  // Handle Proceed to PayPal Button Click
+  const handleProceedClick = (e) => {
     e.preventDefault();
-    if (!isFormValid || cartItems.length === 0) return;
+    if (!isFormValid || cartItems.length === 0 || !isGatewayEnabled) return;
 
-    setIsProcessing(true);
-    setErrorMessage('');
+    localStorage.setItem('pending_shipping', JSON.stringify(formData));
+    localStorage.setItem('pending_cart', JSON.stringify(cartItems));
 
-    try {
-      localStorage.setItem('pending_shipping', JSON.stringify(formData));
-      localStorage.setItem('pending_cart', JSON.stringify(cartItems));
-
-      setTimeout(() => {
-        const mockPayPalToken = 'PAYPAL-TOKEN-' + Date.now();
-        router.push(`/checkout/success?token=${mockPayPalToken}`);
-      }, 1200);
-
-    } catch (err) {
-      console.error('PayPal redirect error:', err);
-      setErrorMessage('Failed to initiate PayPal gateway. Please try again.');
-      setIsProcessing(false);
-    }
+    setShowPayPalButtons(true);
   };
+
+  // LOADING CHECK PLACED AFTER ALL HOOKS
+  if (loadingSettings) {
+    return (
+      <div className="min-h-screen bg-[#0A0908] flex items-center justify-center text-[#e4c577] font-mono text-xs">
+        <Loader2 className="w-6 h-6 animate-spin mr-2" />
+        <span>Initializing secure atelier checkout...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-32 pb-24 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] relative overflow-hidden">
@@ -120,7 +162,7 @@ export default function CheckoutPage() {
 
           <div className="flex items-center gap-2 text-xs font-mono text-emerald-300 bg-emerald-500/20 px-3.5 py-1.5 rounded-full border border-emerald-400/40">
             <Lock className="w-3.5 h-3.5 text-emerald-400" />
-            <span>PayPal Secure Gateway Redirect</span>
+            <span>PayPal Secure Gateway Integration</span>
           </div>
         </div>
 
@@ -130,7 +172,7 @@ export default function CheckoutPage() {
           </div>
         )}
 
-        <form onSubmit={handlePayPalRedirect} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* LEFT: FORM (7 COLS) */}
           <div className="lg:col-span-7 space-y-6">
@@ -305,7 +347,7 @@ export default function CheckoutPage() {
 
           </div>
 
-          {/* RIGHT: SUMMARY (5 COLS) */}
+          {/* RIGHT: SUMMARY & PAYPAL BUTTONS (5 COLS) */}
           <div className="lg:col-span-5 space-y-6">
             <div className="p-6 sm:p-8 rounded-3xl bg-[#171513] border border-white/10 shadow-xl space-y-5 sticky top-28">
               <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#e4c577] font-bold block border-b border-white/10 pb-2">
@@ -362,38 +404,140 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {!isFormValid && (
-                <p className="text-[10px] text-amber-300 font-mono text-center">
-                  * Please complete all required billing fields correctly to unlock PayPal redirect.
-                </p>
-              )}
+              {/* Gateway Inactive Warning */}
+              {!isGatewayEnabled ? (
+                <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono space-y-2">
+                  <p className="font-bold flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4 text-rose-400" />
+                    <span>Payment Gateway Inactive</span>
+                  </p>
+                  <p className="text-[11px] text-stone-300 leading-relaxed">
+                    Online payments are currently disabled by the studio administration. Please check back later.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {!isFormValid && (
+                    <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-mono text-center">
+                      * Please fill out all required shipping and identity fields above to unlock PayPal payment.
+                    </div>
+                  )}
 
-              <button
-                type="submit"
-                disabled={isProcessing || !isFormValid || cartItems.length === 0}
-                className={`w-full py-4 rounded-full text-xs font-mono uppercase tracking-[0.2em] font-semibold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer ${
-                  !isFormValid || cartItems.length === 0
-                    ? 'bg-white/10 text-white/30 cursor-not-allowed border border-white/10'
-                    : 'bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] hover:brightness-110'
-                }`}
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin text-[#0A0908]" />
-                    <span>Redirecting to PayPal...</span>
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-4 h-4 text-[#0A0908]" />
-                    <span>Proceed to PayPal &bull; ${orderTotal.toFixed(2)}</span>
-                  </>
-                )}
-              </button>
+                  {!showPayPalButtons ? (
+                    <button
+                      type="button"
+                      disabled={!isFormValid || cartItems.length === 0}
+                      onClick={handleProceedClick}
+                      className={`w-full py-4 rounded-full text-xs font-mono uppercase tracking-[0.2em] font-semibold transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer ${
+                        !isFormValid || cartItems.length === 0
+                          ? 'bg-white/10 text-white/30 cursor-not-allowed border border-white/10'
+                          : 'bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] hover:brightness-110'
+                      }`}
+                    >
+                      <ShieldCheck className="w-4 h-4 text-[#0A0908]" />
+                      <span>Proceed to PayPal &bull; ${orderTotal.toFixed(2)}</span>
+                    </button>
+                  ) : (
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center justify-between text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/30">
+                        <span>Gateway: Active</span>
+                        <button 
+                          type="button" 
+                          onClick={() => setShowPayPalButtons(false)} 
+                          className="text-xs underline text-stone-300 hover:text-white cursor-pointer"
+                        >
+                          Edit Form
+                        </button>
+                      </div>
+
+                      <div className="text-center text-[10px] text-stone-400 font-mono">
+                        -- Official PayPal Secure Checkout Active --
+                      </div>
+
+                      {/* Original PayPal SDK Provider */}
+                      {clientId && clientId !== 'sb-client-id-sample-token-ssx' && (
+                        <PayPalScriptProvider
+                          options={{
+                            'client-id': clientId,
+                            currency: currency,
+                            intent: 'capture',
+                          }}
+                        >
+                          <PayPalButtons
+                            style={{ layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' }}
+                            disabled={isProcessing || orderTotal <= 0}
+                            createOrder={async () => {
+                              const res = await fetch('/api/checkout/paypal/create-order', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ amount: orderTotal, currency }),
+                              });
+                              const data = await res.json();
+                              if (!res.ok) {
+                                throw new Error(data.error || 'Failed to create PayPal order.');
+                              }
+                              return data.id;
+                            }}
+                            onApprove={async (data) => {
+                              try {
+                                setIsProcessing(true);
+                                const shipping = JSON.parse(localStorage.getItem('pending_shipping') || '{}');
+                                const items = JSON.parse(localStorage.getItem('pending_cart') || '[]');
+                                const userId = localStorage.getItem('userId');
+
+                                const res = await fetch('/api/checkout/paypal/capture-order', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ 
+                                    orderID: data.orderID, 
+                                    shippingData: shipping, 
+                                    cartItems: items,
+                                    userId: userId || null 
+                                  }),
+                                });
+                                
+                                const captureResult = await res.json();
+                                if (captureResult.success) {
+                                  localStorage.removeItem('pending_shipping');
+                                  localStorage.removeItem('pending_cart');
+                                  try {
+                                    if (typeof clearCart === 'function') clearCart();
+                                  } catch (e) {}
+
+                                  const orderUuid = captureResult.order?.id;
+                                  if (!orderUuid) throw new Error('Order UUID missing');
+
+                                  router.push(`/checkout/success?orderId=${orderUuid}`);
+                                } else {
+                                  setErrorMessage(captureResult.error || 'Payment capture failed.');
+                                  setIsProcessing(false);
+                                }
+                              } catch (err) {
+                                console.error('Capture Error:', err);
+                                setErrorMessage('An error occurred during payment verification.');
+                                setIsProcessing(false);
+                              }
+                            }}
+                            onCancel={() => {
+                              setIsProcessing(false);
+                            }}
+                            onError={(err) => {
+                              setIsProcessing(false);
+                              console.error('PayPal SDK Error:', err);
+                              setErrorMessage('PayPal gateway failed to load. Please verify your Client ID in Admin Settings.');
+                            }}
+                          />
+                        </PayPalScriptProvider>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
 
             </div>
           </div>
 
-        </form>
+        </div>
 
       </div>
     </div>

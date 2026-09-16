@@ -79,7 +79,7 @@ export default function FeaturedExhibition() {
   return (
     <section className="relative py-24 sm:py-28 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-white/10 overflow-hidden">
       
-      {/* Static Ambient Glows (No initial scale animation) */}
+      {/* Static Ambient Glows */}
       <div className="absolute top-1/3 left-10 w-[300px] sm:w-[550px] h-[300px] sm:h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" />
 
@@ -102,8 +102,14 @@ export default function FeaturedExhibition() {
 
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         
-        {/* Editorial Section Header */}
-        <div className="flex flex-col items-start justify-between gap-8">
+        {/* Editorial Section Header with Scroll Entry Animation */}
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="flex flex-col items-start justify-between gap-8"
+        >
           <div className="space-y-4 max-w-2xl">
             {/* Atelier Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#e4c577]/30 bg-[#e4c577]/10 backdrop-blur-md text-[10px] uppercase tracking-[0.25em] text-[#e4c577] font-mono font-semibold">
@@ -172,7 +178,7 @@ export default function FeaturedExhibition() {
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Loading / Exhibition Grid */}
         {loading ? (
@@ -186,7 +192,13 @@ export default function FeaturedExhibition() {
             <p className="text-xs text-[#A8A196]">No authenticated originals currently match this category filter.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7"
+          >
             {filteredItems.slice(0, 4).map((artwork) => {
               const isAvailable = artwork.status === 'Available' || artwork.status === 'Available Original';
               const isAdding = addingId === artwork.id;
@@ -287,7 +299,7 @@ export default function FeaturedExhibition() {
                 </div>
               );
             })}
-          </div>
+          </motion.div>
         )}
 
         {/* Bottom Exhibition Catalog CTA */}
