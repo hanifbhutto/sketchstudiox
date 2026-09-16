@@ -335,7 +335,7 @@ export default function PortfolioSection() {
         <div className="relative">
           <div 
             ref={galleryScrollRef}
-            className="flex items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden will-change-transform"
+            className="flex items-stretch gap-6 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
             {filteredItems.map((item) => (
               <div

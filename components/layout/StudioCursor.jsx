@@ -1,15 +1,23 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function StudioCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 });
   const [hovered, setHovered] = useState(false);
+  const frameRef = useRef(null);
+  const nextPositionRef = useRef({ x: -100, y: -100 });
 
   useEffect(() => {
     const handleMove = (e) => {
-      setPos({ x: e.clientX, y: e.clientY });
+      nextPositionRef.current = { x: e.clientX, y: e.clientY };
+      if (frameRef.current !== null) return;
+
+      frameRef.current = window.requestAnimationFrame(() => {
+        setPos(nextPositionRef.current);
+        frameRef.current = null;
+      });
     };
 
     const handleOver = (e) => {
@@ -25,6 +33,7 @@ export default function StudioCursor() {
     return () => {
       window.removeEventListener('mousemove', handleMove);
       window.removeEventListener('mouseover', handleOver);
+      if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
     };
   }, []);
 

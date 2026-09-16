@@ -166,7 +166,7 @@ export default function Testimonials() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -15 }}
                 transition={{ duration: 0.25 }}
-                className="rounded-[24px] bg-[#171513] border border-white/10 shadow-xl overflow-hidden flex flex-col justify-between group will-change-transform"
+                className="rounded-[24px] bg-[#171513] border border-white/10 shadow-xl overflow-hidden flex flex-col justify-between group"
               >
                 {/* Client / Artwork Photo on Top */}
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#141210]">
@@ -228,7 +228,7 @@ export default function Testimonials() {
               return (
                 <div
                   key={rev.id}
-                  className="rounded-[24px] bg-[#171513] border border-white/10 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-400 overflow-hidden flex flex-col justify-between group will-change-transform"
+                  className="rounded-[24px] bg-[#171513] border border-white/10 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-400 overflow-hidden flex flex-col justify-between group"
                 >
                   {/* Client / Artwork Photo on Top */}
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#141210]">
