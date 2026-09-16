@@ -17,7 +17,10 @@ import {
   Trash2,
   Loader2,
   Eye,
-  EyeOff
+  EyeOff,
+  User,
+  Phone,
+  MapPin
 } from 'lucide-react';
 import MediaPickerModal from '../../../../components/admin/MediaPickerModal';
 
@@ -36,6 +39,9 @@ const DEFAULT_SETTINGS = {
   autoConfirmOrders: true,
   logoUrl: '',
   logoMediaId: null,
+  proprietorName: '',
+  proprietorPhone: '',
+  proprietorAddress: '',
 };
 
 export default function AdminSettingsPage() {
@@ -74,6 +80,9 @@ export default function AdminSettingsPage() {
             autoConfirmOrders: data.autoConfirmOrders ?? prev.autoConfirmOrders,
             logoUrl: data.logoMedia?.secureUrl || data.logoUrl || '',
             logoMediaId: data.logoMediaId || null,
+            proprietorName: data.proprietorName || '',
+            proprietorPhone: data.proprietorPhone || '',
+            proprietorAddress: data.proprietorAddress || '',
           }));
         }
       } catch (err) {
@@ -263,6 +272,52 @@ export default function AdminSettingsPage() {
                   onChange={(e) => handleChange('incorporationJurisdiction', e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Proprietor & Studio Location Details (Optional) */}
+          <div className="p-6 sm:p-8 rounded-[32px] bg-[#171513] border border-white/10 shadow-xl space-y-5">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 className="font-serif text-base text-[#FAF8F5] flex items-center gap-2" style={{ fontFamily: 'Georgia, serif' }}>
+                <User className="w-4 h-4 text-[#e4c577]" />
+                <span>Proprietor & Studio Location Details</span>
+              </h3>
+              <span className="text-[10px] font-mono text-[#A8A196]">Optional Footer Display</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+              <div className="space-y-1.5">
+                <label className="text-[#FAF8F5] block font-semibold">Proprietor Name</label>
+                <input 
+                  type="text" 
+                  value={settings.proprietorName}
+                  onChange={(e) => handleChange('proprietorName', e.target.value)}
+                  placeholder="Enter Proprietor Name"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[#FAF8F5] block font-semibold">Proprietor Phone</label>
+                <input 
+                  type="text" 
+                  value={settings.proprietorPhone}
+                  onChange={(e) => handleChange('proprietorPhone', e.target.value)}
+                  placeholder="e.g. 123456789"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="text-[#FAF8F5] block font-semibold">Studio Physical Address</label>
+                <input 
+  type="text" 
+  value={settings.proprietorAddress}
+  onChange={(e) => handleChange('proprietorAddress', e.target.value)}
+  placeholder="e.g. Street 6, Haroonabad, 62300, Pakistan"
+  className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
+/>
               </div>
             </div>
           </div>

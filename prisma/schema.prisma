@@ -138,6 +138,12 @@ model StudioSettings {
   turnaroundDays            String   @default("7 - 14 Business Days")
   acceptingCommissions      Boolean  @default(true)
   autoConfirmOrders         Boolean  @default(true)
+
+  // Optional / Non-default fields for Proprietor Details
+  proprietorName            String?  
+  proprietorPhone           String?  
+  proprietorAddress         String?
+
   logoMediaId               String?  @db.Uuid
   logoMedia                 Media?   @relation(fields: [logoMediaId], references: [id], onDelete: SetNull)
   updatedAt                 DateTime @updatedAt
