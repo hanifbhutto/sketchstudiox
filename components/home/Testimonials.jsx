@@ -97,8 +97,14 @@ export default function Testimonials() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-8">
+        {/* Header Section with Smooth Entry Animation */}
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-8"
+        >
           <div className="space-y-3 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#e4c577]/30 bg-[#e4c577]/10 backdrop-blur-md text-[10px] uppercase tracking-[0.25em] text-[#e4c577] font-mono font-semibold shadow-2xs">
               <Sparkles className="w-3 h-3 text-[#e4c577]" />
@@ -153,10 +159,16 @@ export default function Testimonials() {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-       {/* Responsive Testimonial Display */}
-       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+       {/* Responsive Testimonial Display with Staggered Entry */}
+       <motion.div 
+         initial={{ opacity: 0, y: 30 }}
+         whileInView={{ opacity: 1, y: 0 }}
+         viewport={{ once: true, margin: '-60px' }}
+         transition={{ duration: 0.8, ease: 'easeOut' }}
+         className="grid grid-cols-1 md:grid-cols-3 gap-6"
+       >
           {/* Mobile view: Show only current active review */}
           <div className="md:hidden">
             <AnimatePresence mode="wait">
@@ -285,7 +297,7 @@ export default function Testimonials() {
               );
             })}
           </div>
-       </div>
+       </motion.div>
 
         {/* Carousel Indicators */}
         <div className="flex items-center justify-center gap-2 mt-10">

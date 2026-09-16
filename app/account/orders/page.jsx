@@ -19,7 +19,10 @@ export default function OrdersPage() {
 
     async function fetchOrders() {
       try {
-        const queryParam = savedEmail ? `email=${encodeURIComponent(savedEmail)}` : `userId=${encodeURIComponent(userId)}`;
+        // Prioritize userId first, fallback to email if userId isn't present
+  const queryParam = userId 
+    ? `userId=${encodeURIComponent(userId)}` 
+    : (savedEmail ? `email=${encodeURIComponent(savedEmail)}` : '');
         const res = await fetch(`/api/orders?${queryParam}&type=Gallery`);
         const data = await res.json();
         

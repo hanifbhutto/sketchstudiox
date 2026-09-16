@@ -52,8 +52,14 @@ export default function Newsletter() {
 
       <div className="max-w-6xl mx-auto relative z-10">
         
-        {/* Deep Obsidian Dark Box with Gold Accents */}
-        <div className="rounded-[28px] sm:rounded-[36px] bg-[#171513] border border-[#e4c577]/30 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.8)] overflow-hidden relative">
+        {/* Deep Obsidian Dark Box with Smooth Scroll Entry Animation */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="rounded-[28px] sm:rounded-[36px] bg-[#171513] border border-[#e4c577]/30 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.8)] overflow-hidden relative"
+        >
           
           {/* Subtle Internal Gold Sheen */}
           <div className="absolute -top-32 -right-32 w-80 h-80 bg-[radial-gradient(circle,rgba(228,197,119,0.12)_0%,transparent_70%)] pointer-events-none" />
@@ -199,7 +205,7 @@ export default function Newsletter() {
 
           </div>
 
-        </div>
+        </motion.div>
       </div>
     </section>
   );

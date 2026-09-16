@@ -125,14 +125,19 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-28 sm:pt-36 lg:pt-40 pb-20 sm:pb-24 px-4 sm:px-8 lg:px-12 overflow-hidden bg-[#0A0908] text-[#FAF8F5]">
       
-      {/* Static Ambient Glows (No initial scale animation) */}
+      {/* Static Ambient Glows */}
       <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] lg:w-[650px] h-[300px] sm:h-[400px] lg:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.15)_0%,transparent_70%)] blur-[100px] sm:blur-[120px] pointer-events-none" />
       <div className="absolute bottom-10 right-5 sm:right-10 w-[250px] sm:w-[400px] lg:w-[550px] h-[250px] sm:h-[350px] lg:h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" />
 
       <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 lg:gap-16 items-center relative z-10">
         
         {/* Right Column (Sketches Frame - Interactive Museum Wall Style) */}
-        <div className="lg:col-span-6 lg:order-2 flex flex-col items-center justify-center relative w-full group">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+          className="lg:col-span-6 lg:order-2 flex flex-col items-center justify-center relative w-full group"
+        >
           <div className="w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[430px] select-none relative z-10">
             <div className="relative p-4 sm:p-6 rounded-[24px] sm:rounded-[28px] bg-[#171513] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] border border-[#e4c577]/30 transition-all duration-300 group-hover:border-[#e4c577]/60">
               
@@ -234,10 +239,15 @@ export default function Hero() {
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Left Column (Typography without load animation) */}
-        <div className="lg:col-span-6 lg:order-1 space-y-6 text-center lg:text-left">
+        {/* Left Column (Typography with Smooth Entry Effect) */}
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
+          className="lg:col-span-6 lg:order-1 space-y-6 text-center lg:text-left"
+        >
           
           {/* Top Small Tagline */}
           <div className="inline-block text-[11px] uppercase tracking-[0.28em] font-mono text-[#e4c577] font-semibold px-3 py-1 rounded-full bg-[#e4c577]/10 border border-[#e4c577]/20">
@@ -295,7 +305,7 @@ export default function Hero() {
               <p className="text-xs sm:text-sm text-[#FAF8F5] mt-1 font-medium truncate" style={{ fontFamily: 'Georgia, serif' }}>Worldwide Tracked</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
       </div>
     </section>

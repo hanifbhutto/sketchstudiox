@@ -1,17 +1,18 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle2, Package, ArrowRight, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
+import { CheckCircle2, Package, ArrowRight, Loader2, ShieldCheck, Sparkles, FileText } from 'lucide-react';
 
-// Inner component using useSearchParams
 function CheckoutSuccessContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId') || searchParams.get('session_id');
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     if (!orderId) {
@@ -21,10 +22,14 @@ function CheckoutSuccessContent() {
 
     async function fetchOrderDetails() {
       try {
+        // Fetching order details using the reference from the URL
         const res = await fetch(`/api/orders/${orderId}`);
         const data = await res.json();
-        if (data && !data.error) {
-          setOrder(data);
+        
+        const resolvedOrder = data?.order || data;
+
+        if (resolvedOrder && (resolvedOrder.id || resolvedOrder.orderNumber) && !data.error) {
+          setOrder(resolvedOrder);
         }
       } catch (err) {
         console.error('Failed to fetch order details:', err);
@@ -35,6 +40,29 @@ function CheckoutSuccessContent() {
 
     fetchOrderDetails();
   }, [orderId]);
+
+  // Automatic 5-second countdown & redirect to account order detail page
+  useEffect(() => {
+    // Use order.id if available, otherwise fall back to searching by orderId/orderNumber parameter
+    const targetRouteId = order?.id || orderId;
+    if (!targetRouteId) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          router.push(`/account/orders/${targetRouteId}`);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [order, orderId, router]);
+
+  // Fallback URL for manual button click
+  const detailPageUrl = order?.id ? `/account/orders/${order.id}` : (orderId ? `/account/orders/${orderId}` : '#');
 
   return (
     <div className="min-h-screen pt-32 pb-24 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] relative overflow-hidden flex items-center justify-center">
@@ -59,7 +87,7 @@ function CheckoutSuccessContent() {
           </h1>
 
           <p className="text-xs sm:text-sm text-[#A8A196] font-light max-w-md mx-auto leading-relaxed">
-            Your acquisition has been officially registered in our studio ledger. An archival Certificate of Authenticity will accompany your shipment.
+            Your acquisition has been officially registered in our studio ledger. Redirecting to your detailed order archive in <span className="text-[#e4c577] font-mono font-bold">{countdown}s</span>...
           </p>
         </div>
 
@@ -90,21 +118,22 @@ function CheckoutSuccessContent() {
           </div>
         )}
 
+        {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
           <Link
-            href="/shop"
+            href={detailPageUrl}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-[#e4c577] to-[#cfae59] text-[#0A0908] text-xs uppercase tracking-[0.2em] font-semibold hover:brightness-110 transition-all shadow-lg cursor-pointer"
           >
-            <span>Return to Exhibition</span>
-            <ArrowRight className="w-3.5 h-3.5 text-[#0A0908]" />
+            <FileText className="w-3.5 h-3.5 text-[#0A0908]" />
+            <span>View Order Ledger</span>
           </Link>
 
           <Link
-            href="/contact"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/15 bg-white/5 text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:border-[#e4c577] hover:bg-white/10 transition-all"
+            href="/shop"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/15 bg-white/5 text-[#FAF8F5] text-xs uppercase tracking-[0.2em] font-medium hover:border-[#e4c577] hover:bg-white/10 transition-all cursor-pointer"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-[#e4c577]" />
-            <span>Client Concierge Desk</span>
+            <span>Return to Exhibition</span>
+            <ArrowRight className="w-3.5 h-3.5 text-[#FAF8F5]" />
           </Link>
         </div>
 
@@ -113,7 +142,6 @@ function CheckoutSuccessContent() {
   );
 }
 
-// Default export wrapped in Suspense to satisfy Next.js build requirements
 export default function CheckoutSuccessPage() {
   return (
     <Suspense fallback={

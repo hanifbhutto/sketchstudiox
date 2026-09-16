@@ -20,7 +20,16 @@ export default function CommissionsPage() {
 
     async function fetchCommissions() {
       try {
-        const queryParam = savedEmail ? `email=${encodeURIComponent(savedEmail)}` : `userId=${encodeURIComponent(userId)}`;
+        // Prioritize userId first, fallback to email if userId isn't present
+        const queryParam = userId 
+          ? `userId=${encodeURIComponent(userId)}` 
+          : (savedEmail ? `email=${encodeURIComponent(savedEmail)}` : '');
+          
+        if (!queryParam) {
+          setLoading(false);
+          return;
+        }
+
         const res = await fetch(`/api/orders?${queryParam}&type=Commission`);
         const data = await res.json();
         

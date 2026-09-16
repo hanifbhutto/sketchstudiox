@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { Sparkles, ArrowRight, ChevronLeft, ChevronRight, Sliders, CheckCircle2, Building2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Sparkles, ArrowRight, CheckCircle2, Sliders, ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function CustomSketchCTA() {
   const [sliderPosition, setSliderPosition] = useState(50);
@@ -26,12 +27,18 @@ export default function CustomSketchCTA() {
   return (
     <section className="relative py-24 sm:py-28 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-white/10 overflow-hidden">
       
-      {/* Static Ambient Glows (No animation lag) */}
+      {/* Static Ambient Glows */}
       <div className="absolute top-1/4 right-10 w-[300px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(ellipse_at_top,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-[250px] sm:w-[550px] h-[250px] sm:h-[400px] bg-[radial-gradient(ellipse_at_bottom,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="rounded-[28px] sm:rounded-[32px] bg-[#171513] border border-[#e4c577]/30 p-6 sm:p-12 lg:p-16 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center shadow-[0_20px_60px_-15px_rgba(0,0,0,0.9)]">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="rounded-[28px] sm:rounded-[32px] bg-[#171513] border border-[#e4c577]/30 p-6 sm:p-12 lg:p-16 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center shadow-[0_20px_60px_-15px_rgba(0,0,0,0.9)]"
+        >
           
           {/* Left: Value Proposition & Official Atelier Standards */}
           <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
@@ -163,7 +170,7 @@ export default function CustomSketchCTA() {
 
           </div>
 
-        </div>
+        </motion.div>
       </div>
     </section>
   );
