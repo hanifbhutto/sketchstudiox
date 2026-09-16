@@ -10,7 +10,6 @@ import {
   Sliders, 
   Sparkles,
   RotateCcw,
-  Lock,
   Globe2,
   CircleDot,
   UploadCloud,
@@ -20,7 +19,8 @@ import {
   EyeOff,
   User,
   Phone,
-  MapPin
+  MapPin,
+  MessageCircle
 } from 'lucide-react';
 import MediaPickerModal from '../../../../components/admin/MediaPickerModal';
 
@@ -43,6 +43,8 @@ const DEFAULT_SETTINGS = {
   proprietorEmail: '',
   proprietorPhone: '',
   proprietorAddress: '',
+  whatsappNumber: '',
+  whatsappEnabled: false,
 };
 
 export default function AdminSettingsPage() {
@@ -85,6 +87,8 @@ export default function AdminSettingsPage() {
             proprietorEmail: data.proprietorEmail || '',
             proprietorPhone: data.proprietorPhone || '',
             proprietorAddress: data.proprietorAddress || '',
+            whatsappNumber: data.whatsappNumber || '',
+            whatsappEnabled: data.whatsappEnabled ?? false,
           }));
         }
       } catch (err) {
@@ -332,6 +336,43 @@ export default function AdminSettingsPage() {
                   className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* WhatsApp Quick Support Widget Configuration */}
+          <div className="p-6 sm:p-8 rounded-[32px] bg-[#171513] border border-white/10 shadow-xl space-y-5">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 className="font-serif text-base text-[#FAF8F5] flex items-center gap-2" style={{ fontFamily: 'Georgia, serif' }}>
+                <MessageCircle className="w-4 h-4 text-[#2db742]" />
+                <span>WhatsApp Quick Support Widget</span>
+              </h3>
+
+              {/* WhatsApp Active / Inactive Toggle Switch */}
+              <label className="flex items-center gap-2 cursor-pointer bg-black/50 px-3.5 py-1.5 rounded-full border border-white/10">
+                <input 
+                  type="checkbox"
+                  checked={settings.whatsappEnabled ?? false}
+                  onChange={(e) => handleChange('whatsappEnabled', e.target.checked)}
+                  className="rounded accent-[#2db742] w-3.5 h-3.5 cursor-pointer"
+                />
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FAF8F5]">
+                  {settings.whatsappEnabled ? 'Widget Active' : 'Widget Hidden'}
+                </span>
+              </label>
+            </div>
+
+            <div className="space-y-1.5 text-xs font-mono">
+              <label className="text-[#FAF8F5] block font-semibold">WhatsApp Support Number</label>
+              <input 
+                type="text" 
+                value={settings.whatsappNumber || ''}
+                onChange={(e) => handleChange('whatsappNumber', e.target.value)}
+                placeholder="e.g. +447000000000"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
+              />
+              <span className="text-[10px] text-[#A8A196] block mt-1">
+                Include country code with plus sign. This powers the floating WhatsApp support button across public pages.
+              </span>
             </div>
           </div>
 

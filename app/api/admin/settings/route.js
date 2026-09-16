@@ -24,9 +24,11 @@ export async function GET() {
           autoConfirmOrders: true,
           logoMediaId: null,
           proprietorName: null,
-          proprietorEmail: null, // <-- Added here
+          proprietorEmail: null,
           proprietorPhone: null,
           proprietorAddress: null,
+          whatsappNumber: null, // <-- Added here
+          whatsappEnabled: false, // <-- Added here
         },
         include: { logoMedia: true },
       });
@@ -63,9 +65,11 @@ export async function POST(request) {
       autoConfirmOrders,
       logoMediaId,
       proprietorName,
-      proprietorEmail, // <-- Added here
+      proprietorEmail,
       proprietorPhone,
       proprietorAddress,
+      whatsappNumber, // <-- Added here
+      whatsappEnabled, // <-- Added here
     } = body;
 
     let settings = await prisma.studioSettings.findFirst();
@@ -83,9 +87,11 @@ export async function POST(request) {
       acceptingCommissions,
       autoConfirmOrders,
       proprietorName: proprietorName || null,
-      proprietorEmail: proprietorEmail || null, // <-- Added here
+      proprietorEmail: proprietorEmail || null,
       proprietorPhone: proprietorPhone || null,
       proprietorAddress: proprietorAddress || null,
+      whatsappNumber: whatsappNumber || null, // <-- Added here
+      whatsappEnabled: whatsappEnabled ?? false, // <-- Added here
       logoMedia: logoMediaId 
         ? { connect: { id: logoMediaId } } 
         : { disconnect: true },

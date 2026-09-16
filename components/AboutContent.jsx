@@ -212,7 +212,7 @@ export default function AboutContent() {
         </div>
 
         {/* Certificate of Authenticity Protocol & UK Incorporation */}
-        <div className="p-8 sm:p-14 rounded-[36px] bg-[#171513] border border-[#e4c577]/30 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.8)] grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative overflow-hidden text-[#FAF8F5]">
+        {/* <div className="p-8 sm:p-14 rounded-[36px] bg-[#171513] border border-[#e4c577]/30 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.8)] grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative overflow-hidden text-[#FAF8F5]">
           <div className="absolute top-0 right-0 w-96 h-96 bg-[radial-gradient(circle,rgba(228,197,119,0.15)_0%,transparent_70%)] pointer-events-none" />
 
           <div className="lg:col-span-7 space-y-4 relative z-10">
@@ -250,7 +250,7 @@ export default function AboutContent() {
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Action Commission CTA */}
         <div className="text-center space-y-6 pt-4 max-w-2xl mx-auto">
