@@ -79,7 +79,7 @@ export default function FeaturedExhibition() {
   return (
     <section className="relative py-24 sm:py-28 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-white/10 overflow-hidden">
       
-      {/* Animated Breathing Ambient Glows */}
+      {/* Static Ambient Glows (No initial scale animation) */}
       <div className="absolute top-1/3 left-10 w-[300px] sm:w-[550px] h-[300px] sm:h-[550px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[250px] sm:w-[500px] h-[250px] sm:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" />
 
@@ -198,7 +198,7 @@ export default function FeaturedExhibition() {
                   className="group flex flex-col justify-between will-change-transform"
                 >
                   {/* Dark Luxury Frame Card */}
-                  <div className="relative aspect-[3/4] bg-[#171513] p-4 rounded-2xl border border-white/10 overflow-hidden shadow-[0_15px_35px_-5px_rgba(0,0,0,0.8)] sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] sm:group-hover:border-[#e4c577]/60 transition-all duration-500">
+                  <div className="relative aspect-[3/4] bg-[#171513] p-4 rounded-2xl border border-white/10 overflow-hidden shadow-[0_15px_35px_-5px_rgba(0,0,0,0.8)] sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] sm:group-hover:border-[#e4c577]/60 transition-all duration-300">
                     
                     {/* Inner Viewport with Next.js Optimized Image */}
                     <div className="bg-[#141210] p-3 rounded-xl shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)] relative w-full h-full border border-white/10 flex items-center justify-center overflow-hidden">
@@ -208,7 +208,7 @@ export default function FeaturedExhibition() {
                           alt={artwork.title}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                          className="object-cover rounded-lg transition-transform duration-700 ease-out sm:group-hover:scale-105 contrast-110"
+                          className="object-cover rounded-lg transition-transform duration-500 ease-out sm:group-hover:scale-105 contrast-110"
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center text-stone-400 gap-1.5 p-4 text-center">
@@ -234,7 +234,7 @@ export default function FeaturedExhibition() {
                       </div>
 
                       {/* Interactive Floating Action Dock */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-4 gap-2.5 backdrop-blur-none sm:backdrop-blur-[2px] z-20">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 flex items-end justify-center p-4 gap-2.5 backdrop-blur-none sm:backdrop-blur-[2px] z-20">
                         <Link
                           href={`/shop/${artwork.id}`}
                           className="flex-1 py-2.5 rounded-xl bg-white/95 text-[#0A0908] hover:bg-[#e4c577] hover:text-black transition-all text-[10px] uppercase tracking-widest font-mono font-semibold flex items-center justify-center gap-1.5 shadow-lg"

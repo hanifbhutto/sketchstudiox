@@ -270,7 +270,7 @@ export default function PortfolioSection() {
   return (
     <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-[#e4c577]/20 overflow-hidden">
       
-      {/* Tuscan Gold & Charcoal Ambient Glow */}
+      {/* Tuscan Gold & Charcoal Static Ambient Glow */}
       <div className="absolute top-1/4 right-1/4 w-[500px] h-[300px] sm:w-[700px] sm:h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(228,197,119,0.1)_0%,transparent_70%)] pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-[350px] h-[250px] sm:w-[500px] sm:h-[350px] bg-[radial-gradient(ellipse_at_bottom,rgba(228,197,119,0.06)_0%,transparent_70%)] pointer-events-none" />
 
@@ -340,7 +340,7 @@ export default function PortfolioSection() {
             {filteredItems.map((item) => (
               <div
                 key={item.id}
-                className="group relative min-w-[280px] sm:min-w-[320px] lg:min-w-[360px] aspect-[4/5] rounded-[24px] bg-[#171513] border border-[#e4c577]/30 overflow-hidden shadow-[0_20px_40px_-12px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_55px_-10px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/60 transition-all duration-500 cursor-pointer flex flex-col justify-end p-6"
+                className="group relative min-w-[280px] sm:min-w-[320px] lg:min-w-[360px] aspect-[4/5] rounded-[24px] bg-[#171513] border border-[#e4c577]/30 overflow-hidden shadow-[0_20px_40px_-12px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_55px_-10px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/60 transition-all duration-300 cursor-pointer flex flex-col justify-end p-6"
               >
                 {/* Artwork Image Background with Next.js Optimized Image */}
                 <div className="absolute inset-0 bg-[#141210]">
@@ -349,7 +349,7 @@ export default function PortfolioSection() {
                     alt={item.title}
                     fill
                     sizes="(max-width: 768px) 280px, 360px"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out contrast-110 opacity-90 group-hover:opacity-100"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out contrast-110 opacity-90 group-hover:opacity-100"
                   />
                   {/* Dark Gradient Overlay for text readability at bottom */}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0A0908] via-black/40 to-transparent z-10" />
