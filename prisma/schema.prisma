@@ -141,6 +141,7 @@ model StudioSettings {
 
   // Optional / Non-default fields for Proprietor Details
   proprietorName            String?  
+  proprietorEmail           String?
   proprietorPhone           String?  
   proprietorAddress         String?
 
