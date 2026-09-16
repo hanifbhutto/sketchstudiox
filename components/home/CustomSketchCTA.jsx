@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight, CheckCircle2, Sliders, ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
 
 export default function CustomSketchCTA() {
@@ -27,7 +26,7 @@ export default function CustomSketchCTA() {
   return (
     <section className="relative py-24 sm:py-28 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-white/10 overflow-hidden">
       
-      {/* Animated Breathing Ambient Glows */}
+      {/* Static Ambient Glows (No animation lag) */}
       <div className="absolute top-1/4 right-10 w-[300px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(ellipse_at_top,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-[250px] sm:w-[550px] h-[250px] sm:h-[400px] bg-[radial-gradient(ellipse_at_bottom,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" />
 

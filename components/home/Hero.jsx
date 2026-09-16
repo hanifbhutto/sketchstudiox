@@ -125,29 +125,16 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-28 sm:pt-36 lg:pt-40 pb-20 sm:pb-24 px-4 sm:px-8 lg:px-12 overflow-hidden bg-[#0A0908] text-[#FAF8F5]">
       
-      {/* Animated Ambient Glows */}
-      <motion.div 
-        animate={{ scale: [1, 1.08, 1], opacity: [0.12, 0.18, 0.12] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] lg:w-[650px] h-[300px] sm:h-[400px] lg:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.15)_0%,transparent_70%)] blur-[100px] sm:blur-[120px] pointer-events-none" 
-      />
-      <motion.div 
-        animate={{ scale: [1, 1.1, 1], opacity: [0.07, 0.12, 0.07] }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-10 right-5 sm:right-10 w-[250px] sm:w-[400px] lg:w-[550px] h-[250px] sm:h-[350px] lg:h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" 
-      />
+      {/* Static Ambient Glows (No initial scale animation) */}
+      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] lg:w-[650px] h-[300px] sm:h-[400px] lg:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.15)_0%,transparent_70%)] blur-[100px] sm:blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-10 right-5 sm:right-10 w-[250px] sm:w-[400px] lg:w-[550px] h-[250px] sm:h-[350px] lg:h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" />
 
       <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 lg:gap-16 items-center relative z-10">
         
         {/* Right Column (Sketches Frame - Interactive Museum Wall Style) */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="lg:col-span-6 lg:order-2 flex flex-col items-center justify-center relative w-full group"
-        >
-          <div className="w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[430px] select-none relative z-10 transition-transform duration-700 group-hover:scale-[1.01]">
-            <div className="relative p-4 sm:p-6 rounded-[24px] sm:rounded-[28px] bg-[#171513] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] border border-[#e4c577]/30 transition-all duration-500 group-hover:border-[#e4c577]/60">
+        <div className="lg:col-span-6 lg:order-2 flex flex-col items-center justify-center relative w-full group">
+          <div className="w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[430px] select-none relative z-10">
+            <div className="relative p-4 sm:p-6 rounded-[24px] sm:rounded-[28px] bg-[#171513] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] border border-[#e4c577]/30 transition-all duration-300 group-hover:border-[#e4c577]/60">
               
               {/* Museum White Mat Board Container */}
               <div className="bg-[#FAF8F3] p-3 sm:p-6 rounded-xl sm:rounded-2xl shadow-[inset_0_2px_12px_rgba(0,0,0,0.12)] relative border border-[#EBE5DA]">
@@ -165,10 +152,10 @@ export default function Hero() {
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeExhibit.id}
-                      initial={{ opacity: 0, scale: 1.05 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.98 }}
-                      transition={{ duration: 0.6, ease: 'easeOut' }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
                       className="absolute inset-0"
                     >
                       <Image
@@ -191,20 +178,14 @@ export default function Hero() {
           </div>
 
           {/* Exhibition Plaque Description */}
-          <motion.div 
-            key={activeExhibit.id + '-text'}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mt-4 sm:mt-5 text-center space-y-1 relative z-10 px-4"
-          >
+          <div className="mt-4 sm:mt-5 text-center space-y-1 relative z-10 px-4">
             <p className="font-serif italic text-base sm:text-lg text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>
               &ldquo;{activeExhibit.title}&rdquo; &mdash; <span className="text-[#e4c577] font-medium">{activeExhibit.year}</span>
             </p>
             <p className="text-[10px] uppercase tracking-[0.25em] text-[#A8A196] font-mono">
               {activeExhibit.medium} &bull; <span className="text-[#e4c577] font-semibold">{activeExhibit.edition}</span>
             </p>
-          </motion.div>
+          </div>
 
           {/* Switcher Dock with Scroll Arrows */}
           <div className="mt-3 sm:mt-4 flex items-center gap-2 bg-[#171513]/90 backdrop-blur-md px-3 py-2 rounded-2xl border border-white/10 shadow-lg relative z-10 max-w-[320px] sm:max-w-[400px] w-full justify-center">
@@ -253,25 +234,15 @@ export default function Hero() {
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Left Column (Typography with Staggered Motion Entry) */}
-        <motion.div 
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="lg:col-span-6 lg:order-1 space-y-6 text-center lg:text-left"
-        >
+        {/* Left Column (Typography without load animation) */}
+        <div className="lg:col-span-6 lg:order-1 space-y-6 text-center lg:text-left">
           
           {/* Top Small Tagline */}
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="inline-block text-[11px] uppercase tracking-[0.28em] font-mono text-[#e4c577] font-semibold px-3 py-1 rounded-full bg-[#e4c577]/10 border border-[#e4c577]/20"
-          >
+          <div className="inline-block text-[11px] uppercase tracking-[0.28em] font-mono text-[#e4c577] font-semibold px-3 py-1 rounded-full bg-[#e4c577]/10 border border-[#e4c577]/20">
             HAND-DRAWN &bull; PERSONAL &bull; TIMELESS
-          </motion.div>
+          </div>
 
           {/* Main Headline */}
           <h1 className="text-4xl sm:text-5xl lg:text-[67px] font-normal leading-[1.15] lg:leading-[1.08] tracking-tight text-[#FAF8F5]" style={{ fontFamily: 'Georgia, serif' }}>
@@ -286,7 +257,7 @@ export default function Hero() {
             Master hand-drawn portraits of people and cherished pets. Crafted stroke by stroke in pure charcoal, fine graphite, or vibrant colored pencil on 300 GSM cotton sheets.
           </p>
 
-          {/* Action CTAs with Hover Lift Effect */}
+          {/* Action CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-1 px-4 sm:px-0">
             <Link
               href="/custom-sketch"
@@ -324,7 +295,7 @@ export default function Hero() {
               <p className="text-xs sm:text-sm text-[#FAF8F5] mt-1 font-medium truncate" style={{ fontFamily: 'Georgia, serif' }}>Worldwide Tracked</p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
       </div>
     </section>
