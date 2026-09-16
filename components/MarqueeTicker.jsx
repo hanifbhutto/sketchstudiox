@@ -21,16 +21,16 @@ export default function MarqueeTicker() {
       <div className="absolute top-0 bottom-0 left-0 w-24 bg-gradient-to-r from-[#0A0908] to-transparent z-10 pointer-events-none" />
       <div className="absolute top-0 bottom-0 right-0 w-24 bg-gradient-to-l from-[#0A0908] to-transparent z-10 pointer-events-none" />
 
-      {/* Infinite Smooth Marquee Track */}
+      {/* Infinite Smooth Marquee Track with GPU acceleration */}
       <div className="flex overflow-hidden whitespace-nowrap">
         <motion.div
           animate={{ x: ['0%', '-50%'] }}
           transition={{
-            duration: 45, // Slowed down for a luxury, relaxed pacing
+            duration: 45,
             repeat: Infinity,
             ease: 'linear',
           }}
-          className="flex items-center gap-8 shrink-0"
+          className="flex items-center gap-8 shrink-0 will-change-transform"
         >
           {/* Render multiple sets to ensure seamless infinite looping */}
           {[...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS].map((item, index) => (
