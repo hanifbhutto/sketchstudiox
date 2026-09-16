@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma'; // Apne prisma client ka path check kar lein
+import { prisma } from '../../../../../lib/prisma'; // Apne prisma client ka path check kar lein
 
 async function getPayPalAccessToken(clientId, clientSecret, env) {
   const baseUrl = env === 'production' 
