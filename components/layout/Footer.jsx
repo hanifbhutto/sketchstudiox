@@ -11,6 +11,7 @@ export default function Footer() {
     acceptingCommissions: true,
     logoUrl: '',
     proprietorName: '',
+    proprietorEmail: '',
     proprietorPhone: '',
     proprietorAddress: '',
   });
@@ -29,6 +30,7 @@ export default function Footer() {
             acceptingCommissions: data.acceptingCommissions ?? true,
             logoUrl: data.logoUrl || '',
             proprietorName: data.proprietorName || '',
+            proprietorEmail: data.proprietorEmail || '',
             proprietorPhone: data.proprietorPhone || '',
             proprietorAddress: data.proprietorAddress || '',
           });
@@ -172,35 +174,42 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 4: Optional Proprietor & Address Details (Sirf tabhi render hoga jab database mein maujood honge) */}
-          {(studioInfo.proprietorName || studioInfo.proprietorPhone || studioInfo.proprietorAddress) && (
-  <div className="col-span-2 md:col-span-1 space-y-3.5 bg-[#171513] p-5 rounded-2xl border border-[#e4c577]/30 backdrop-blur-md shadow-inner">
-    {studioInfo.proprietorName && (
-      <div className="flex items-center gap-1.5 text-xs font-semibold text-[#FAF8F5] border-b border-white/10 pb-2">
-        <User className="w-4 h-4 text-[#e4c577]" />
-        <span className="font-mono tracking-wider text-[11px] uppercase">{studioInfo.proprietorName}</span>
-      </div>
-    )}
-    <ul className="space-y-2 font-light stext-[#A8A196] text-[11px]">
-      <li className="flex items-center gap-2">
-        <Mail className="w-3 h-3 text-[#e4c577] shrink-0" />
-        <a href={`mailto:${studioInfo.studioEmail}`} className="hover:text-white transition-colors truncate">{studioInfo.studioEmail}</a>
-      </li>
-      {studioInfo.proprietorPhone && (
-        <li className="flex items-center gap-2">
-          <Phone className="w-3 h-3 text-[#e4c577] shrink-0" />
-          <span>{studioInfo.proprietorPhone}</span>
-        </li>
-      )}
-      {studioInfo.proprietorAddress && (
-        <li className="flex items-start gap-2 pt-1">
-          <MapPin className="w-3 h-3 text-[#e4c577] shrink-0 mt-0.5" />
-          <span>{studioInfo.proprietorAddress}</span>
-        </li>
-      )}
-    </ul>
-  </div>
-)}
+          {/* Column 4: Optional Proprietor & Address Details */}
+          {(studioInfo.proprietorName || studioInfo.proprietorEmail || studioInfo.proprietorPhone || studioInfo.proprietorAddress) && (
+            <div className="col-span-2 md:col-span-1 space-y-3.5 bg-[#171513] p-5 rounded-2xl border border-[#e4c577]/30 backdrop-blur-md shadow-inner">
+              {studioInfo.proprietorName && (
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#FAF8F5] border-b border-white/10 pb-2">
+                  <User className="w-4 h-4 text-[#e4c577]" />
+                  <span className="font-mono tracking-wider text-[11px] uppercase">{studioInfo.proprietorName}</span>
+                </div>
+              )}
+              <ul className="space-y-2 font-light text-[#A8A196] text-[11px]">
+                {studioInfo.proprietorEmail ? (
+                  <li className="flex items-center gap-2">
+                    <Mail className="w-3 h-3 text-[#e4c577] shrink-0" />
+                    <a href={`mailto:${studioInfo.proprietorEmail}`} className="hover:text-white transition-colors truncate">{studioInfo.proprietorEmail}</a>
+                  </li>
+                ) : (
+                  <li className="flex items-center gap-2">
+                    <Mail className="w-3 h-3 text-[#e4c577] shrink-0" />
+                    <a href={`mailto:${studioInfo.studioEmail}`} className="hover:text-white transition-colors truncate">{studioInfo.studioEmail}</a>
+                  </li>
+                )}
+                {studioInfo.proprietorPhone && (
+                  <li className="flex items-center gap-2">
+                    <Phone className="w-3 h-3 text-[#e4c577] shrink-0" />
+                    <span>{studioInfo.proprietorPhone}</span>
+                  </li>
+                )}
+                {studioInfo.proprietorAddress && (
+                  <li className="flex items-start gap-2 pt-1">
+                    <MapPin className="w-3 h-3 text-[#e4c577] shrink-0 mt-0.5" />
+                    <span>{studioInfo.proprietorAddress}</span>
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
 
         </div>
 

@@ -24,6 +24,7 @@ export async function GET() {
           autoConfirmOrders: true,
           logoMediaId: null,
           proprietorName: null,
+          proprietorEmail: null, // <-- Added here
           proprietorPhone: null,
           proprietorAddress: null,
         },
@@ -62,8 +63,9 @@ export async function POST(request) {
       autoConfirmOrders,
       logoMediaId,
       proprietorName,
+      proprietorEmail, // <-- Added here
       proprietorPhone,
-      proprietorAddress, // <-- Yeh updated field name hai
+      proprietorAddress,
     } = body;
 
     let settings = await prisma.studioSettings.findFirst();
@@ -81,8 +83,9 @@ export async function POST(request) {
       acceptingCommissions,
       autoConfirmOrders,
       proprietorName: proprietorName || null,
+      proprietorEmail: proprietorEmail || null, // <-- Added here
       proprietorPhone: proprietorPhone || null,
-      proprietorAddress: proprietorAddress || null, // <-- Yahan bhi update kiya
+      proprietorAddress: proprietorAddress || null,
       logoMedia: logoMediaId 
         ? { connect: { id: logoMediaId } } 
         : { disconnect: true },

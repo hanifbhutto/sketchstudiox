@@ -40,6 +40,7 @@ const DEFAULT_SETTINGS = {
   logoUrl: '',
   logoMediaId: null,
   proprietorName: '',
+  proprietorEmail: '',
   proprietorPhone: '',
   proprietorAddress: '',
 };
@@ -81,6 +82,7 @@ export default function AdminSettingsPage() {
             logoUrl: data.logoMedia?.secureUrl || data.logoUrl || '',
             logoMediaId: data.logoMediaId || null,
             proprietorName: data.proprietorName || '',
+            proprietorEmail: data.proprietorEmail || '',
             proprietorPhone: data.proprietorPhone || '',
             proprietorAddress: data.proprietorAddress || '',
           }));
@@ -299,6 +301,17 @@ export default function AdminSettingsPage() {
               </div>
 
               <div className="space-y-1.5">
+                <label className="text-[#FAF8F5] block font-semibold">Proprietor Email</label>
+                <input 
+                  type="email" 
+                  value={settings.proprietorEmail}
+                  onChange={(e) => handleChange('proprietorEmail', e.target.value)}
+                  placeholder="e.g. arslan@domain.com"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
                 <label className="text-[#FAF8F5] block font-semibold">Proprietor Phone</label>
                 <input 
                   type="text" 
@@ -309,15 +322,15 @@ export default function AdminSettingsPage() {
                 />
               </div>
 
-              <div className="space-y-1.5 sm:col-span-2">
+              <div className="space-y-1.5">
                 <label className="text-[#FAF8F5] block font-semibold">Studio Physical Address</label>
                 <input 
-  type="text" 
-  value={settings.proprietorAddress}
-  onChange={(e) => handleChange('proprietorAddress', e.target.value)}
-  placeholder="e.g. Street 6, Haroonabad, 62300, Pakistan"
-  className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
-/>
+                  type="text" 
+                  value={settings.proprietorAddress}
+                  onChange={(e) => handleChange('proprietorAddress', e.target.value)}
+                  placeholder="e.g. Street 6, Haroonabad, 62300, Pakistan"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 outline-none focus:border-[#e4c577] text-[#FAF8F5]"
+                />
               </div>
             </div>
           </div>
