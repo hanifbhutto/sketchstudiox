@@ -195,7 +195,7 @@ export default function FeaturedExhibition() {
               return (
                 <div
                   key={artwork.id}
-                  className="group flex flex-col justify-between will-change-transform"
+                  className="group flex flex-col justify-between"
                 >
                   {/* Dark Luxury Frame Card */}
                   <div className="relative aspect-[3/4] bg-[#171513] p-4 rounded-2xl border border-white/10 overflow-hidden shadow-[0_15px_35px_-5px_rgba(0,0,0,0.8)] sm:group-hover:-translate-y-1.5 sm:group-hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] sm:group-hover:border-[#e4c577]/60 transition-all duration-300">

@@ -62,7 +62,7 @@ export default function StudioPromise() {
             return (
               <div
                 key={index}
-                className="p-8 rounded-[24px] bg-[#171513] border border-white/10 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-300 flex flex-col items-center text-center group will-change-transform"
+                className="p-8 rounded-[24px] bg-[#171513] border border-white/10 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-300 flex flex-col items-center text-center group"
               >
                 {/* Icon Container with Soft Gold Ring */}
                 <div className="w-14 h-14 rounded-2xl bg-[#0A0908] border border-[#e4c577]/30 flex items-center justify-center text-[#e4c577] mb-6 group-hover:bg-[#e4c577] group-hover:text-[#0A0908] group-hover:border-[#e4c577] transition-all duration-300 shadow-md">

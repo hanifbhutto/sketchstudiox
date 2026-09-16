@@ -14,9 +14,25 @@ export default function Navbar() {
   const { setIsCartOpen, totalItems } = useCart();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    let frameId = null;
+
+    const onScroll = () => {
+      if (frameId !== null) return;
+
+      frameId = window.requestAnimationFrame(() => {
+        setScrolled((current) => {
+          const next = window.scrollY > 20;
+          return current === next ? current : next;
+        });
+        frameId = null;
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+    };
   }, []);
 
   // Real-time Authentication State Checker

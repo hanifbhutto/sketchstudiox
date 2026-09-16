@@ -74,7 +74,7 @@ export default function HowItWorks() {
             return (
               <div
                 key={step.phase}
-                className="relative rounded-[24px] bg-[#171513] border border-white/10 p-7 sm:p-8 flex flex-col justify-between group shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-300 z-10 will-change-transform"
+                className="relative rounded-[24px] bg-[#171513] border border-white/10 p-7 sm:p-8 flex flex-col justify-between group shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-300 z-10"
               >
                 {/* Step Top Bar */}
                 <div className="flex items-center justify-between mb-8">
