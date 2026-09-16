@@ -8,7 +8,6 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [studioInfo, setStudioInfo] = useState({
     studioEmail: 'pencilxstudio@gmail.com',
-    acceptingCommissions: true,
     logoUrl: '',
     proprietorName: '',
     proprietorEmail: '',
@@ -27,7 +26,6 @@ export default function Footer() {
         if (data && !data.error) {
           setStudioInfo({
             studioEmail: data.studioEmail || 'pencilxstudio@gmail.com',
-            acceptingCommissions: data.acceptingCommissions ?? true,
             logoUrl: data.logoUrl || '',
             proprietorName: data.proprietorName || '',
             proprietorEmail: data.proprietorEmail || '',
@@ -53,7 +51,7 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto space-y-16 relative z-10">
         
-        {/* Top Section: Brand Identity & Live Studio Pulse */}
+        {/* Top Section: Brand Identity & Live Studio Mail/Shipping */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-12 border-b border-white/10 gap-8">
           <div className="space-y-3.5 max-w-lg">
             <Link href="/" className="flex items-center gap-3 group select-none">
@@ -81,7 +79,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Live Studio Status & Official Direct Mail with Loader */}
+          {/* Official Direct Mail & Shipping Info */}
           <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
             <a 
               href={`mailto:${studioInfo.studioEmail}`}
@@ -91,17 +89,7 @@ export default function Footer() {
               <span>{studioInfo.studioEmail}</span>
             </a>
 
-            <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#171513] border border-[#e4c577]/30 text-[#FAF8F5] shadow-inner backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e4c577] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#e4c577]" />
-              </span>
-              <span className="tracking-wider">
-                {studioInfo.acceptingCommissions ? 'Atelier Open • Accepting Commissions' : 'Atelier Queue • Commissions Paused'}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1.5 text-[#A8A196] text-[11px] font-mono tracking-wider">
+            <div className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#171513] border border-white/10 text-[#A8A196] text-[11px] font-mono tracking-wider shadow-inner backdrop-blur-md">
               <MapPin className="w-3.5 h-3.5 text-[#e4c577]" />
               <span>Worldwide Tracked Shipping</span>
             </div>
