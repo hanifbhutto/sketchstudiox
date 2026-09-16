@@ -145,6 +145,10 @@ model StudioSettings {
   proprietorPhone           String?  
   proprietorAddress         String?
 
+  // WhatsApp Widget Configuration (New)
+  whatsappNumber            String?
+  whatsappEnabled           Boolean  @default(false)
+
   logoMediaId               String?  @db.Uuid
   logoMedia                 Media?   @relation(fields: [logoMediaId], references: [id], onDelete: SetNull)
   updatedAt                 DateTime @updatedAt

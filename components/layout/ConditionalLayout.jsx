@@ -5,6 +5,7 @@ import Navbar from './Navbar';
 import Footer from './Footer'; // Agar aapke paas footer component hai
 import CartDrawer from '../cart/CartDrawer';
 import StudioCursor from './StudioCursor';
+import WhatsAppButton from '../WhatsAppButton';
 
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
@@ -17,6 +18,7 @@ export default function ConditionalLayout({ children }) {
 
   return (
     <>
+    <WhatsAppButton/>
       <Navbar />
         <StudioCursor />
           <CartDrawer />
