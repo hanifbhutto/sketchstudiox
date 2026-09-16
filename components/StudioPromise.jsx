@@ -1,7 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Sparkles, CheckCircle2, RefreshCw, CreditCard, Award, ShieldCheck, Star } from 'lucide-react';
+import { Sparkles, CheckCircle2, CreditCard, Award, ShieldCheck, Star } from 'lucide-react';
 
 const PROMISES = [
   {
@@ -9,11 +8,6 @@ const PROMISES = [
     desc: 'Every portrait is hand-drawn stroke by stroke on archival cotton.',
     icon: CheckCircle2,
   },
-//   {
-//     title: 'Unlimited Modifications',
-//     desc: 'Digital proof revisions until you are completely satisfied.',
-//     icon: RefreshCw,
-//   },
   {
     title: 'Flexible Secure Payment',
     desc: 'Secure deposit options with full encrypted processing.',
@@ -40,12 +34,8 @@ export default function StudioPromise() {
   return (
     <section className="relative py-24 sm:py-28 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-white/10 overflow-hidden">
       
-      {/* Animated Breathing Ambient Glows */}
-      <motion.div 
-        animate={{ scale: [1, 1.06, 1], opacity: [0.1, 0.16, 0.1] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[350px] sm:w-[700px] h-[350px] sm:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.12)_0%,transparent_70%)] blur-[120px] sm:blur-[150px] pointer-events-none" 
-      />
+      {/* Static Ambient Glow (No animation lag during scroll) */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[350px] sm:w-[700px] h-[350px] sm:h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(228,197,119,0.12)_0%,transparent_70%)] blur-[120px] sm:blur-[150px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10 space-y-16">
         
@@ -65,18 +55,14 @@ export default function StudioPromise() {
           </p>
         </div>
 
-        {/* 6 Promises Grid */}
+        {/* 5 Promises Grid (Instant Render without lag) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {PROMISES.map((item, index) => {
             const Icon = item.icon;
             return (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="p-8 rounded-[24px] bg-[#171513] border border-white/10 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-400 flex flex-col items-center text-center group"
+                className="p-8 rounded-[24px] bg-[#171513] border border-white/10 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-300 flex flex-col items-center text-center group will-change-transform"
               >
                 {/* Icon Container with Soft Gold Ring */}
                 <div className="w-14 h-14 rounded-2xl bg-[#0A0908] border border-[#e4c577]/30 flex items-center justify-center text-[#e4c577] mb-6 group-hover:bg-[#e4c577] group-hover:text-[#0A0908] group-hover:border-[#e4c577] transition-all duration-300 shadow-md">
@@ -92,7 +78,7 @@ export default function StudioPromise() {
                 <p className="text-xs text-[#A8A196] font-light leading-relaxed">
                   {item.desc}
                 </p>
-              </motion.div>
+              </div>
             );
           })}
         </div>

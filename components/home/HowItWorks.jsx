@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { UploadCloud, Pencil, CheckCircle2, PackageCheck, Sparkles, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -39,17 +38,9 @@ export default function HowItWorks() {
   return (
     <section className="relative py-24 sm:py-28 px-4 sm:px-8 lg:px-12 bg-[#0A0908] text-[#FAF8F5] border-t border-white/10 overflow-hidden">
       
-      {/* Animated Breathing Ambient Glows */}
-      <motion.div 
-        animate={{ scale: [1, 1.06, 1], opacity: [0.1, 0.16, 0.1] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/3 right-10 w-[300px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(ellipse_at_top,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" 
-      />
-      <motion.div 
-        animate={{ scale: [1, 1.08, 1], opacity: [0.06, 0.1, 0.06] }}
-        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-10 left-10 w-[250px] sm:w-[500px] h-[250px] sm:h-[400px] bg-[radial-gradient(ellipse_at_bottom,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" 
-      />
+      {/* Static Ambient Glows (No animation lag during scroll) */}
+      <div className="absolute top-1/3 right-10 w-[300px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(ellipse_at_top,rgba(228,197,119,0.14)_0%,transparent_70%)] blur-[100px] sm:blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 left-10 w-[250px] sm:w-[550px] h-[250px] sm:h-[400px] bg-[radial-gradient(ellipse_at_bottom,rgba(228,197,119,0.08)_0%,transparent_70%)] blur-[110px] sm:blur-[130px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         
@@ -72,22 +63,18 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        {/* 4 Steps Grid */}
+        {/* 4 Steps Grid (Instant Render without scroll lag) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
           
           {/* Connector Line for Large Screens */}
           <div className="hidden lg:block absolute top-14 left-12 right-12 h-[1px] bg-gradient-to-r from-transparent via-[#e4c577]/40 to-transparent pointer-events-none z-0" />
 
-          {steps.map((step, idx) => {
+          {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <motion.div
+              <div
                 key={step.phase}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.12 }}
-                className="relative rounded-[24px] bg-[#171513] border border-white/10 p-7 sm:p-8 flex flex-col justify-between group shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-400 z-10"
+                className="relative rounded-[24px] bg-[#171513] border border-white/10 p-7 sm:p-8 flex flex-col justify-between group shadow-[0_15px_35px_-10px_rgba(0,0,0,0.8)] hover:shadow-[0_25px_50px_-12px_rgba(228,197,119,0.25)] hover:border-[#e4c577]/50 transition-all duration-300 z-10 will-change-transform"
               >
                 {/* Step Top Bar */}
                 <div className="flex items-center justify-between mb-8">
@@ -114,12 +101,12 @@ export default function HowItWorks() {
                     {step.desc}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
-        {/* Quick Commission CTA Banner (Short text & mobile compact) */}
+        {/* Quick Commission CTA Banner */}
         <div className="mt-14 sm:mt-16 text-center">
           <Link
             href="/custom-sketch"
