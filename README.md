@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Sketch Studio X — Fine Art Atelier & Bespoke Governance System
 
-## Getting Started
+An enterprise-grade, high-end fine art atelier web application built for creating bespoke hand-drawn portraits, managing secure client checkouts via PayPal, and maintaining dynamic studio governance via a centralized admin dashboard.
 
-First, run the development server:
+---
 
-```bash
+## 🛠️ Technology Stack & Platforms (A to Z)
+
+- **Frontend & UI**: Next.js (App Router), React, Tailwind CSS, Framer Motion (for staggered entrance animations and smooth immersive transitions).
+- **Icons & UI Assets**: Lucide React.
+- **Database & Backend**: Supabase (PostgreSQL relational database managed securely via Prisma ORM).
+- **Database Safety & Automation**: Supabase `pg_cron` extension configured to prevent free-tier database auto-pausing.
+- **Media Management**: Cloudinary (Centralized Media Vault repository for studio branding seals, logos, and artwork assets with secure upload/deletion pipelines).
+- **Payment Gateway**: PayPal Smart Buttons API (Supporting Sandbox & Live Production settlement modes with dynamic currency switching).
+- **Deployment & Hosting**: Vercel (Production Cloud Hosting).
+
+---
+
+## 🏛️ System Architecture & Core Features
+
+1. **Atelier Governance & Admin Panel (`/admin`)**:
+   - Manages UK Companies House legal identity and registration numbers.
+   - Dynamic control over PayPal gateway credentials, environment switcher (Sandbox/Production), and active status toggles.
+   - Proprietor details (`proprietorName`, `proprietorEmail`, `proprietorPhone`, `proprietorAddress`) reflecting in real-time across the platform footer.
+   - Production fulfillment lead times and custom commission easel status toggles.
+
+2. **Centralized Media Vault**:
+   - Modal-driven asset picker integrated seamlessly with Cloudinary for managing brand logos and portfolio items.
+
+3. **Immersive Public Frontend**:
+   - Gallery exhibitions, human portraits, pet and animal core studies.
+   - Bespoke commission workflow with dynamic pricing matrices.
+   - Live status pulse indicating active/paused atelier commission queues.
+
+---
+
+## ⚙️ Environment Configuration (`.env`)
+
+Create a `.env` file in the root directory of your project and paste the following production configuration:
+
+```env
+# ==========================================
+# SUPABASE & PRISMA DATABASE CONFIGURATION
+# ==========================================
+DATABASE_URL="postgresql://postgres.slxrezehjhjnkchixktw:sketchstudio12345%40@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require"
+DIRECT_URL="postgresql://postgres.slxrezehjhjnkchixktw:supabase:@[aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres?sslmode=require](https://aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres?sslmode=require)"
+
+# ==========================================
+# ADMIN AUTHENTICATION & SECURITY
+# ==========================================
+ADMIN_EMAIL="admin@sketchstudiox.com"
+ADMIN_PASSWORD="StudioAdmin2026Secure!"
+ADMIN_JWT_SECRET="super-secret-studio-key-987654321"
+
+# ==========================================
+# CLOUDINARY MEDIA VAULT INTEGRATION
+# ==========================================
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="oeullaft"
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="sketchstudio_preset"
+CLOUDINARY_API_KEY="289636527764821"
+CLOUDINARY_API_SECRET="iYY3FFM1HzWYQF7kcuRY2d8FrQA"
+🚀 Local Development Setup
+Clone the repository:
+
+Bash
+git clone [https://github.com/your-username/sketchstudiox.git](https://github.com/your-username/sketchstudiox.git)
+cd sketchstudiox
+Install dependencies:
+
+Bash
+npm install
+Synchronize Prisma Schema & Generate Client:
+
+Bash
+npx prisma db push
+npx prisma generate
+Run the development server:
+
+Bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Open http://localhost:3000 in your browser.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🛡️ Database Persistence & Keep-Alive Protection
+To prevent Supabase free-tier PostgreSQL databases from automatically pausing after 7 days of inactivity, the system utilizes an active internal pg_cron heartbeat query scheduled inside the Supabase SQL editor:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+SQL
+create extension if not exists pg_cron;
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+select cron.schedule(
+  'keep-alive-job',
+  '0 0 */3 * *', 
+  $$ select count(*) from "StudioSettings"; $$
+);
+📄 License & Ownership
+Copyright © 2026 Sketch X Studio Ltd. All rights reserved. Registered in England and Wales (UK). Company No: 17429707.
