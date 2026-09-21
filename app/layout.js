@@ -48,7 +48,7 @@ export default function RootLayout({ children }) {
             <StudioPreloader />
             {children}
           </ConditionalLayout>
-          <script src="//code.tidio.co/tig0gq3xxnjhc46d1ncx5iqhhcgm9nia.js" async></script>
+          {/* <script src="//code.tidio.co/tig0gq3xxnjhc46d1ncx5iqhhcgm9nia.js" async></script> */}
         </CartProvider>
       </body>
     </html>
