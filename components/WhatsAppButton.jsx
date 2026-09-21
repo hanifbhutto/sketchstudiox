@@ -41,7 +41,7 @@ export default function WhatsAppButton() {
   const defaultMsg = encodeURIComponent(`Hello ${whatsappConfig.siteName}! I need some help regarding the platform.`);
 
   return (
-    <div className='whatsAppFixedFloatButton fixed md:bottom-30! md:right-6! bottom-30! right-6! z-[55]!'>
+    <div className='whatsAppFixedFloatButton fixed md:bottom-10! md:right-6! bottom-10! right-6! z-[55]!'>
       <a 
         href={`https://wa.me/${cleanNumber}?text=${defaultMsg}`} 
         target='_blank' 
